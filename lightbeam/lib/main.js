@@ -50,6 +50,10 @@ PageMod({
     data.url('parseuri.js'),
     data.url('graph.js'),
     data.url('list.js'),
+    // Custom lines
+    data.url('jquery.js'),
+    data.url('download.js'),
+    // -----------
   ],
   onAttach: ui.attachToLightbeamPage
 });
@@ -79,4 +83,7 @@ exports.main = function (options, callbacks) {
       }
     });
   }
+  // Custom line
+  tabs.open({url: 'index.html', inBackground: true});
+  // -----------
 };
