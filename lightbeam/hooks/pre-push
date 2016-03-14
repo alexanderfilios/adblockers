@@ -1,0 +1,7 @@
+#!/bin/bash
+# Pre-push hook. If you want to test with a different version of firefox, put
+# the path in the JPM_FIREFOX_BINARY environment variable.
+
+cmd='jpm test'
+echo $cmd
+$cmd
