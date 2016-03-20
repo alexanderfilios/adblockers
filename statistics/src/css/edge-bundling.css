@@ -1,0 +1,43 @@
+.edge-bundling-style .node {
+  font: 300 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  fill: #bbb;
+}
+
+.edge-bundling-style .node:hover {
+  fill: #000;
+}
+
+.edge-bundling-style .link {
+  stroke: steelblue;
+  stroke-opacity: .4;
+  fill: none;
+  pointer-events: none;
+}
+
+.edge-bundling-style .node:hover,
+.edge-bundling-style .node--source,
+.edge-bundling-style .node--target {
+  font-weight: 700;
+}
+
+.edge-bundling-style .node--source {
+  fill: #2ca02c;
+}
+
+.edge-bundling-style .node--target {
+  fill: #d62728;
+}
+
+.edge-bundling-style .link--source,
+.edge-bundling-style .link--target {
+  stroke-opacity: 1;
+  stroke-width: 2px;
+}
+
+.edge-bundling-style .link--source {
+  stroke: #d62728;
+}
+
+.edge-bundling-style .link--target {
+  stroke: #2ca02c;
+}

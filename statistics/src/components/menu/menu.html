@@ -1,0 +1,39 @@
+<div>
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+    <a class="navbar-brand" href="#">Statistics</a>
+
+  </div>
+  <div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav">
+      <li ng-class="selected === menuItems.TABLE ? 'active' : ''">
+        <a href="#" ng-click="selected = menuItems.TABLE">Table</a>
+      </li>
+      <li ng-class="selected === menuItems.BUNDLE ? 'active' : ''">
+        <a href="#" ng-click="selected = menuItems.BUNDLE">Bundle</a>
+      </li>
+      <li ng-class="selected === menuItems.BAR ? 'active' : ''">
+        <a href="#" ng-click="selected = menuItems.BAR">Bar</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div>
+  <div ng-show="selected === menuItems.BUNDLE">
+    <div ng-controller="EdgeBundlingController">
+      <div edge-bundling=""></div>
+    </div>
+  </div>
+  <div ng-show="selected === menuItems.TABLE">
+    <div ng-controller="TableController">
+      <div my-table=""></div>
+    </div>
+  </div>
+  <div ng-show="selected === menuItems.BAR">
+    <div ng-controller="BarController">
+      <div bar=""></div>
+    </div>
+  </div>
+</div>
+</div>
