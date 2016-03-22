@@ -12,23 +12,29 @@ export default angular
   .controller('EdgeBundlingController', ['$scope', function($scope) {
 
     $scope.data = null;
-    $scope.connection.find().then(data => {
-        data = data
+    $scope.$watch(
+      (scope) => scope.selected === Utilities.constants.menuItems.BUNDLE,
+      (loaded) => {if (loaded && $scope.data === null) fetchData();});
+    const fetchData = function() {
+      $scope.connection.find().then(data => {
+          data = data
           // Only keep third-party requests
-          .filter(row => row.target !== row.source)
-          .map(row => Object({
-            // Use first party as the source. Replace reserved char '.' with ','.
-            source: 's.' + row.firstParty.replace(/\./g, ','),
-            target: 't.' + row.target.replace(/\./g, ',')
-          }));
+            .filter(row => row.target !== row.source)
+            .map(row => Object({
+              // Use first party as the source. Replace reserved char '.' with ','.
+              source: 's.' + row.firstParty.replace(/\./g, ','),
+              target: 't.' + row.target.replace(/\./g, ',')
+            }));
 
-        $scope.data = jQuery.unique(data.map(row => row.source).concat(data.map(row => row.target)))
-          .map(source => Object({
-            name: source,
-            imports: jQuery.unique(data.filter(r => r.source === source).map(r => r.target))
-          }));
-      }
-    );
+          $scope.data = jQuery.unique(data.map(row => row.source).concat(data.map(row => row.target)))
+            .map(source => Object({
+              name: source,
+              imports: jQuery.unique(data.filter(r => r.source === source).map(r => r.target))
+            }));
+        }
+      );
+    };
+
   }])
   .directive('edgeBundling', function($compile) {
     return {

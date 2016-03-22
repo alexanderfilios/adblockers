@@ -17,24 +17,30 @@ export default angular
       third: 'green'
       };
     $scope.data = null;
-    $scope.connection.find().then(data => {
-      $scope.data = jQuery.unique(data.map(row => row.firstParty))
-        .map(firstParty => Object({
-          name: firstParty,
-          firsts: jQuery.unique(data
-            .filter(row => row.firstParty === firstParty)
-            .filter(row => Utilities.isFalseFp(row))
-            .map(row => row.source)).length,
-          thirds: jQuery.unique(data
-            .filter(row => row.firstParty === firstParty)
-            .filter(row => Utilities.isTp(row))
-            .map(row => row.target)).length
+    $scope.$watch(
+      (scope) => scope.selected === Utilities.constants.menuItems.BAR,
+      (loaded) => {if (loaded && $scope.data === null) fetchData();});
+    const fetchData = function() {
+      $scope.connection.find().then(data => {
+        $scope.data = jQuery.unique(data.map(row => row.firstParty))
+          .map(firstParty => Object({
+            name: firstParty,
+            firsts: jQuery.unique(data
+              .filter(row => row.firstParty === firstParty)
+              .filter(row => Utilities.isFalseFp(row))
+              .map(row => row.source)).length,
+            thirds: jQuery.unique(data
+              .filter(row => row.firstParty === firstParty)
+              .filter(row => Utilities.isTp(row))
+              .map(row => row.target)).length
 
-        }))
-        .reduce((prevVal, curr) => prevVal
-          .concat({name: curr.name, value: curr.firsts, color: colors.first})
-          .concat({name: curr.name, value: curr.thirds, color: colors.third}), []);
-    });
+          }))
+          .reduce((prevVal, curr) => prevVal
+            .concat({name: curr.name, value: curr.firsts, color: colors.first})
+            .concat({name: curr.name, value: curr.thirds, color: colors.third}), []);
+      });
+    };
+
   }])
   .directive('bar', function($compile) {
     return {

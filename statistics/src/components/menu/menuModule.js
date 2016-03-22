@@ -3,6 +3,7 @@
  */
 
 import angular from 'angular';
+import Constants from '../../Constants';
 require('angular-ui-bootstrap');
 
 import tableModule from '../../components/tables/tableModule';
@@ -18,15 +19,15 @@ export default angular
   forceDirectedModule])
   .controller('MenuController', ['$scope', function($scope) {
 
-    const menuItems = {
-      BUNDLE: 1,
-      TABLE: 2,
-      BAR: 3,
-      NETWORK: 4
+    $scope.activate = function(menuItem) {
+      $scope.selected = menuItem;
     };
 
-    $scope.menuItems = menuItems;
-    $scope.selected = menuItems.NETWORK;
+    //setTimeout(() => $scope.$broadcast('someEvent'), 3000);
+
+
+    $scope.menuItems = Constants.menuItems;
+    $scope.selected = Constants.menuItems.BAR;
   }])
   .directive('myMenu', function() {
 

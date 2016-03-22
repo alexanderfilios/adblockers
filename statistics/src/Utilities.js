@@ -2,7 +2,10 @@
  * Created by alexandros on 3/18/16.
  */
 
+  import Constants from './Constants';
+
 const Utilities = {
+  constants: Constants,
   repeatUntil: function (periodicCallback, condition, checkInterval, endCallback) {
     const intervalId = setInterval(function () {
       if (condition()) {

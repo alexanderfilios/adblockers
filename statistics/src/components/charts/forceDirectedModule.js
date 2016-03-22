@@ -10,19 +10,22 @@ import Utilities from '../../Utilities';
 export default angular
   .module('forceDirected', ['ui.bootstrap'])
   .controller('ForceDirectedController', ['$scope', function($scope) {
-    const images = {
-      first: 'https://github.com/favicon.ico',
-      third: 'https://google.com/favicon.ico'
-    };
     $scope.data = null;
-    $scope.connection.distinct(null, ['firstParty', 'target']).then(data => {
-      const nodeDict = data.reduce(function(accumulator, current) {
+
+    //$scope.$on('someEvent', (e) => console.log('aaaaaa'));
+    $scope.$watch(
+      (scope) => scope.selected === Utilities.constants.menuItems.NETWORK,
+      (loaded) => {if (loaded && $scope.data === null) fetchData();});
+
+    const fetchData = function() {
+      $scope.connection.distinct(null, ['firstParty', 'target']).then(data => {
+        const nodeDict = data.reduce(function(accumulator, current) {
           if (!(('s.' + current.firstParty) in accumulator)) {
             accumulator['s.' + current.firstParty] = {
               idx: Object.keys(accumulator).length,
               group: Object.keys(accumulator).length,
               name: current.firstParty,
-              image: images.first
+              image: Utilities.constants.images.first
             };
           }
           if (!(('t.' + current.target) in accumulator)) {
@@ -30,21 +33,24 @@ export default angular
               idx: Object.keys(accumulator).length,
               group: Object.keys(accumulator).length,
               name: current.target,
-              image: images.third
+              image: Utilities.constants.images.third
             };
           }
           return accumulator;
         }, {});
-      const links = data.map(row => ({
-        source: nodeDict['s.' + row.firstParty].idx,
-        target: nodeDict['t.' + row.target].idx
-      }));
-      const nodes = Object.values(nodeDict);
-      $scope.data = {
-        nodes: nodes,
-        links: links
-      };
-    });
+        const links = data.map(row => ({
+          source: nodeDict['s.' + row.firstParty].idx,
+          target: nodeDict['t.' + row.target].idx
+        }));
+        const nodes = Object.values(nodeDict);
+
+        $scope.data = {
+          nodes: nodes,
+          links: links
+        };
+      });
+    };
+
   }])
   .directive('forceDirected', function($compile) {
     return {

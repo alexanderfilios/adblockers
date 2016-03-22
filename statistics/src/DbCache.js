@@ -13,7 +13,7 @@ const DbCache = function(lifetime = 10000) {
   self.get = function(collection, filter) {
     const cacheData = self._cache
       .filter(entry => entry.collection === collection && entry.filter === filter);
-    
+
     if (cacheData.length > 0 && (new Date() - cacheData[0].lastFetched <= self._lifetime)) {
       return cacheData[0];
     } else {
