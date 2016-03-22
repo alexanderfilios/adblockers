@@ -8,22 +8,25 @@ require('angular-ui-bootstrap');
 import tableModule from '../../components/tables/tableModule';
 import edgeBundlingModule from '../../components/charts/edgeBundlingModule';
 import barModule from '../../components/charts/barModule';
+import forceDirectedModule from '../../components/charts/forceDirectedModule';
 
 export default angular
   .module('menu', ['ui.bootstrap',
     tableModule,
     edgeBundlingModule,
-    barModule])
+    barModule,
+  forceDirectedModule])
   .controller('MenuController', ['$scope', function($scope) {
 
     const menuItems = {
       BUNDLE: 1,
       TABLE: 2,
-      BAR: 3
+      BAR: 3,
+      NETWORK: 4
     };
 
     $scope.menuItems = menuItems;
-    $scope.selected = menuItems.BAR;
+    $scope.selected = menuItems.NETWORK;
   }])
   .directive('myMenu', function() {
 

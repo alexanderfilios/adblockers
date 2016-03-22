@@ -16,6 +16,9 @@
       <li ng-class="selected === menuItems.BAR ? 'active' : ''">
         <a href="#" ng-click="selected = menuItems.BAR">Bar</a>
       </li>
+      <li ng-class="selected === menuItems.NETWORK ? 'active' : ''">
+        <a href="#" ng-click="selected = menuItems.NETWORK">Network</a>
+      </li>
     </ul>
   </div>
 </nav>
@@ -33,6 +36,11 @@
   <div ng-show="selected === menuItems.BAR">
     <div ng-controller="BarController">
       <div bar=""></div>
+    </div>
+  </div>
+  <div ng-show="selected === menuItems.NETWORK">
+    <div ng-controller="ForceDirectedController">
+      <div force-directed=""></div>
     </div>
   </div>
 </div>

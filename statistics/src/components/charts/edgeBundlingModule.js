@@ -3,20 +3,16 @@
  */
 
 import angular from 'angular';
-import DbConnection from '../../DbConnection';
 require('angular-ui-bootstrap');
-const conn = new DbConnection();
 const d3 = require('d3');
 import Utilities from '../../Utilities';
-
-window.Utilities = Utilities;
 
 export default angular
   .module('edgeBundling', ['ui.bootstrap'])
   .controller('EdgeBundlingController', ['$scope', function($scope) {
 
     $scope.data = null;
-    conn.find().then(data => {
+    $scope.connection.find().then(data => {
         data = data
           // Only keep third-party requests
           .filter(row => row.target !== row.source)

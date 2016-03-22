@@ -2,7 +2,8 @@
  * Created by alexandros on 3/17/16.
  */
 
-  import jQuery from 'jquery';
+import jQuery from 'jquery';
+import DbCache from './DbCache';
 
 const DbConnection = function() {
   console.log('New DB connection object created! Make sure the mongod and mongodb-rest are running.');
@@ -15,8 +16,18 @@ const DbConnection = function() {
   self._host = '127.0.0.1';
   self._port = 3000;
 
-  self._find = function(collection, filter, database) {
-    let url = 'http://' + self._host + ':' + self._port + '/' + (database || self._database) + '/' + collection;
+  // Cache for the default database
+  self._cache = new DbCache();
+  window.mycache = self._cache;
+  self._find = function(collection, filter = {}, database = self._database, cache = true) {
+    // We asked for caching and data is cached
+    if (cache && database === self._database
+      && self._cache.get(collection, filter) !== null) {
+      const data = self._cache.get(collection, filter);
+      return new Promise((resolve) => resolve(data));
+    }
+
+    let url = 'http://' + self._host + ':' + self._port + '/' + database + '/' + collection;
     if (typeof filter === 'string') {
       // Filter is an ID
       url += '/' + filter;
@@ -29,7 +40,13 @@ const DbConnection = function() {
         type: 'GET',
         url: url,
         dataType: 'json',
-        success: (result) => resolve(result),
+        success: function(result) {
+          console.log('Fetching uncached data');
+          if (cache) {
+            self._cache.put(collection, filter, result);
+          }
+          resolve(result);
+        },
         error: (xhr, status, error) => reject(xhr, status, error)
       });
     });

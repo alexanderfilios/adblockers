@@ -3,23 +3,21 @@
  */
 
 import angular from 'angular';
-import DbConnection from '../../DbConnection';
 require('angular-ui-bootstrap');
-const conn = new DbConnection();
+
 const d3 = require('d3');
 import Utilities from '../../Utilities';
-
-window.Utilities = Utilities;
 
 export default angular
   .module('bar', ['ui.bootstrap'])
   .controller('BarController', ['$scope', function($scope) {
+
     const colors = {
       first: 'lightblue',
       third: 'green'
       };
     $scope.data = null;
-    conn.find().then(data => {
+    $scope.connection.find().then(data => {
       $scope.data = jQuery.unique(data.map(row => row.firstParty))
         .map(firstParty => Object({
           name: firstParty,
