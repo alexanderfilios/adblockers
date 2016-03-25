@@ -18,8 +18,8 @@ import menuModule from './components/menu/menuModule';
 
 angular.module('main', [demoModule, menuModule])
   .controller('MainController', ['$scope', function($scope) {
+    // Setting a global connection
     $scope.connection = new DbConnection();
-    console.log('set a global connection');
   }]);
 
 angular.bootstrap(document.documentElement, ['main']);

@@ -19,12 +19,14 @@ const DbConnection = function() {
   // Cache for the default database
   self._cache = new DbCache();
   window.mycache = self._cache;
+
   self._find = function(collection, filter = {}, database = self._database, cache = true) {
+    let cachedData = null;
     // We asked for caching and data is cached
     if (cache && database === self._database
-      && self._cache.get(collection, filter) !== null) {
-      const data = self._cache.get(collection, filter);
-      return new Promise((resolve) => resolve(data));
+      && (cachedData = self._cache.get(collection, filter)) !== null) {
+      console.log('Returning cached data for filter ' + JSON.stringify(filter));
+      return new Promise((resolve) => resolve(cachedData.data));
     }
 
     let url = 'http://' + self._host + ':' + self._port + '/' + database + '/' + collection;
@@ -41,7 +43,7 @@ const DbConnection = function() {
         url: url,
         dataType: 'json',
         success: function(result) {
-          console.log('Fetching uncached data');
+          console.log('Fetching uncached data for filter ' + JSON.stringify(filter));
           if (cache) {
             self._cache.put(collection, filter, result);
           }

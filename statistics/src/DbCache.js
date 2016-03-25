@@ -2,6 +2,8 @@
  * Created by alexandros on 3/22/16.
  */
 
+import Utilities from './Utilities';
+
 const DbCache = function(lifetime = 10000) {
   const self = this;
   self._lifetime = lifetime;
@@ -12,9 +14,11 @@ const DbCache = function(lifetime = 10000) {
   };
   self.get = function(collection, filter) {
     const cacheData = self._cache
-      .filter(entry => entry.collection === collection && entry.filter === filter);
+      .filter(entry => entry.collection === collection
+        && Utilities.areObjectsEqual(entry.filter, filter));
 
-    if (cacheData.length > 0 && (new Date() - cacheData[0].lastFetched <= self._lifetime)) {
+    if (cacheData.length > 0
+      && (new Date() - cacheData[0].lastFetched <= self._lifetime)) {
       return cacheData[0];
     } else {
       return null;

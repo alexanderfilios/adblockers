@@ -18,7 +18,7 @@ export default angular
       (loaded) => {if (loaded && $scope.data === null) fetchData();});
 
     const fetchData = function() {
-      $scope.connection.distinct(null, ['firstParty', 'target']).then(data => {
+      $scope.connection.distinct({}, ['firstParty', 'target']).then(data => {
         const nodeDict = data.reduce(function(accumulator, current) {
           if (!(('s.' + current.firstParty) in accumulator)) {
             accumulator['s.' + current.firstParty] = {

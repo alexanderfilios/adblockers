@@ -6,6 +6,30 @@
 
 const Utilities = {
   constants: Constants,
+  _isSubArrayOf: function(subArr, superArr) {
+    const self = this;
+    return subArr.every(k => superArr.some(n => self.areObjectsEqual(n, k)));
+  },
+  areObjectsEqual: function(obj1, obj2) {
+    const self = this;
+    if (typeof obj1 !== typeof obj2) {
+      return false;
+    } else if (typeof obj1 === 'string'
+      || typeof obj1 === 'number'
+      || typeof obj1 === 'boolean'
+      || typeof obj1 === 'undefined'
+      || obj1 === null) {
+      return obj1 === obj2;
+    } else if (Array.isArray(obj1)) {
+      return Array.isArray(obj2)
+        && self._isSubArrayOf(obj1, obj2)
+        && self._isSubArrayOf(obj2, obj1);
+    } else {
+      return Object.keys(obj1)
+        .every(k =>  self.areObjectsEqual(obj1[k], obj2[k]));
+    }
+
+  },
   repeatUntil: function (periodicCallback, condition, checkInterval, endCallback) {
     const intervalId = setInterval(function () {
       if (condition()) {
@@ -82,5 +106,5 @@ const Utilities = {
     return !self._urisMatch(data.firstParty, data.source);
   }
 };
-
+window.Utilities = Utilities;
 export default Utilities;
