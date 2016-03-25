@@ -23,11 +23,8 @@ export default angular
       $scope.selected = menuItem;
     };
 
-    //setTimeout(() => $scope.$broadcast('someEvent'), 3000);
-
-
     $scope.menuItems = Constants.menuItems;
-    $scope.selected = Constants.menuItems.BAR;
+    $scope.selected = Constants.menuItems.TABLE;
   }])
   .directive('myMenu', function() {
 
