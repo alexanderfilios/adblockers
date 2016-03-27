@@ -77,7 +77,7 @@ const DbConnection = function() {
       });
     });
   };
-  self._distinct = (array = [], uniqueFields) => array
+  self._distinct = (array = [], uniqueFields = []) => array
     .filter((currItem, idx) => !array.slice(0, idx)
       .some(prevItem => self._equal(prevItem, currItem, uniqueFields)));
   self._equal = (obj1, obj2, fields = []) => fields.length === 0
