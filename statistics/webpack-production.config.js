@@ -4,7 +4,7 @@ const config = makeWebpackConfig({
   //commonsChunk: true,
   longTermCaching: true,
   separateStylesheet: true,
-  minimize: true,
+  //minimize: true,
   devtool: false
 });
 

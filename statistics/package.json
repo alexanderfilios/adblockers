@@ -19,6 +19,7 @@
     "angular-ui-bootstrap": "^1.2.4",
     "better-console": "^0.2.4",
     "bootstrap": "^3.3.6",
+    "connect": "^3.4.1",
     "d3": "^3.5.16",
     "del": "^2.2.0",
     "extend": "^3.0.0",
@@ -52,6 +53,7 @@
     "net": "^1.0.2",
     "require-dot-file": "^0.4.0",
     "run-sequence": "^1.1.5",
+    "serve-static": "^1.10.2",
     "tls": "0.0.1",
     "yamljs": "^0.2.6"
   },
