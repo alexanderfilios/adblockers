@@ -58,6 +58,12 @@ export default angular
         var xAxis = d3.svg.axis().scale(x).orient("top").tickSize(-h),
           yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
 
+        var description = d3.select(element[0])
+          .append("div")
+          .text(
+          "False first parties as returned by lightbeam are marked with lightblue color. " +
+          "Third parties loaded are marked with green color.");
+
         var svg = d3.select(element[0])
           .append("svg")
           .attr("class", "bar-style")

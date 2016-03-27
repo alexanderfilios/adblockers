@@ -51,6 +51,10 @@ export default angular
 
         var bundle = d3.layout.bundle();
 
+        var description = d3.select(element[0])
+          .append("div")
+          .text("Connections between the first parties (Alexa) and the third parties (targets) loaded.");
+
         var line = d3.svg.line.radial()
           .interpolate("bundle")
           .tension(.85)
