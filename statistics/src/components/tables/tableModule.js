@@ -14,7 +14,6 @@ export default angular
       (scope) => scope.selected === Utilities.constants.menuItems.TABLE,
       (loaded) => {if (loaded && $scope.data === null) fetchData();});
     const fetchData = function() {
-      console.log('fetch em');
       $scope.connection.distinct()
         .then((rows) => $scope.stats = [
           {

@@ -19,6 +19,9 @@
       <li ng-class="selected === menuItems.NETWORK ? 'active' : ''">
         <a href="#" ng-click="selected = menuItems.NETWORK">Network</a>
       </li>
+      <li ng-class="selected === menuItems.STACKED_BAR ? 'active' : ''">
+        <a href="#" ng-click="selected = menuItems.STACKED_BAR">Stacked Bar</a>
+      </li>
     </ul>
   </div>
 </nav>
@@ -41,6 +44,11 @@
   <div ng-show="selected === menuItems.NETWORK">
     <div ng-controller="ForceDirectedController">
       <div force-directed=""></div>
+    </div>
+  </div>
+  <div ng-show="selected === menuItems.STACKED_BAR">
+    <div ng-controller="StackedBarController">
+      <div stacked-bar=""></div>
     </div>
   </div>
 </div>

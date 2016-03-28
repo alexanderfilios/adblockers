@@ -10,12 +10,14 @@ import tableModule from '../../components/tables/tableModule';
 import edgeBundlingModule from '../../components/charts/edgeBundlingModule';
 import barModule from '../../components/charts/barModule';
 import forceDirectedModule from '../../components/charts/forceDirectedModule';
+import stackedBarModule from '../../components/charts/stackedBarModule';
 
 export default angular
   .module('menu', ['ui.bootstrap',
     tableModule,
     edgeBundlingModule,
     barModule,
+    stackedBarModule,
   forceDirectedModule])
   .controller('MenuController', ['$scope', function($scope) {
 

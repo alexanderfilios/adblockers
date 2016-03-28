@@ -30,6 +30,22 @@ const Utilities = {
     }
 
   },
+  executeSerially: function(array, callback, promise) {
+    if (array.length === 0) {
+      return;
+    }
+    return array.slice(1).reduce(function(previousPromise, database, idx) {
+      return previousPromise.then((data) => {
+        callback(array[idx], data);
+        return promise(database);
+      });
+    }, promise(array[0])).then(function(data) {
+      return new Promise(resolve => {
+        callback(array[array.length - 1], data);
+        resolve();
+      });
+    });
+  },
   repeatUntil: function (periodicCallback, condition, checkInterval, endCallback) {
     const intervalId = setInterval(function () {
       if (condition()) {

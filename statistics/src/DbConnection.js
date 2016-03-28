@@ -87,7 +87,7 @@ const DbConnection = function() {
   self._clearCollection = (collection) => self._find(collection)
     .then((data) => data.forEach((record) => self._delete(collection, record._id)));
 
-  self.find = (filter) => self._find(self._dataTable, filter);
+  self.find = (filter, database = self._database) => self._find(self._dataTable, filter, database);
   self.distinct = (filter, uniqueFields) => self.find(filter).then(data => self._distinct(data, uniqueFields));
   self.getFirstParties = () => self._find(self._firstPartyTable);
   self.getLogs = () => self._find(self._logTable);
@@ -105,7 +105,7 @@ const DbConnection = function() {
   //  });
   //});
   //self.getFirstParties().then(data => data.map(o => o.url).forEach(url => console.log(url)));
-  self.find().then(data => console.log(data));
+  //self.find().then(data => console.log(data));
 };
 
 export default DbConnection;

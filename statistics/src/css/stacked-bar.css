@@ -1,0 +1,14 @@
+.stacked-bar-style .axis path,
+.stacked-bar-style .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.stacked-bar-style .bar {
+  fill: steelblue;
+}
+
+.stacked-bar-style .x.axis path {
+  display: none;
+}
