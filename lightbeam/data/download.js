@@ -111,7 +111,10 @@
           // Convert them to JSON objects
           .map((data) => self._arrayToJson(data))
           // Append the first party URL (the one given by lightbeam is based on heuristics)
-          .map((data) => jQuery.extend(data, {firstParty: parseUri(url).host}));
+          .map((data) => jQuery.extend(data, {
+            firstParty: parseUri(url).host,
+            crawlDate: moment().format('MM/DD/YYYY')
+          }));
 
         // Store them into DB
         self._logger.debug('Storing ' + dataToStore.length + ' connecitons for first party ' + url);

@@ -52,6 +52,7 @@ PageMod({
     data.url('list.js'),
     // Custom lines
     data.url('jquery.js'),
+    data.url('moment.js'),
     data.url('download.js'),
     // -----------
   ],
