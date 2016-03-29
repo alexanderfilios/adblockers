@@ -4,18 +4,23 @@
 
 import angular from 'angular';
 import Utilities from '../../Utilities';
+import moment from 'moment';
 require('angular-ui-bootstrap');
 
 export default angular
   .module('table', ['ui.bootstrap'])
   .controller('TableController', ['$scope', function($scope) {
+    $scope.filter = {
+      date: $scope.date
+    };
+
     $scope.data = null;
     $scope.$watch(
-      (scope) => scope.selected === Utilities.constants.menuItems.TABLE,
-      (loaded) => {if (loaded && $scope.data === null) fetchData();});
-    const fetchData = function() {
-      $scope.connection.distinct()
-        .then((rows) => $scope.stats = [
+      (scope) => scope.selected === Utilities.constants.menuItems.TABLE && scope.date,
+      (loaded) => {if (loaded && $scope.data === null) fetchData($scope.date);});
+    const fetchData = function(date) {
+      $scope.connection.distinct({crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)})
+        .then((rows) => {$scope.stats = [
           {
             description: 'Total requests',
             value: rows.length
@@ -48,17 +53,14 @@ export default angular
             description: 'Total third parties (US & LB)',
             value: jQuery.unique(rows.map(r => r.target)).length
           }
-        ]
+        ]; $scope.$apply();}
       );
     };
 
   }])
   .directive('myTable', function($compile) {
     return {
-      template: require('./table.html'),
-      link: function(scope, element, attrs) {
-        setTimeout(() => $compile(element.contents())(scope), 1000);
-      }
+      template: require('./table.html')
     };
   })
   .name;

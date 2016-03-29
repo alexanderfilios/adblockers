@@ -24,7 +24,12 @@
       </li>
     </ul>
   </div>
+    <div class="datepicker">
+      <label for="date">Choose date:</label>
+      <input type="date" ng-model="date" name="date">
+    </div>
 </nav>
+
 <div>
   <div ng-show="selected === menuItems.BUNDLE">
     <div ng-controller="EdgeBundlingController">

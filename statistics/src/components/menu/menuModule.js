@@ -25,6 +25,7 @@ export default angular
       $scope.selected = menuItem;
     };
 
+    $scope.date = new Date();
     $scope.menuItems = Constants.menuItems;
     $scope.selected = Constants.menuItems.TABLE;
   }])

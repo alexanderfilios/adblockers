@@ -10,6 +10,7 @@ const Constants = {
     NETWORK: 4,
     STACKED_BAR: 5
   },
+  DATE_FORMAT: 'MM/DD/YYYY',
   images: {
     first: 'https://github.com/favicon.ico',
     third: 'https://google.com/favicon.ico'

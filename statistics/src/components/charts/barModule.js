@@ -4,6 +4,7 @@
 
 import angular from 'angular';
 require('angular-ui-bootstrap');
+import moment from 'moment';
 
 const d3 = require('d3');
 import Utilities from '../../Utilities';
@@ -18,10 +19,11 @@ export default angular
       };
     $scope.data = null;
     $scope.$watch(
-      (scope) => scope.selected === Utilities.constants.menuItems.BAR,
-      (loaded) => {if (loaded && $scope.data === null) fetchData();});
-    const fetchData = function() {
-      $scope.connection.find().then(data => {
+      (scope) => scope.selected === Utilities.constants.menuItems.BAR && scope.date,
+      (loaded) => {if (loaded) fetchData($scope.date);});
+    const fetchData = function(date) {
+      $scope.connection.find({crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)})
+        .then(data => {
         $scope.data = jQuery.unique(data.map(row => row.firstParty))
           .map(firstParty => Object({
             name: firstParty,
@@ -38,6 +40,7 @@ export default angular
           .reduce((prevVal, curr) => prevVal
             .concat({name: curr.name, value: curr.firsts, color: colors.first})
             .concat({name: curr.name, value: curr.thirds, color: colors.third}), []);
+          $scope.$apply();
       });
     };
 
@@ -46,83 +49,98 @@ export default angular
     return {
       link: function(scope, element, attrs) {
 
-        var m = [30, 10, 10, 150],
-          w = 960 - m[1] - m[3],
-          h = 930 - m[0] - m[2];
+        scope.$watch('data', function () {
+          // Clear previous data (if existing)
+          element.find('svg').remove();
+          element.find('div').remove();
+          if (!Array.isArray(scope.data) || scope.data.length === 0) {
+            // If no data is present, display a message
+            var message = d3.select(element[0])
+              .append('div')
+              .attr('class', 'message')
+              .text('No data for ' + moment(scope.date).format('DD.MM.YYYY'));
+            return;
+          }
 
-        var format = d3.format(",.0f");
+          var m = [30, 10, 10, 150],
+            w = 960 - m[1] - m[3],
+            h = 930 - m[0] - m[2];
 
-        var x = d3.scale.linear().range([0, w]),
-          y = d3.scale.ordinal().rangeRoundBands([0, h], .1);
+          var format = d3.format(",.0f");
 
-        var xAxis = d3.svg.axis().scale(x).orient("top").tickSize(-h),
-          yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
+          var x = d3.scale.linear().range([0, w]),
+            y = d3.scale.ordinal().rangeRoundBands([0, h], .1);
 
-        var description = d3.select(element[0])
-          .append("div")
-          .text(
-          "False first parties as returned by lightbeam are marked with lightblue color. " +
-          "Third parties loaded are marked with green color.");
+          var xAxis = d3.svg.axis().scale(x).orient("top").tickSize(-h),
+            yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
 
-        var svg = d3.select(element[0])
-          .append("svg")
-          .attr("class", "bar-style")
-          .attr("width", w + m[1] + m[3])
-          .attr("height", h + m[0] + m[2])
-          .append("g")
-          .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+          var description = d3.select(element[0])
+            .append("div")
+            .text(
+            "False first parties as returned by lightbeam are marked with lightblue color. " +
+            "Third parties loaded are marked with green color.");
 
-        if (typeof scope.data === 'string') {
-          d3.csv(scope.data, function(error, data) {
-            if (error) throw error;
-            console.log(data);
-            createBars(data);
-          });
-        } else {
-          Utilities
-            .repeatPromise(null, () => scope.data !== null, 500)
-            .then(() => createBars(scope.data), 2000);
-        }
+          var svg = d3.select(element[0])
+            .append("svg")
+            .attr("class", "bar-style")
+            .attr("width", w + m[1] + m[3])
+            .attr("height", h + m[0] + m[2])
+            .append("g")
+            .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
+            // Parse numbers, and sort by value.
+            scope.data.forEach(function (d) {
+              d.value = +d.value;
+            });
+          scope.data.sort(function (a, b) {
+              return b.value - a.value;
+            });
 
-        function createBars(data) {
-          // Parse numbers, and sort by value.
-          data.forEach(function(d) { d.value = +d.value; });
-          data.sort(function(a, b) { return b.value - a.value; });
+            // Set the scale domain.
+            x.domain([0, d3.max(scope.data, function (d) {
+              return d.value;
+            })]);
+            y.domain(scope.data.map(function (d) {
+              return d.name;
+            }));
 
-          // Set the scale domain.
-          x.domain([0, d3.max(data, function(d) { return d.value; })]);
-          y.domain(data.map(function(d) { return d.name; }));
+            var bar = svg.selectAll("g.bar")
+              .data(scope.data)
+              .enter().append("g")
+              .attr("class", "bar")
+              .attr("transform", function (d) {
+                return "translate(0," + y(d.name) + ")";
+              });
 
-          var bar = svg.selectAll("g.bar")
-            .data(data)
-            .enter().append("g")
-            .attr("class", "bar")
-            .attr("transform", function(d) { return "translate(0," + y(d.name) + ")"; });
+            bar.append("rect")
+              .attr("width", function (d) {
+                return x(d.value);
+              })
+              .attr("style", (d) => d.color ? ("fill: " + d.color) : "")
+              .attr("height", y.rangeBand());
 
-          bar.append("rect")
-            .attr("width", function(d) { return x(d.value); })
-            .attr("style", (d) => d.color ? ("fill: " + d.color) : "")
-            .attr("height", y.rangeBand());
+            bar.append("text")
+              .attr("class", "value")
+              .attr("x", function (d) {
+                return x(d.value);
+              })
+              .attr("y", y.rangeBand() / 2)
+              .attr("dx", -3)
+              .attr("dy", ".35em")
+              .attr("text-anchor", "end")
+              .text(function (d) {
+                return format(d.value);
+              });
 
-          bar.append("text")
-            .attr("class", "value")
-            .attr("x", function(d) { return x(d.value); })
-            .attr("y", y.rangeBand() / 2)
-            .attr("dx", -3)
-            .attr("dy", ".35em")
-            .attr("text-anchor", "end")
-            .text(function(d) { return format(d.value); });
+            svg.append("g")
+              .attr("class", "x axis")
+              .call(xAxis);
 
-          svg.append("g")
-            .attr("class", "x axis")
-            .call(xAxis);
+            svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis);
 
-          svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
-        }
-
+        });
       }
     };
   })

@@ -2,3 +2,12 @@
 @import url('./bar.css');
 @import url('./force-directed.css');
 @import url('./stacked-bar.css');
+
+.navbar.navbar-default .collapse.navbar-collapse {
+  float: left;
+}
+
+.navbar.navbar-default .datepicker {
+  float: right;
+}
+
