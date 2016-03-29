@@ -14,6 +14,12 @@ export default angular
       date: $scope.date
     };
 
+    $scope.connection.find({crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)})
+      .then(rows => {
+        console.log('FALSE FIRST PARTY REQUESTS:');
+        console.log(rows.filter(row => Utilities.isFalseFp(row)));
+      });
+
     $scope.data = null;
     $scope.$watch(
       (scope) => scope.selected === Utilities.constants.menuItems.TABLE && scope.date,
