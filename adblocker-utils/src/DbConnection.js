@@ -3,7 +3,7 @@
  */
 
 import jQuery from 'jquery';
-import DbCache from './DbCache';
+import DbCache from './DbCache.js';
 
 const DbConnection = function() {
   console.log('New DB connection object created! Make sure the mongod and mongodb-rest are running.');
@@ -13,8 +13,8 @@ const DbConnection = function() {
   self._firstPartyTable = 'first_parties';
   self._dataTable = 'data';
   self._database = 'myapp_test1';
-  //self._host = '127.0.0.1';
-  self._host = '192.33.93.94';
+  self._host = '127.0.0.1';
+  //self._host = '192.33.93.94';
   self._port = 3000;
 
   // Cache for the default database

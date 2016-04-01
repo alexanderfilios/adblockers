@@ -6,7 +6,7 @@ import angular from 'angular';
 require('angular-ui-bootstrap');
 const d3 = require('d3');
 import moment from 'moment';
-import Utilities from '../../Utilities';
+import {Utilities} from 'adblocker-utils';
 
 export default angular
   .module('edgeBundling', ['ui.bootstrap'])

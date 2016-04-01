@@ -16,6 +16,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "adblocker-utils": "file:../adblocker-utils",
     "angular": "^1.4.1",
     "angular-ui-bootstrap": "^1.2.4",
     "better-console": "^0.2.4",

@@ -3,7 +3,7 @@
  */
 
 import angular from 'angular';
-import Utilities from '../../Utilities';
+import {Utilities} from 'adblocker-utils';
 import moment from 'moment';
 require('angular-ui-bootstrap');
 

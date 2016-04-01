@@ -5,7 +5,7 @@ import angular from 'angular';
 
 // Load Bootstrap
 import jQuery from 'jquery';
-import DbConnection from './DbConnection';
+import {DbConnection} from 'adblocker-utils';
 
 window.jQuery = jQuery;
 

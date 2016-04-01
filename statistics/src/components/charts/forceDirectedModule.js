@@ -6,7 +6,7 @@ import angular from 'angular';
 require('angular-ui-bootstrap');
 import moment from 'moment';
 const d3 = require('d3');
-import Utilities from '../../Utilities';
+import {Utilities} from 'adblocker-utils';
 
 export default angular
   .module('forceDirected', ['ui.bootstrap'])

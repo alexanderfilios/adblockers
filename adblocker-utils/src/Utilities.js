@@ -2,15 +2,15 @@
  * Created by alexandros on 3/18/16.
  */
 
-  import Constants from './Constants';
+  import Constants from './Constants.js';
 
 const Utilities = {
   constants: Constants,
-  _isSubArrayOf: function(subArr, superArr) {
+  _isSubArrayOf: function (subArr, superArr) {
     const self = this;
     return subArr.every(k => superArr.some(n => self.areObjectsEqual(n, k)));
   },
-  areObjectsEqual: function(obj1, obj2) {
+  areObjectsEqual: function (obj1, obj2) {
     const self = this;
     if (typeof obj1 !== typeof obj2) {
       return false;
@@ -30,16 +30,16 @@ const Utilities = {
     }
 
   },
-  executeSerially: function(array, callback, promise) {
+  executeSerially: function (array, callback, promise) {
     if (array.length === 0) {
       return;
     }
-    return array.slice(1).reduce(function(previousPromise, database, idx) {
+    return array.slice(1).reduce(function (previousPromise, database, idx) {
       return previousPromise.then((data) => {
         callback(array[idx], data);
         return promise(database);
       });
-    }, promise(array[0])).then(function(data) {
+    }, promise(array[0])).then(function (data) {
       return new Promise(resolve => {
         callback(array[array.length - 1], data);
         resolve();
@@ -120,7 +120,27 @@ const Utilities = {
   isFalseFp: function (data) {
     const self = this;
     return !self._urisMatch(data.firstParty, data.source);
+  },
+
+  uniqueArray: function (array) {
+    const seen = {};
+    return array.filter(function (el) {
+      if (seen[el]) return;
+      seen[el] = true;
+      return el;
+    });
+  },
+
+  setTimeoutPromise: function(callback, timeout) {
+    return new Promise(function(resolve) {
+      setTimeout(function() {
+        if (typeof callback === 'function') {
+          callback();
+        }
+        resolve();
+      }, timeout);
+    });
   }
 };
-window.Utilities = Utilities;
+
 export default Utilities;

@@ -51,8 +51,9 @@ PageMod({
     data.url('graph.js'),
     data.url('list.js'),
     // Custom lines
-    data.url('jquery.js'),
-    data.url('moment.js'),
+    data.url('libs/jquery.js'),
+    data.url('libs/moment.js'),
+    data.url('libs/adblocker-utils.js'),
     data.url('download.js'),
     // -----------
   ],
