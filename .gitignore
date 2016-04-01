@@ -8,6 +8,9 @@ data/deployment.json
 *.xpi
 exported_graphs
 *.swp
+
+/.idea/
+
 /lightbeam/node_modules
 /lightbeam/*debuglog.txt
 /lightbeam/data/libs/
