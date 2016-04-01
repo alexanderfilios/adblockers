@@ -85,7 +85,7 @@
           // Append the first party URL (the one given by lightbeam is based on heuristics)
           .map((data) => jQuery.extend(data, {
             firstParty: parseUri(url).host,
-            crawlDate: moment().format('MM/DD/YYYY')
+            crawlDate: moment().format(Utilities.constants.DATE_FORMAT)
           }));
 
         // Store them into DB
@@ -100,9 +100,11 @@
   };
 
   const db = new DbConnection();
-  db.clearLogs();
-  db.clearData();
   const sync = new Synchronizer(db);
+
+  // Clear data recorded today, in order to avoid double records for the same crawler
+  db.clearData({crawlDate: moment().format(Utilities.constants.DATE_FORMAT)});
+
   db.getFirstParties().then(function(data) {
     new Crawler(data.map((record) => record.url))
       .crawl(sync.storeNewConnections, 5000);

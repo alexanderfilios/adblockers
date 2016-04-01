@@ -84,28 +84,18 @@ const DbConnection = function() {
   self._equal = (obj1, obj2, fields = []) => fields.length === 0
     ? (obj1 === obj2)
     : (fields.every(field => obj1[field] === obj2[field]));
-  self._clearCollection = (collection) => self._find(collection)
+  self._clearCollection = (collection, filter = {}) => self._find(collection, filter)
     .then((data) => data.forEach((record) => self._delete(collection, record._id)));
 
   self.find = (filter, database = self._database) => self._find(self._dataTable, filter, database);
   self.distinct = (filter, uniqueFields) => self.find(filter).then(data => self._distinct(data, uniqueFields));
   self.getFirstParties = () => self._find(self._firstPartyTable);
   self.getLogs = () => self._find(self._logTable);
-  self.clearLogs = () => self._clearCollection(self._logTable);
-  self.clearData = () => self._clearCollection(self._dataTable);
+  self.clearLogs = (filter = {}) => self._clearCollection(self._logTable, filter);
+  self.clearData = (filter = {}) => self._clearCollection(self._dataTable, filter);
   self.store = (data) => self._insert(data, self._dataTable);
   self.log = (message) => self._insert({time: new Date(), message: message}, self._logTable);
 
-
-  //self._find(self._firstPartyTable, {}, self._database, false, '127.0.0.1').then(data => {
-  //  self._clearCollection(self._firstPartyTable);
-  //  data.map(o => o.url).forEach(url => {
-  //    console.log(url);
-  //    self._insert({url: url}, self._firstPartyTable, self._database, '192.33.93.94');
-  //  });
-  //});
-  //self.getFirstParties().then(data => data.map(o => o.url).forEach(url => console.log(url)));
-  //self.find().then(data => console.log(data));
 };
 
 export default DbConnection;

@@ -19,8 +19,6 @@ exported_graphs
 /statistics/npm-debug.log
 /statistics/public/_assets
 
-/utils/node_modules
-
 /adblocker-utils/node_modules
 /adblocker-utils/dist
 /adblocker-utils/build
