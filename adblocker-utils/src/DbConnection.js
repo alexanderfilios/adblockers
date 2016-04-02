@@ -4,6 +4,7 @@
 
 import jQuery from 'jquery';
 import DbCache from './DbCache.js';
+import Utilities from './Utilities.js';
 
 const DbConnection = function() {
   console.log('New DB connection object created! Make sure the mongod and mongodb-rest are running.');
@@ -12,14 +13,12 @@ const DbConnection = function() {
   self._logTable = 'log';
   self._firstPartyTable = 'first_parties';
   self._dataTable = 'data';
-  self._database = 'myapp_test1';
-  self._host = '127.0.0.1';
-  //self._host = '192.33.93.94';
-  self._port = 3000;
+  self._database = Utilities.constants.DATABASE_NAME;
+  self._host = Utilities.constants.DATABASE_HOST;
+  self._port = Utilities.constants.DATABASE_PORT;
 
   // Cache for the default database
   self._cache = new DbCache();
-  window.mycache = self._cache;
 
   self._find = function(collection, filter = {}, database = self._database, cache = true, host = self._host, port = self._port) {
     let cachedData = null;

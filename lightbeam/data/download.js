@@ -37,11 +37,10 @@
 
       });
     };
-    self.crawl = function(callback, windowOpenInterval = 2000, storeDataInterval = 3000) {
+    self.crawl = function(callback, windowOpenInterval = Utilities.constants.WINDOW_OPEN_INTERVAL, storeDataInterval = Utilities.constants.STORE_DATA_INTERVAL) {
       self._websites.reduce(function(currentPromise, nextUrl) {
         return currentPromise
             .then(() => self._openWebsite(nextUrl, callback, windowOpenInterval, storeDataInterval));
-            //.then(() => delay(2000));
       }, Promise.resolve())
         .then(self._closeWindow);
     }
@@ -107,7 +106,7 @@
 
   db.getFirstParties().then(function(data) {
     new Crawler(data.map((record) => record.url))
-      .crawl(sync.storeNewConnections, 5000);
+      .crawl(sync.storeNewConnections);
   });
 
   //setTimeout(function() {

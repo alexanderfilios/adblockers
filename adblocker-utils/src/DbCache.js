@@ -4,7 +4,7 @@
 
 import Utilities from './Utilities';
 
-const DbCache = function(lifetime = 10000) {
+const DbCache = function(lifetime = Utilities.constants.CACHE_LIFETIME) {
   const self = this;
   self._lifetime = lifetime;
   self._cache = [];
