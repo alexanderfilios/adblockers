@@ -22,6 +22,9 @@
       <li ng-class="selected === menuItems.STACKED_BAR ? 'active' : ''">
         <a href="#" ng-click="selected = menuItems.STACKED_BAR">Stacked Bar</a>
       </li>
+      <li ng-class="selected === menuItems.LINE_CHART ? 'active' : ''">
+        <a href="#" ng-click="selected = menuItems.LINE_CHART">Line Chart</a>
+      </li>
     </ul>
   </div>
     <div class="datepicker">
@@ -54,6 +57,11 @@
   <div ng-show="selected === menuItems.STACKED_BAR">
     <div ng-controller="StackedBarController">
       <div stacked-bar=""></div>
+    </div>
+  </div>
+  <div ng-show="selected === menuItems.LINE_CHART">
+    <div ng-controller="LineChartController">
+      <div line-chart=""></div>
     </div>
   </div>
 </div>

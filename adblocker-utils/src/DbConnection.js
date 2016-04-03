@@ -5,6 +5,7 @@
 import jQuery from 'jquery';
 import DbCache from './DbCache.js';
 import Utilities from './Utilities.js';
+import moment from 'moment';
 
 const DbConnection = function() {
   console.log('New DB connection object created! Make sure the mongod and mongodb-rest are running.');
@@ -13,6 +14,7 @@ const DbConnection = function() {
   self._logTable = 'log';
   self._firstPartyTable = 'first_parties';
   self._dataTable = 'data';
+  self._statsTable = 'stats';
   self._database = Utilities.constants.DATABASE_NAME;
   self._host = Utilities.constants.DATABASE_HOST;
   self._port = Utilities.constants.DATABASE_PORT;
@@ -86,6 +88,39 @@ const DbConnection = function() {
   self._clearCollection = (collection, filter = {}) => self._find(collection, filter)
     .then((data) => data.forEach((record) => self._delete(collection, record._id)));
 
+  self.findOrCalculateStats = function(stat,
+                                       calculator = (data) => 0,
+                                       startDate = moment().format(Utilities.constants.DATE_FORMAT),
+                                       endDate = moment().format(Utilities.constants.DATE_FORMAT),
+                                       filter = {}) {
+
+    const daysBetween = moment.duration(moment(endDate, Utilities.constants.DATE_FORMAT)
+      .diff(moment(startDate, Utilities.constants.DATE_FORMAT))).get('days');
+    return new Promise(function (resolve) {
+      self._find(self._statsTable, jQuery.extend({}, {name: stat}, filter))
+        .then(function (data) {
+
+          const datesNotCalculated = Array.apply(null, Array(daysBetween))
+            .map((el, idx) => idx)
+            .map(el => moment().subtract(el, 'days').format(Utilities.constants.DATE_FORMAT))
+            .filter(date => !data.some(d => d.date === date && d.name === stat));
+
+          const newData = [];
+          Utilities.executeSerially(
+            datesNotCalculated,
+            (input, output) => newData.push({date: input, name: stat, value: calculator(output)}),
+            (date) => self.find(jQuery.extend({}, {crawlDate: date}, filter))
+          )
+            .then(() => Utilities.executeSerially(
+              newData,
+              (input, output) => console.log('Storing data for ' + input.name + ' on ' + input.date),
+              (input) => self._insert(input, self._statsTable)
+            ))
+            .then(() => resolve(data.concat(newData)));
+        });
+    });
+
+  };
   self.find = (filter, database = self._database) => self._find(self._dataTable, filter, database);
   self.distinct = (filter, uniqueFields) => self.find(filter).then(data => self._distinct(data, uniqueFields));
   self.getFirstParties = () => self._find(self._firstPartyTable);
@@ -94,6 +129,7 @@ const DbConnection = function() {
   self.clearData = (filter = {}) => self._clearCollection(self._dataTable, filter);
   self.store = (data) => self._insert(data, self._dataTable);
   self.log = (message) => self._insert({time: new Date(), message: message}, self._logTable);
+
 
 };
 

@@ -2,6 +2,7 @@
 @import url('./bar.css');
 @import url('./force-directed.css');
 @import url('./stacked-bar.css');
+@import url('./line-chart.css');
 
 .navbar.navbar-default .collapse.navbar-collapse {
   float: left;

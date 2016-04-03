@@ -32,7 +32,7 @@ const Utilities = {
   },
   executeSerially: function (array, callback, promise) {
     if (array.length === 0) {
-      return;
+      return Promise.resolve();
     }
     return array.slice(1).reduce(function (previousPromise, database, idx) {
       return previousPromise.then((data) => {
