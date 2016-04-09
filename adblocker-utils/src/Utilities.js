@@ -32,6 +32,12 @@ const Utilities = {
     }
 
   },
+  createElement: function(document, tagName, attrs) {
+    return Object.keys(attrs).reduce((element, attrName) => {
+      element.setAttribute(attrName, attrs[attrName]);
+      return element;
+    }, document.createElement(tagName));
+  },
   conditionalReturn: (conditionalValue, defaultValue, condition) =>
     condition(conditionalValue) ? conditionalValue : defaultValue,
 

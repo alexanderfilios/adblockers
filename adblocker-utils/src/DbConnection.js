@@ -11,17 +11,15 @@ import moment from 'moment';
 const DbConnection = function(profile = 'default') {
   console.log('New DB connection object created! Make sure the mongod and mongodb-rest are running.');
   const self = this;
-  self._config = ProfileConfigs[profile];
-  self._allConfigs = ProfileConfigs;
-  self._prof = profile;
+  self._config = ProfileConfigs[profile] || ProfileConfigs.default;
   self._logger = null;
   self._logTable = 'log';
   self._firstPartyTable = 'first_parties';
-  self._dataTable = 'data';
+  self._dataTable = self._config.DATA_COLLECTION;
   self._statsTable = 'statistics';
-  self._database = Utilities.constants.DATABASE_NAME;
-  self._host = Utilities.constants.DATABASE_HOST;
-  self._port = Utilities.constants.DATABASE_PORT;
+  self._database = self._config.DATABASE_NAME;
+  self._host = self._config.DATABASE_HOST;
+  self._port = self._config.DATABASE_PORT;
 
   // Cache for the default database
   self._cache = new DbCache();

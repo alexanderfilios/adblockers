@@ -12,7 +12,20 @@ fi
 
 # Input
 if [ "$1" == "auto" ]; then
-  profiles=("User1" "User2" "User3")
+  profiles=(
+    "Ghostery_Default"
+    "Ghostery_MaxProtection"
+    "Adblockplus_Default"
+    "Adblockplus_MaxProtection"
+    "NoAdblocker"
+    "NoAdblocker_DNT"
+    "Ghostery_Default_MUA"
+    "Ghostery_MaxProtection_MUA"
+    "Adblockplus_Default_MUA"
+    "Adblockplus_MaxProtection_MUA"
+    "NoAdblocker_MUA"
+    "NoAdblocker_DNT_MUA"
+  )
 else
   profiles=("$1")
 fi

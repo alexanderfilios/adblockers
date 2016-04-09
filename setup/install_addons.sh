@@ -16,9 +16,18 @@ declare -A xpis=(
 )
 
 declare -A profiles=(
-#  ["User1"]="lightbeam adblockplus"
-#  ["User2"]="lightbeam ghostery"
-  ["Alexandros"]="adblockplus lightbeam"
+  ["Ghostery_Default"]="ghostery lightbeam"
+  ["Ghostery_MaxProtection"]="ghostery lightbeam"
+  ["Adblockplus_Default"]="adblockplus lightbeam"
+  ["Adblockplus_MaxProtection"]="adblockplus lightbeam"
+  ["NoAdblocker"]="lightbeam"
+  ["NoAdblocker_DNT"]="lightbeam"
+  ["Ghostery_Default_MUA"]="ghostery lightbeam user_agent_switcher"
+  ["Ghostery_MaxProtection_MUA"]="ghostery lightbeam user_agent_switcher"
+  ["Adblockplus_Default_MUA"]="adblockplus lightbeam user_agent_switcher"
+  ["Adblockplus_MaxProtection_MUA"]="adblockplus lightbeam user_agent_switcher"
+  ["NoAdblocker_MUA"]="lightbeam user_agent_switcher"
+  ["NoAdblocker_DNT_MUA"]="lightbeam user_agent_switcher"
 )
 
 for profile in ${!profiles[@]}; do

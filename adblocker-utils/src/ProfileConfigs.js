@@ -5,23 +5,53 @@
 import jQuery from 'jquery';
 
 const defaultConfigs = {
-  CACHE_LIFETIME: 10000,
-  WINDOW_OPEN_INTERVAL: 5000,
-  STORE_DATA_INTERVAL: 3000,
-
-  //DATABASE_HOST: '127.0.0.1',
-  DATABASE_HOST: '192.33.93.94',
+  DATABASE_HOST: '127.0.0.1',
+  //DATABASE_HOST: '192.33.93.94',
   DATABASE_PORT: 3000,
-  DATABASE_NAME: 'myapp_test1'
-
+  DATABASE_NAME: 'myapp_test1',
+  DATA_COLLECTION: 'data'
 };
 
 const customConfigs = {
   Alexandros: {
-    DATABASE_NAME: 'alex_data'
+    DATA_COLLECTION: 'data_Alexandros'
   },
-  Config2: {},
-  Config3: {},
+  Ghostery_Default: {
+    DATA_COLLECTION: 'data_Ghostery_Default'
+  },
+  Ghostery_MaxProtection: {
+    DATA_COLLECTION: 'data_Ghostery_MaxProtection'
+  },
+  Adblockplus_Default: {
+    DATA_COLLECTION: 'data_Adblockplus_Default'
+  },
+  Adblockplus_MaxProtection: {
+    DATA_COLLECTION: 'data_Adblockplus_MaxProtection'
+  },
+  NoAdblocker: {
+    DATA_COLLECTION: 'data_NoAdblocker'
+  },
+  NoAdblocker_DNT: {
+    DATA_COLLECTION: 'data_NoAdblocker_DNT'
+  },
+  Ghostery_Default_MUA: {
+    DATA_COLLECTION: 'data_Ghostery_Default_MUA'
+  },
+  Ghostery_MaxProtection_MUA: {
+    DATA_COLLECTION: 'data_Ghostery_MaxProtection_MUA'
+  },
+  Adblockplus_Default_MUA: {
+    DATA_COLLECTION: 'data_Adblockplus_Default_MUA'
+  },
+  Adblockplus_MaxProtection_MUA: {
+    DATA_COLLECTION: 'data_Adblockplus_MaxProtection_MUA'
+  },
+  NoAdblocker_MUA: {
+    DATA_COLLECTION: 'data_NoAdblocker_MUA'
+  },
+  NoAdblocker_DNT_MUA: {
+    DATA_COLLECTION: 'data_NoAdblocker_DNT_MUA'
+  },
   default: {}
 };
 
