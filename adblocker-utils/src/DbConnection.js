@@ -5,16 +5,20 @@
 import jQuery from 'jquery';
 import DbCache from './DbCache.js';
 import Utilities from './Utilities.js';
+import ProfileConfigs from './ProfileConfigs.js';
 import moment from 'moment';
 
-const DbConnection = function() {
+const DbConnection = function(profile = 'default') {
   console.log('New DB connection object created! Make sure the mongod and mongodb-rest are running.');
   const self = this;
+  self._config = ProfileConfigs[profile];
+  self._allConfigs = ProfileConfigs;
+  self._prof = profile;
   self._logger = null;
   self._logTable = 'log';
   self._firstPartyTable = 'first_parties';
   self._dataTable = 'data';
-  self._statsTable = 'stats';
+  self._statsTable = 'statistics';
   self._database = Utilities.constants.DATABASE_NAME;
   self._host = Utilities.constants.DATABASE_HOST;
   self._port = Utilities.constants.DATABASE_PORT;
@@ -102,7 +106,7 @@ const DbConnection = function() {
 
           const datesNotCalculated = Array.apply(null, Array(daysBetween))
             .map((el, idx) => idx)
-            .map(el => moment().subtract(el, 'days').format(Utilities.constants.DATE_FORMAT))
+            .map(el => moment(endDate, Utilities.constants.DATE_FORMAT).subtract(el, 'days').format(Utilities.constants.DATE_FORMAT))
             .filter(date => !data.some(d => d.date === date && d.name === stat));
 
           const newData = [];
@@ -127,6 +131,7 @@ const DbConnection = function() {
   self.getLogs = () => self._find(self._logTable);
   self.clearLogs = (filter = {}) => self._clearCollection(self._logTable, filter);
   self.clearData = (filter = {}) => self._clearCollection(self._dataTable, filter);
+  self.clearStats = (filter = {}) => self._clearCollection(self._statsTable, filter);
   self.store = (data) => self._insert(data, self._dataTable);
   self.log = (message) => self._insert({time: new Date(), message: message}, self._logTable);
 

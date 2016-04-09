@@ -5,15 +5,16 @@ data/deployment.json
 *.html~
 *.css~
 ._*
-*.xpi
 exported_graphs
 *.swp
+
 
 /.idea/
 
 /lightbeam/node_modules
 /lightbeam/*debuglog.txt
 /lightbeam/data/libs/
+/lightbeam/*.xpi
 
 /statistics/node_modules
 /statistics/npm-debug.log

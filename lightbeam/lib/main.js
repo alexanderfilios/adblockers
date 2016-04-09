@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 /* global exports, require */
 "use strict";
-
 // require("sdk/preferences/service").set("extensions.sdk.console.logLevel", "debug");
 const events = require("sdk/system/events");
 const {
@@ -54,6 +53,7 @@ PageMod({
     data.url('libs/jquery.js'),
     data.url('libs/moment.js'),
     data.url('libs/adblocker-utils.js'),
+    data.url('communication.js'),
     data.url('download.js'),
     // -----------
   ],
@@ -85,7 +85,17 @@ exports.main = function (options, callbacks) {
       }
     });
   }
-  // Custom line
-  tabs.open({url: 'index.html', inBackground: true});
+  // Custom lines
+  tabs.open({
+    url: 'index.html',
+    inBackground: true,
+    onReady: function(tab) {
+      const profileName = require('sdk/preferences/service').get('profile.custom_name');
+      const worker = tab.attach({
+        contentScript:
+          'document.getElementById("profName").value = "' + profileName + '";'
+      });
+    }
+  });
   // -----------
 };

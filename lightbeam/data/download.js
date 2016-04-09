@@ -7,6 +7,8 @@
   const DbConnection = global.AdblockerUtils.DbConnection;
   const Utilities = global.AdblockerUtils.Utilities;
 
+  console.log('LOADED DOCUMENT!///////////////////////');
+
   const Crawler = function(websites) {
     const self = this;
     self._logger = new Logger();
@@ -98,16 +100,42 @@
     };
   };
 
-  const db = new DbConnection();
-  const sync = new Synchronizer(db);
+  const createElement = function(tagName, attrs) {
+    return Object.keys(attrs).reduce((element, attrName) => {
+      element.setAttribute(attrName, attrs[attrName]);
+      return element;
+    }, document.createElement(tagName));
+  };
 
-  // Clear data recorded today, in order to avoid double records for the same crawler
-  db.clearData({crawlDate: moment().format(Utilities.constants.DATE_FORMAT)});
+  document.body.appendChild(createElement('input', {
+    type: 'hidden',
+    id: 'profName'
+  }));
 
-  db.getFirstParties().then(function(data) {
-    new Crawler(data.map((record) => record.url))
-      .crawl(sync.storeNewConnections);
-  });
+  function startCrawl(profile = 'default') {
+    const db = new DbConnection(profile);
+    const sync = new Synchronizer(db);
+
+    db._host = '127.0.0.1';
+    alert('Starting crawl with profile ' + profile + '. Config: ' + JSON.stringify(db._config));
+
+    // Clear data recorded today, in order to avoid double records for the same crawler
+    db.clearData({crawlDate: moment().format(Utilities.constants.DATE_FORMAT)});
+    db.getFirstParties().then(function (data) {
+      //console.log('first parties');
+      //console.log(data);
+      new Crawler(data.map((record) => record.url))
+        .crawl(sync.storeNewConnections);
+    });
+  }
+
+  Utilities.repeatUntil(
+    () => console.log(document.getElementById('profName').value),
+    () => !!document.getElementById('profName').value,
+    1000,
+    () => startCrawl(document.getElementById('profName').value));
+
+
 
   //setTimeout(function() {
   //  console.log('CHECKING DATA-------------------');

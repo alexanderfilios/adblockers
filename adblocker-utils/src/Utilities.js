@@ -1,7 +1,9 @@
 /**
  * Created by alexandros on 3/18/16.
  */
-
+/**
+ *
+ */
   import Constants from './Constants.js';
 
 const Utilities = {
@@ -30,6 +32,9 @@ const Utilities = {
     }
 
   },
+  conditionalReturn: (conditionalValue, defaultValue, condition) =>
+    condition(conditionalValue) ? conditionalValue : defaultValue,
+
   executeSerially: function (array, callback, promise) {
     if (array.length === 0) {
       return Promise.resolve();
