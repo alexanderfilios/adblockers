@@ -18,8 +18,14 @@
     self._websites = websites;
     self._closeWindow = function() {
       if (self._windowOpened !== null) {
+        //console.log(self._windowOpened);
         self._logger.debug('Closing window');
-        self._windowOpened.close();
+        try {
+          self._windowOpened.close();
+        } catch (e) {
+          console.log('Error closing the window.');
+          console.log(e);
+        }
         self._windowOpened = null;
       }
     };
@@ -100,14 +106,7 @@
     };
   };
 
-  const createElement = function(tagName, attrs) {
-    return Object.keys(attrs).reduce((element, attrName) => {
-      element.setAttribute(attrName, attrs[attrName]);
-      return element;
-    }, document.createElement(tagName));
-  };
-
-  document.body.appendChild(createElement('input', {
+  document.body.appendChild(Utilities.createElement(document, 'input', {
     type: 'hidden',
     id: 'profName'
   }));
@@ -116,8 +115,8 @@
     const db = new DbConnection(profile);
     const sync = new Synchronizer(db);
 
-    db._host = '127.0.0.1';
-    alert('Starting crawl with profile ' + profile + '. Config: ' + JSON.stringify(db._config));
+    //db._host = '127.0.0.1';
+    //alert('Starting crawl with profile ' + profile + '. Config: ' + JSON.stringify(db._config));
 
     // Clear data recorded today, in order to avoid double records for the same crawler
     db.clearData({crawlDate: moment().format(Utilities.constants.DATE_FORMAT)});
