@@ -30,12 +30,28 @@ else
   profiles=("$1")
 fi
 
+set_config_param() {
+  profile="$1"
+  param_name="$2"
+  param_value="$3"
+  new_param="user_pref(\"$param_name\", $param_value);"
+
+  # Preferences file
+  prefs=$(grep Path ~/.mozilla/firefox/profiles.ini | grep "$profile\$")
+  prefs="$HOME/.mozilla/firefox/${prefs#Path=}/prefs.js"
+  if cat $prefs | grep $param_name; then
+    # If parameter is already specified, replace it
+    echo "Replacing user name config: \"$param_name\" = \"$param_value\"..."
+    sed -i "/${param_name}/c\\$new_param" "$prefs"
+  else
+    # Otherwise, append a new line with the parameter
+    echo "Adding new config: \"$param_name\" = \"$param_value\"..."
+    echo "$new_param" >> "$prefs"
+  fi
+}
+
+
 for profile in ${profiles[@]}; do
-
-  param_name="profile.custom_name"
-  param_value="$profile"
-  new_param="user_pref(\"$param_name\", \"$param_value\");"
-
   # Create the profile if it does not exist
   if cat ~/.mozilla/firefox/profiles.ini | grep "Name=$profile\$"; then
     echo "Profile '$profile' exists!"
@@ -44,19 +60,7 @@ for profile in ${profiles[@]}; do
     firefox -CreateProfile "$profile"
   fi
 
-  # Preferences file
-  prefs=$(grep Path ~/.mozilla/firefox/profiles.ini | grep "$profile")
-  prefs="$HOME/.mozilla/firefox/${prefs#Path=}/prefs.js"
-  if cat $prefs | grep $param_name; then
-    # If parameter is already specified, replace it
-    echo "Replacing user name config..."
-    sed -i "/${param_name}/c\\$new_param" "$prefs"
-  else
-    # Otherwise, append a new line with the parameter
-    echo "Adding user name config..."
-    echo "$new_param" >> "$prefs"
-  fi
-
+  set_config_param $profile "profile.custom_name" "\"$profile\""
+  set_config_param $profile "xpinstall.signatures.required" "false"
   echo "Done!"
-
 done
