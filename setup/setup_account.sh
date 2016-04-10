@@ -62,5 +62,6 @@ for profile in ${profiles[@]}; do
 
   set_config_param $profile "profile.custom_name" "\"$profile\""
   set_config_param $profile "xpinstall.signatures.required" "false"
+  set_config_param $profile "dom.disable_open_during_load" "false"
   echo "Done!"
 done
