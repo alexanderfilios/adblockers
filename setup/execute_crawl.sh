@@ -22,7 +22,10 @@ profiles=(
   "NoAdblocker_DNT_MUA"
 )
 
+export DISPLAY=:0
+
 for profile in ${profiles[@]}; do
-  (cd "$project_dir/lightbeam"; export DISPLAY=:0; /usr/local/bin/jpm run -b /usr/bin/firefox -p "$profile")
+#  (cd "$project_dir/lightbeam"; export DISPLAY=:0; /usr/local/bin/jpm run -b /usr/bin/firefox -p "$profile"&)
+  /usr/bin/firefox -p "$profile"&
   sleep 2 # Shift in time so that not all DB insertions fall together at the same time
 done
