@@ -14,13 +14,14 @@ profiles=(
   "Adblockplus_MaxProtection"
   "NoAdblocker"
   "NoAdblocker_DNT"
-  "Ghostery_Default_MUA"
-  "Ghostery_MaxProtection_MUA"
-  "Adblockplus_Default_MUA"
-  "Adblockplus_MaxProtection_MUA"
-  "NoAdblocker_MUA"
-  "NoAdblocker_DNT_MUA"
 )
+#  "Ghostery_Default_MUA"
+#  "Ghostery_MaxProtection_MUA"
+#  "Adblockplus_Default_MUA"
+#  "Adblockplus_MaxProtection_MUA"
+#  "NoAdblocker_MUA"
+#  "NoAdblocker_DNT_MUA"
+#)
 
 export DISPLAY=:0
 
