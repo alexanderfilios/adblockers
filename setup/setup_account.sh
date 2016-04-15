@@ -60,8 +60,15 @@ for profile in ${profiles[@]}; do
     firefox -CreateProfile "$profile"
   fi
 
+  # Set profile name
   set_config_param $profile "profile.custom_name" "\"$profile\""
+  # Set custom DbConnection params (optional)
+  set_config_param $profile "profile.custom_db_connection_config" "\"{}\""
+  # Set custom Crawler params (optional)
+  set_config_param $profile "profile.custom_crawler_config" "\"{\\\"sampleFrom\\\":\\\"0\\\",\\\"windowOpenInterval\\\":\\\"10000\\\"}\""
+  # Install unsigned XPIs (unpublished lightbeam)
   set_config_param $profile "xpinstall.signatures.required" "false"
+  # Allow popups from add-ons (lightbeam opens popups to crawl them)
   set_config_param $profile "dom.disable_open_during_load" "false"
   echo "Done!"
 done

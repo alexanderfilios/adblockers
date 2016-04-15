@@ -30,6 +30,8 @@ declare -A profiles=(
   ["NoAdblocker_DNT_MUA"]="lightbeam user_agent_switcher"
 )
 
+killall firefox
+
 for profile in ${!profiles[@]}; do
   echo "Profile: $profile -----------------------------------------_"
   IFS=" " read -a addons <<< "${profiles[$profile]}"

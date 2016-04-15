@@ -8,18 +8,18 @@ import Utilities from './Utilities.js';
 import ProfileConfigs from './ProfileConfigs.js';
 import moment from 'moment';
 
-const DbConnection = function(profile = 'default') {
+const DbConnection = function(profile = 'default', config = {}) {
   console.log('New DB connection object created! Make sure the mongod and mongodb-rest are running.');
   const self = this;
-  self._config = ProfileConfigs[profile] || ProfileConfigs.default;
+  self._config = jQuery.extend({}, ProfileConfigs[profile] || ProfileConfigs.default, config);
   self._logger = null;
   self._logTable = 'log';
-  self._firstPartyTable = 'first_parties';
-  self._dataTable = self._config.DATA_COLLECTION;
+  self._firstPartyTable = self._config.firstPartiesTable;
+  self._dataTable = self._config.dataTable;
   self._statsTable = 'statistics';
-  self._database = self._config.DATABASE_NAME;
-  self._host = self._config.DATABASE_HOST;
-  self._port = self._config.DATABASE_PORT;
+  self._database = self._config.database;
+  self._host = self._config.host;
+  self._port = self._config.port;
 
   // Cache for the default database
   self._cache = new DbCache();

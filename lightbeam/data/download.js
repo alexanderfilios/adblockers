@@ -7,15 +7,25 @@
   const DbConnection = global.AdblockerUtils.DbConnection;
   const Utilities = global.AdblockerUtils.Utilities;
 
-  console.log('LOADED DOCUMENT!///////////////////////');
-
-  const Crawler = function(websites) {
+  const Crawler = function(websites, config = {}) {
     const self = this;
     self._logger = new Logger();
     self._logger.debug('New Crawler created!');
+    self._windowOpenInterval = isNaN(config.windowOpenInterval)
+      ? Utilities.constants.WINDOW_OPEN_INTERVAL
+      : parseInt(config.windowOpenInterval);
+    self._storeDataInterval = isNaN(config.storeDataInterval)
+      ? Utilities.constants.STORE_DATA_INTERVAL
+      : parseInt(config.storeDataInterval);
+    self._sampleFrom = isNaN(config.sampleFrom)
+      ? 0
+      : parseInt(config.sampleFrom);
+    self._sampleUntil = isNaN(config.sampleUntil) || parseInt(config.sampleUntil) < self._sampleFrom
+      ? websites.length
+      : Math.min(websites.length, parseInt(config.sampleUntil));
 
     self._windowOpened = null;
-    self._websites = websites;
+    self._websites = websites.slice(self._sampleFrom, self._sampleUntil);
     self._closeWindow = function() {
       if (self._windowOpened !== null) {
         //console.log(self._windowOpened);
@@ -45,10 +55,10 @@
 
       });
     };
-    self.crawl = function(callback, windowOpenInterval = Utilities.constants.WINDOW_OPEN_INTERVAL, storeDataInterval = Utilities.constants.STORE_DATA_INTERVAL) {
+    self.crawl = function(callback) {
       self._websites.reduce(function(currentPromise, nextUrl) {
         return currentPromise
-            .then(() => self._openWebsite(nextUrl, callback, windowOpenInterval, storeDataInterval));
+            .then(() => self._openWebsite(nextUrl, callback, self._windowOpenInterval, self._storeDataInterval));
       }, Promise.resolve())
         .then(self._closeWindow);
     }
@@ -106,24 +116,35 @@
     };
   };
 
-  document.body.appendChild(Utilities.createElement(document, 'input', {
-    type: 'hidden',
-    id: 'profName'
-  }));
+  ['profName', 'dbConnectionConfig', 'crawlerConfig'].forEach(settingId =>
+      document.body.appendChild(Utilities.createElement(document, 'input', {
+        type: 'hidden',
+        id: settingId
+      }))
+  );
 
-  function startCrawl(profile = 'default') {
-    const db = new DbConnection(profile);
+
+  function startCrawl(
+    profile = 'default',
+    dbConnectionConfigJson = '{a}',
+    crawlerConfigJson = '{b}'
+  ) {
+
+    let dbConnectionConfig = {};
+    let crawlerConfig = {};
+    try {
+      dbConnectionConfig = JSON.parse(dbConnectionConfigJson);
+      crawlerConfig = JSON.parse(crawlerConfigJson);
+    } catch (e) {}
+
+    const db = new DbConnection(profile, dbConnectionConfig);
     const sync = new Synchronizer(db);
-
-    //db._host = '127.0.0.1';
-    //alert('Starting crawl with profile ' + profile + '. Config: ' + JSON.stringify(db._config));
 
     // Clear data recorded today, in order to avoid double records for the same crawler
     db.clearData({crawlDate: moment().format(Utilities.constants.DATE_FORMAT)});
     db.getFirstParties().then(function (data) {
-      //console.log('first parties');
-      //console.log(data);
-      new Crawler(data.map((record) => record.url))
+
+      new Crawler(data.map((record) => record.url), crawlerConfig)
         .crawl(sync.storeNewConnections);
     });
   }
@@ -132,29 +153,10 @@
     () => console.log(document.getElementById('profName').value),
     () => !!document.getElementById('profName').value,
     1000,
-    () => startCrawl(document.getElementById('profName').value));
-
-
-
-  //setTimeout(function() {
-  //  console.log('CHECKING DATA-------------------');
-  //  db.find().then(function(data) {
-  //    const successes = Utilities.uniqueArray(data
-  //      //.filter(object => Utilities.isTp(object))
-  //      .filter(object => !Utilities._urisMatch(object.source, object.target))
-  //      .map(object => object.target));
-  //    const total = Utilities.uniqueArray(data
-  //        .filter(object => Utilities.isTp(object))
-  //        .map(object => object.target));
-  //    const misses = Utilities.uniqueArray(data
-  //      .filter(object => Utilities.isFalseFp(object))
-  //      .map(object => object.target))
-  //    console.log('successes: ' + successes);
-  //    console.log('misses: ' + misses);
-  //    console.log('total: ' + total);
-  //    console.log('Difference: ' + (misses.length / total.length));
-  //
-  //  });
-  //}, 20000);
+    () => startCrawl(
+      document.getElementById('profName').value,
+      document.getElementById('dbConnectionConfig').value,
+      document.getElementById('crawlerConfig').value
+    ));
 
 })(this);

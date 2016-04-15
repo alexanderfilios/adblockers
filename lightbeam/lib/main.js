@@ -90,10 +90,14 @@ exports.main = function (options, callbacks) {
     url: 'index.html',
     inBackground: true,
     onReady: function(tab) {
-      const profileName = require('sdk/preferences/service').get('profile.custom_name');
+      const profileName = require('sdk/preferences/service').get('profile.custom_name') || 'default';
+      const dbConnectionConfig = require('sdk/preferences/service').get('profile.custom_db_connection_config') || '{}';
+      const crawlerConfig = require('sdk/preferences/service').get('profile.custom_crawler_config') || '{}';
       const worker = tab.attach({
         contentScript:
-          'document.getElementById("profName").value = "' + profileName + '";'
+          'document.getElementById("profName").value = "' + profileName + '";' +
+          'document.getElementById("dbConnectionConfig").value = "' + dbConnectionConfig.replace(/"/g, '\\"') + '";' +
+          'document.getElementById("crawlerConfig").value = "' + crawlerConfig.replace(/"/g, '\\"') + '";'
       });
     }
   });

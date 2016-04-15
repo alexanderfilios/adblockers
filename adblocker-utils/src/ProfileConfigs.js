@@ -5,52 +5,53 @@
 import jQuery from 'jquery';
 
 const defaultConfigs = {
-  DATABASE_HOST: '127.0.0.1',
-  //DATABASE_HOST: '192.33.93.94',
-  DATABASE_PORT: 3000,
-  DATABASE_NAME: 'myapp_test1',
-  DATA_COLLECTION: 'data'
+  host: '127.0.0.1',
+  //host: '192.33.93.94',
+  port: 3000,
+  database: 'myapp_test1',
+  firstPartiesTable: 'first_parties',
+  dataTable: 'data'
 };
 
 const customConfigs = {
   Alexandros: {
-    DATA_COLLECTION: 'data_Alexandros'
+    dataTable: 'data_Alexandros'
   },
   Ghostery_Default: {
-    DATA_COLLECTION: 'data_Ghostery_Default'
+    dataTable: 'data_Ghostery_Default'
   },
   Ghostery_MaxProtection: {
-    DATA_COLLECTION: 'data_Ghostery_MaxProtection'
+    dataTable: 'data_Ghostery_MaxProtection'
   },
   Adblockplus_Default: {
-    DATA_COLLECTION: 'data_Adblockplus_Default'
+    dataTable: 'data_Adblockplus_Default'
   },
   Adblockplus_MaxProtection: {
-    DATA_COLLECTION: 'data_Adblockplus_MaxProtection'
+    dataTable: 'data_Adblockplus_MaxProtection'
   },
   NoAdblocker: {
-    DATA_COLLECTION: 'data_NoAdblocker'
+    dataTable: 'data_NoAdblocker'
   },
   NoAdblocker_DNT: {
-    DATA_COLLECTION: 'data_NoAdblocker_DNT'
+    dataTable: 'data_NoAdblocker_DNT'
   },
   Ghostery_Default_MUA: {
-    DATA_COLLECTION: 'data_Ghostery_Default_MUA'
+    dataTable: 'data_Ghostery_Default_MUA'
   },
   Ghostery_MaxProtection_MUA: {
-    DATA_COLLECTION: 'data_Ghostery_MaxProtection_MUA'
+    dataTable: 'data_Ghostery_MaxProtection_MUA'
   },
   Adblockplus_Default_MUA: {
-    DATA_COLLECTION: 'data_Adblockplus_Default_MUA'
+    dataTable: 'data_Adblockplus_Default_MUA'
   },
   Adblockplus_MaxProtection_MUA: {
-    DATA_COLLECTION: 'data_Adblockplus_MaxProtection_MUA'
+    dataTable: 'data_Adblockplus_MaxProtection_MUA'
   },
   NoAdblocker_MUA: {
-    DATA_COLLECTION: 'data_NoAdblocker_MUA'
+    dataTable: 'data_NoAdblocker_MUA'
   },
   NoAdblocker_DNT_MUA: {
-    DATA_COLLECTION: 'data_NoAdblocker_DNT_MUA'
+    dataTable: 'data_NoAdblocker_DNT_MUA'
   },
   default: {}
 };
