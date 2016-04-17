@@ -38,7 +38,7 @@ set_config_param() {
 
   # Preferences file
   prefs=$(grep Path ~/.mozilla/firefox/profiles.ini | grep "$profile\$")
-  prefs="$HOME/.mozilla/firefox/${prefs#Path=}/prefs.js"
+  prefs="$HOME/.mozilla/firefox/${prefs#Path=}/user.js"
   if cat $prefs | grep $param_name; then
     # If parameter is already specified, replace it
     echo "Replacing user name config: \"$param_name\" = \"$param_value\"..."
@@ -65,7 +65,7 @@ for profile in ${profiles[@]}; do
   # Set custom DbConnection params (optional)
   set_config_param $profile "profile.custom_db_connection_config" "\"{}\""
   # Set custom Crawler params (optional)
-  set_config_param $profile "profile.custom_crawler_config" "\"{\\\"sampleFrom\\\":\\\"0\\\",\\\"windowOpenInterval\\\":\\\"10000\\\"}\""
+  set_config_param $profile "profile.custom_crawler_config" "\"{\\\\\"sampleFrom\\\\\":\\\\\"0\\\\\",\\\\\"windowOpenInterval\\\\\":\\\\\"10000\\\\\"}\""
   # Install unsigned XPIs (unpublished lightbeam)
   set_config_param $profile "xpinstall.signatures.required" "false"
   # Allow popups from add-ons (lightbeam opens popups to crawl them)
