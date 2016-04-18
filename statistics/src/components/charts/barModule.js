@@ -5,45 +5,48 @@
 import angular from 'angular';
 require('angular-ui-bootstrap');
 import moment from 'moment';
+import jQuery from 'jquery';
 
 const d3 = require('d3');
 import {Utilities} from 'adblocker-utils';
 
 export default angular
   .module('bar', ['ui.bootstrap'])
-  .controller('BarController', ['$scope', function($scope) {
+  .service('barService', function() {
+    const self = this;
+    self.getBar = function(graphStats) {
+      if (graphStats === undefined) {
+        return null;
+      }
 
-    const colors = {
-      first: 'lightblue',
-      third: 'green'
+      const colors = {
+        first: 'lightblue',
+        third: 'green'
       };
+      return jQuery.unique(graphStats.data.map(row => row.firstParty))
+        .map(firstParty => Object({
+          name: firstParty,
+          firsts: jQuery.unique(graphStats.data
+            .filter(row => row.firstParty === firstParty)
+            .filter(row => Utilities.isFalseFp(row))
+            .map(row => row.source)).length,
+          thirds: jQuery.unique(graphStats.data
+            .filter(row => row.firstParty === firstParty)
+            .filter(row => Utilities.isTp(row))
+            .map(row => row.target)).length
+
+        }))
+        .reduce((prevVal, curr) => prevVal
+          .concat({name: curr.name, value: curr.firsts, color: colors.first})
+          .concat({name: curr.name, value: curr.thirds, color: colors.third}), []);
+    }
+  })
+  .controller('BarController', ['$scope', 'barService', function($scope, barService) {
     $scope.data = null;
     $scope.$watch(
-      (scope) => scope.selected === Utilities.constants.menuItems.BAR && scope.date,
-      (loaded) => {if (loaded) fetchData($scope.date);});
-    const fetchData = function(date) {
-      $scope.connection.find({crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)})
-        .then(data => {
-        $scope.data = jQuery.unique(data.map(row => row.firstParty))
-          .map(firstParty => Object({
-            name: firstParty,
-            firsts: jQuery.unique(data
-              .filter(row => row.firstParty === firstParty)
-              .filter(row => Utilities.isFalseFp(row))
-              .map(row => row.source)).length,
-            thirds: jQuery.unique(data
-              .filter(row => row.firstParty === firstParty)
-              .filter(row => Utilities.isTp(row))
-              .map(row => row.target)).length
-
-          }))
-          .reduce((prevVal, curr) => prevVal
-            .concat({name: curr.name, value: curr.firsts, color: colors.first})
-            .concat({name: curr.name, value: curr.thirds, color: colors.third}), []);
-          $scope.$apply();
-      });
-    };
-
+      scope => scope.currentGraphStats,
+      graphStats => $scope.data = barService.getBar(graphStats)
+    );
   }])
   .directive('bar', function($compile) {
     return {

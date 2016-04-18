@@ -10,41 +10,30 @@ import {Utilities} from 'adblocker-utils';
 
 export default angular
   .module('stackedBar', ['ui.bootstrap'])
-  .controller('StackedBarController', ['$scope', function($scope) {
+  .service('stackedBarService', function() {
+    const self = this;
+    self.getStackedBar = function(graphStats) {
+      if (jQuery.isEmptyObject(graphStats)) {
+        return null;
+      }
 
+      const categories = ['image', 'application', 'text', 'font', 'video', 'binary', 'content', 'audio'];
+      const bars = Object.keys(graphStats)
+        .reduce((cum, instance) => cum.concat(([{barTitle: instance, data: graphStats[instance].data}])), [])
+        .map(bar => categories.reduce(function (accumulator, current) {
+          accumulator[current] = bar.data.filter(row => row.contentType.split('/')[0] === current).length;
+          return accumulator;
+        }, {barTitle: bar.barTitle}));
+
+      return {units: 'Requests', bars: bars};
+    }
+  })
+  .controller('StackedBarController', ['$scope', 'stackedBarService', function($scope, stackedBarService) {
     $scope.data = null;
     $scope.$watch(
-      (scope) => scope.selected === Utilities.constants.menuItems.STACKED_BAR && scope.date,
-      (loaded) => {if (loaded) fetchData($scope.date);});
-    const fetchData = function(date) {
-
-      const categories = ['image', 'application', 'text', 'font', 'video'];
-      let bars = [];
-
-      Utilities.executeSerially(
-        [
-          {database: 'myapp_test1', title: 'DB 1'},
-          {database: 'myapp_test1', title: 'DB 2'},
-          {database: 'myapp_test1', title: 'DB 3'},
-          {database: 'myapp_test1', title: 'DB 4'},
-          {database: 'myapp_test2', title: 'DB 5'},
-          {database: 'myapp_test3', title: 'DB 6'}
-        ],
-        (input, output) => bars = bars.concat([{barTitle: input.title, data: output}]),
-        (bar) => $scope.connection.find({crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)}, bar.database)
-      ).then(() => {
-          $scope.data = {
-            units: 'Requests',
-            bars: bars.map(bar => categories.reduce(function (accumulator, current) {
-              accumulator[current] = bar.data.filter(row => row.contentType.split('/')[0] === current).length;
-              return accumulator;
-            }, {barTitle: bar.barTitle}))
-          };
-          $scope.$apply();
-        });
-
-    };
-
+      scope => scope.currentGraphStats && scope.selected === Utilities.constants.menuItems.STACKED_BAR,
+      loaded => {if (loaded) $scope.data = stackedBarService.getStackedBar($scope.graphStats);}
+    );
   }])
   .directive('stackedBar', function($compile) {
     return {

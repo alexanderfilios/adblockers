@@ -10,49 +10,39 @@ import {Utilities} from 'adblocker-utils';
 
 export default angular
   .module('forceDirected', ['ui.bootstrap'])
-  .controller('ForceDirectedController', ['$scope', function($scope) {
+  .service('forceDirectedService', function() {
+    this.getNodesAndLinks = function(graphStats, forFirstParties = true) {
+
+      if (graphStats === undefined) {
+        return null;
+      }
+
+      const nodeDict = Array.from(graphStats.graph.nodes())
+        .map((e, idx) => ({
+          idx: idx,
+          group: idx,
+          name: e,
+          image: e.startsWith(forFirstParties ? 's.' : 't.') ? Utilities.constants.images.first : Utilities.constants.images.third,
+        }))
+        .reduce((cum, curr) => {
+          cum[curr.name] = curr;
+          return cum;
+        }, {});
+      return {
+        links: graphStats.getLinks(forFirstParties).map(e => ({
+          source: nodeDict[e.source].idx,
+          target: nodeDict[e.target].idx
+        })),
+        nodes: Object.values(nodeDict)
+      };
+    }
+  })
+  .controller('ForceDirectedController', ['$scope', 'forceDirectedService', function($scope, forceDirectedService) {
     $scope.data = null;
     $scope.$watch(
-      (scope) => scope.selected === Utilities.constants.menuItems.NETWORK && scope.date,
-      (loaded) => {if (loaded) fetchData($scope.date);});
-    const fetchData = function(date) {
-      $scope.connection.distinct(
-        {crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)},
-      ['firstParty', 'target'])
-        .then(data => {
-        const nodeDict = data.reduce(function(accumulator, current) {
-          if (!(('s.' + current.firstParty) in accumulator)) {
-            accumulator['s.' + current.firstParty] = {
-              idx: Object.keys(accumulator).length,
-              group: Object.keys(accumulator).length,
-              name: current.firstParty,
-              image: Utilities.constants.images.first
-            };
-          }
-          if (!(('t.' + current.target) in accumulator)) {
-            accumulator['t.' + current.target] = {
-              idx: Object.keys(accumulator).length,
-              group: Object.keys(accumulator).length,
-              name: current.target,
-              image: Utilities.constants.images.third
-            };
-          }
-          return accumulator;
-        }, {});
-        const links = data.map(row => ({
-          source: nodeDict['s.' + row.firstParty].idx,
-          target: nodeDict['t.' + row.target].idx
-        }));
-        const nodes = Object.values(nodeDict);
-
-        $scope.data = {
-          nodes: nodes,
-          links: links
-        };
-          $scope.$apply();
-      });
-    };
-
+        scope => scope.currentGraphStats,
+        graphStats => $scope.data = forceDirectedService.getNodesAndLinks(graphStats)
+    );
   }])
   .directive('forceDirected', function($compile) {
     return {

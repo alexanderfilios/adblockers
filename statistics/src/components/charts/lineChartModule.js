@@ -7,106 +7,11 @@ require('angular-ui-bootstrap');
 const d3 = require('d3');
 import moment from 'moment';
 import {Utilities} from 'adblocker-utils';
-import {jStat} from 'jStat';
-import {algorithms, functions, Graph, DiGraph} from 'jsnetworkx';
 import GraphStats from '../../GraphStats';
-
-
-
-//const GraphStats = function(data, undirected = true) {
-//  const self = this;
-//
-//  const _getGraphLinks = function (data, srcToTgt = true) {
-//    const links = data
-//      // Only keep third-party requests
-//      .filter(row => Utilities.isTp(row))
-//      .reduce((cum, curr) => {
-//        if (curr[srcToTgt ? 'firstParty' : 'target'] in cum)
-//          cum[curr[srcToTgt ? 'firstParty' : 'target']][curr[srcToTgt ? 'target' : 'firstParty']] = 1;
-//        else
-//          cum[curr[srcToTgt ? 'firstParty' : 'target']] = {};
-//        return cum;
-//      }, {});
-//    for (const source in links) {
-//      links[source] = Object.keys(links[source]);
-//    }
-//    return links;
-//
-//  };
-//  const _getGraphObject = function (data, srcToTgt = true) {
-//    const links = _getGraphLinks(data, srcToTgt);
-//    const graph = undirected ? new Graph() : new DiGraph();
-//    graph.addNodesFrom(Object.keys(links).map(n => [('s.' + n), {f: true}]));
-//    graph.addNodesFrom(Object.values(links)
-//      .reduce((cum, curr) => cum.concat(curr), [])
-//      .map(n => [('t.' + n), {f: false}]));
-//    //graph.add
-//    graph.addEdgesFrom(jQuery.map(links, (connections, src) => connections.map(dst => ['s.' + src, 't.' + dst])));
-//    return graph;
-//  };
-//  self.graph = _getGraphObject(data, true);
-//
-//  self.isNotEmpty = () => Array.isArray(data) && data.length > 0;
-//  self.getVertexDegrees = (forFirstParties = true) =>
-//    Array.from(self.graph.degree(Array.from(self.graph.nodesIter()), false))
-//      .filter(node => node[0].startsWith(forFirstParties ? 's.' : 't.'))
-//      .reduce((cum, curr) => {
-//        cum[curr[0]] = curr[1];
-//        return cum;
-//      }, {});
-//
-//  self.getMeanDegree = (forFirstParties = true) => self.isNotEmpty()
-//    ? jStat.mean(Object.values(self.getVertexDegrees(forFirstParties)))
-//    : 0;
-//  self.getStdevDegree = (forFirstParties = true) => self.isNotEmpty()
-//    ? jStat.stdev(Object.values(self.getVertexDegrees(forFirstParties)))
-//    : 0;
-//  self.getDensity = () => self.isNotEmpty()
-//    ? functions.density(self.graph)
-//    : 0;
-//  self.getBetweennessCentrality = () => self.isNotEmpty()
-//    ? Array.from(algorithms.betweennessCentrality(self.graph))
-//    .filter(n => n[0].startsWith('s.'))
-//    .reduce((cum, curr) => {
-//      cum[curr[0]] = curr[1];
-//      return cum;
-//    }, {})
-//    : 0;
-//  self.getDiameter = () => jStat.max(
-//    Array.from(algorithms.shortestPathLength(self.graph).values())
-//      .map(node => jStat.max(Array.from(node.values()))))
-//};
-
-window.from = Array.from;
-window.jStat = jStat;
-window.functions = functions;
-window.algorithms = algorithms;
-window.Graph = Graph;
 
 export default angular
   .module('lineChart', ['ui.bootstrap'])
   .controller('LineChartController', ['$scope', function($scope) {
-
-    //$scope.connection._clearCollection($scope.connection._statsTable);
-
-$scope.connection._host = '127.0.0.1';
-
-    $scope.connection.find({crawlDate: '04/03/2016'}).then(
-        data => {
-          let graphStats = new GraphStats(data);
-          window.graph = graphStats;
-
-          console.log(graphStats.getVertexDegrees());
-          console.log('mean degree: ' + graphStats.getMeanDegree());
-          console.log('stdev degree: ' + graphStats.getStdevDegree());
-          console.log('density: ' + graphStats.getDensity());
-          //console.log('graph diameter: ' + graphStats.getDiameter());
-          //const start = new Date();
-          //console.log('betweenness centrality:');
-          //console.log(graphStats.getBetweennessCentrality());
-          //console.log('time to calculate BC: ' + (moment().diff(moment(start)) / 1000) + ' sec')
-      }
-    );
 
 //$scope.connection.clearStats();
 
@@ -122,38 +27,35 @@ $scope.connection._host = '127.0.0.1';
           {
             name: 'first-meansafada',
             title: 'First mean',
-            calculator: data => new GraphStats(data).getMeanDegree()
+            calculator: data => new GraphStats(data).getMeanDegree(true)
           },
-          //{
-          //  name: 'first-stdev',
-          //  title: 'First standard deviation',
-          //  calculator: (data) => GraphUtils.getStdevDegree(data, true)
-          //},
-          //{
-          //  name: 'third-mean',
-          //  title: 'Third mean',
-          //  calculator: (data) => GraphUtils.getMeanDegree(data, false)
-          //},
-          //{
-          //  name: 'third-stdev',
-          //  title: 'Third standard deviation',
-          //  calculator: (data) => GraphUtils.getStdevDegree(data, false)
-          //},
-          //{
-          //  name: 'density',
-          //  title: 'Graph density',
-          //  calculator: (data) => GraphUtils.getGraphDensity(data)
-          //}
+          {
+            name: 'first-stdev',
+            title: 'First std',
+            calculator: data => new GraphStats(data).getStdevDegree(true)
+          },
+          {
+            name: 'third-meansafada',
+            title: 'Third mean',
+            calculator: data => new GraphStats(data).getMeanDegree(false)
+          },
+          {
+            name: 'third-stdev',
+            title: 'Third std',
+            calculator: data => new GraphStats(data).getStdevDegree(false)
+          }
         ],
         (input, output) => output.forEach(dataOfDay => {
             dataPerDate[dataOfDay.date] = jQuery.extend({date: dataOfDay.date}, dataPerDate[dataOfDay.date]);
             dataPerDate[dataOfDay.date][input.title] = dataOfDay.value;
           }),
-        (input) => $scope.connection.findOrCalculateStats(input.name, input.calculator, '03/30/2016', '04/03/2016')
+        (input) => $scope.connection.findOrCalculateStats(input.name, input.calculator, '03/30/2016', moment(new Date()).format(Utilities.constants.DATE_FORMAT))
       ).then(() => {
+          //console.log(JSON.stringify(Object.values(dataPerDate));
           $scope.data = {
-            units: 'Requests',
+            units: '.',
             charts: Object.values(dataPerDate)
+              .sort((data1, data2) => new Date(data1.date) - new Date(data2.date))
           };
 
           $scope.$apply();
@@ -286,10 +188,33 @@ $scope.connection._host = '127.0.0.1';
             .attr("transform", function (d) {
               return "translate(" + x(d.value.date) + "," + y(d.value.val) + ")";
             })
-            .attr("x", 3)
+            //.attr("x", 3)
+            //.attr("dy", ".35em")
+            //.text(function (d) {
+            //  return d.name;
+            //});
+
+          var legend = svg.selectAll(".legend")
+            .data(color.domain().slice().reverse())
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function (d, i) {
+              return "translate(0," + i * 20 + ")";
+            });
+
+          legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+
+          legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
             .attr("dy", ".35em")
+            .style("text-anchor", "end")
             .text(function (d) {
-              return d.name;
+              return d;
             });
 
         });

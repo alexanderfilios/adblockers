@@ -10,34 +10,27 @@ import {Utilities} from 'adblocker-utils';
 
 export default angular
   .module('edgeBundling', ['ui.bootstrap'])
-  .controller('EdgeBundlingController', ['$scope', function($scope) {
+  .service('edgeBundlingService', function() {
+    const self = this;
+    self._formatName = (str) => str.replace(/\./g, (substr, pos) => pos === 1 ? '.' : ',');
+    self.getEdgeBundling = function(graphStats) {
+      if (graphStats === undefined) {
+        return null;
+      }
 
+      return Array.from(graphStats.graph.nodes())
+        .map(e => ({
+          name: self._formatName(e),
+          imports: Array.from(graphStats.graph.neighbors(e)).map(n => self._formatName(n))
+        }));
+    }
+  })
+  .controller('EdgeBundlingController', ['$scope', 'edgeBundlingService', function($scope, edgeBundlingService) {
     $scope.data = null;
     $scope.$watch(
-      (scope) => scope.selected === Utilities.constants.menuItems.BUNDLE && scope.date,
-      (loaded) => {if (loaded) fetchData($scope.date);});
-    const fetchData = function(date) {
-      $scope.connection.find({crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)})
-        .then(data => {
-          data = data
-          // Only keep third-party requests
-            .filter(row => row.target !== row.source)
-            .map(row => Object({
-              // Use first party as the source. Replace reserved char '.' with ','.
-              source: 's.' + row.firstParty.replace(/\./g, ','),
-              target: 't.' + row.target.replace(/\./g, ',')
-            }));
-
-          $scope.data = jQuery.unique(data.map(row => row.source).concat(data.map(row => row.target)))
-            .map(source => Object({
-              name: source,
-              imports: jQuery.unique(data.filter(r => r.source === source).map(r => r.target))
-            }));
-          $scope.$apply();
-        }
-      );
-    };
-
+      scope => scope.currentGraphStats,
+      graphStats => $scope.data = edgeBundlingService.getEdgeBundling(graphStats)
+    );
   }])
   .directive('edgeBundling', function($compile) {
     return {

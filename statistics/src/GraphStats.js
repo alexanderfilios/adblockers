@@ -8,6 +8,7 @@ import {algorithms, functions, Graph, DiGraph} from 'jsnetworkx';
 
 const GraphStats = function(data, undirected = true) {
   const self = this;
+  self.data = data;
 
   const _getGraphLinks = function (data, srcToTgt = true) {
     const links = data
@@ -39,6 +40,10 @@ const GraphStats = function(data, undirected = true) {
   };
   self.graph = _getGraphObject(data, true);
 
+  self.getLinks = (forFirstParties = true) => Array.from(self.graph.edges())
+    .filter(e => e[0].startsWith(forFirstParties ? 's.' : 't.'))
+    .map(e => ({source: e[0], target: e[1]}));
+
   self.isNotEmpty = () => Array.isArray(data) && data.length > 0;
   self.getVertexDegrees = (forFirstParties = true) =>
     Array.from(self.graph.degree(Array.from(self.graph.nodesIter()), false))
@@ -47,6 +52,7 @@ const GraphStats = function(data, undirected = true) {
         cum[curr[0]] = curr[1];
         return cum;
       }, {});
+
 
   self.getMeanDegree = (forFirstParties = true) => self.isNotEmpty()
     ? jStat.mean(Object.values(self.getVertexDegrees(forFirstParties)))
