@@ -16,7 +16,7 @@ import stackedBarModule from '../../components/charts/stackedBarModule';
 import lineChartModule from '../../components/charts/lineChartModule';
 import {DbConnection} from 'adblocker-utils';
 import GraphStats from '../../GraphStats';
-
+import jStat from 'jStat';
 
 export default angular
   .module('menu', ['ui.bootstrap',
@@ -46,9 +46,7 @@ export default angular
         date => $scope.connection
         ._find($scope.instance, {crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)})
         .then(function(data) {
-          //$scope.graphStats = new GraphStats(data);
-
-          $scope.graphStats[$scope.instance] = new GraphStats(data);
+            $scope.graphStats[$scope.instance] = new GraphStats(data);
             $scope.currentGraphStats = $scope.graphStats[$scope.instance];
             $scope.$apply();
         })

@@ -70,10 +70,15 @@ const GraphStats = function(data, undirected = true) {
       cum[curr[0]] = curr[1];
       return cum;
     }, {})
+    : {};
+  self.getMeanBetweennessCentrality = () => self.isNotEmpty()
+    ? jStat.mean(Object.values(self.getBetweennessCentrality()))
     : 0;
-  self.getDiameter = () => jStat.max(
+  self.getDiameter = () => self.isNotEmpty()
+    ? jStat.max(
     Array.from(algorithms.shortestPathLength(self.graph).values())
       .map(node => jStat.max(Array.from(node.values()))))
+    : 0;
 };
 
 export default GraphStats;

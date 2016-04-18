@@ -43,6 +43,21 @@ export default angular
             name: 'third-stdev',
             title: 'Third std',
             calculator: data => new GraphStats(data).getStdevDegree(false)
+          },
+          {
+            name: 'density',
+            title: 'Density',
+            calculator: data => new GraphStats(data).getDensity()
+          },
+          {
+            name: 'betweenness-centrality3',
+            title: 'Mean betweenness centrality',
+            calculator: data => new GraphStats(data).getMeanBetweennessCentrality()
+          },
+          {
+            name: 'diameter2',
+            title: 'Diameter',
+            calculator: data => new GraphStats(data).getDiameter()
           }
         ],
         (input, output) => output.forEach(dataOfDay => {
