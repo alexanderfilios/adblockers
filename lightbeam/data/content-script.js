@@ -14,7 +14,7 @@ self.port.on('connection', function (connection) {
 
 self.port.on('passStoredConnections', function (connections) {
   global.allConnections = connections;
-  global.aggregate.emit('load', global.allConnections);
+  //global.aggregate.emit('load', global.allConnections);
 });
 
 self.port.on('update-blocklist', function (domain) {
@@ -27,7 +27,7 @@ self.port.on('update-blocklist-all', function (domains) {
 
 self.port.on('init', function () {
   console.debug('content-script::init()');
-  global.aggregate.emit('load', global.allConnections);
+  //global.aggregate.emit('load', global.allConnections);
 });
 
 self.port.on("updateUIFromMetadata", function (metadata) {
