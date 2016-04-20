@@ -140,8 +140,6 @@
     const db = new DbConnection(profile, dbConnectionConfig);
     const sync = new Synchronizer(db);
 
-    // Clear data recorded today, in order to avoid double records for the same crawler
-    db.clearData({crawlDate: moment().format(Utilities.constants.DATE_FORMAT)});
     db.getFirstParties().then(function (data) {
 
       new Crawler(data.map((record) => record.url), crawlerConfig)

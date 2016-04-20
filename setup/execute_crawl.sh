@@ -7,7 +7,7 @@
 
 project_dir="$( dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 
-step="100"
+step="50"
 TOTAL_WEBSITES="1000"
 
 sample_from="0"
@@ -39,15 +39,24 @@ min() {
 
 open_profiles() {
   for profile in ${profiles[@]}; do
-    (cd "$project_dir/lightbeam"; export DISPLAY=:0; /usr/local/bin/jpm run -b /usr/bin/firefox -p "$profile"&)
+    (cd "$project_dir/lightbeam"; export DISPLAY=:0; /usr/bin/jpm run -b /usr/bin/firefox -p "$profile"&)
   #  /usr/bin/firefox -p "$profile"&
     sleep 2 # Shift in time so that not all DB insertions fall together at the same time
+  done
+}
+
+clear_data() {
+  for profile in ${profiles[@]}; do
+    "/usr/bin/mongo" "myapp_test1" "--eval" "db.data_$profile.remove({crawlDate: \"$(date +"%D")\"})"
   done
 }
 
 echo -e "Kill process executing:\n"\
   "\tkill -9 $$\n"\
   "\tkill all firefox\n"
+
+echo -e "Clearing data recorded today..."
+clear_data >/dev/null
 
 while [ "$sample_from" -le "$((TOTAL_WEBSITES - 1))" ]; do
 
