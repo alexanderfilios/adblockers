@@ -5,10 +5,16 @@
 # Check whether the result is correct by searching for profile.custom_name
 # firefox -p User1 about:config
 
-if [ $# -ne 1 ]; then
-  echo "Only one parameter (username or \"auto\") has to be given!"
+if [ $# -lt 1 ]; then
+  echo "At least one parameter (username or \"auto\") has to be given!"
   exit 1
 fi
+
+# Set default parameters
+sample_from="0"
+sample_until="1000"
+window_open_interval="20000"
+store_data_interval="5000"
 
 # Input
 if [ "$1" == "auto" ]; then
@@ -29,8 +35,27 @@ if [ "$1" == "auto" ]; then
 else
   profiles=("$1")
 fi
+if [ ! -z "$2" ]; then
+  sample_from="$2"
+fi
+if [ ! -z "$3" ]; then
+  sample_until="$3"
+fi
+if [ ! -z "$4" ]; then
+  window_open_interval="$4"
+fi
+if [ ! -z "$5" ]; then
+  store_data_interval="$5"
+fi
 
-USER_AGENT="ozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"
+echo -e "-------------------------------------\n"\
+"Setting profiles with parameters:\n"\
+"\tCrawl range: $sample_from - $sample_until\n"\
+"\tWindow open interval: $window_open_interval\n"\
+"\tStore data interval: $store_data_interval\n"\
+"-------------------------------------\n"
+
+USER_AGENT="Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"
 
 set_config_param() {
   profile="$1"
@@ -52,31 +77,37 @@ set_config_param() {
   fi
 }
 
+create_profile() {
+  profile="$1"
 
-for profile in ${profiles[@]}; do
-  # Create the profile if it does not exist
   if cat ~/.mozilla/firefox/profiles.ini | grep "Name=$profile\$"; then
     echo "Profile '$profile' exists!"
   else
     echo "Creating new profile for $profile..."
     firefox -CreateProfile "$profile"
   fi
+}
+
+for profile in ${profiles[@]}; do
+  # Create the profile if it does not exist
+  create_profile $profile >/dev/null
 
   # Set profile name
-  set_config_param $profile "profile.custom_name" "\"$profile\""
+  set_config_param $profile "profile.custom_name" "\"$profile\"" >/dev/null
   # Set custom DbConnection params (optional)
-  set_config_param $profile "profile.custom_db_connection_config" "\"{}\""
+  set_config_param $profile "profile.custom_db_connection_config" "\"{}\"" >/dev/null
   # Set custom Crawler params (optional)
-  set_config_param $profile "profile.custom_crawler_config" "\"{\\\\\"sampleFrom\\\\\":\\\\\"0\\\\\",\\\\\"windowOpenInterval\\\\\":\\\\\"20000\\\\\"}\""
+  set_config_param $profile "profile.custom_crawler_config" "\"{\\\\\"sampleFrom\\\\\":\\\\\"$sample_from\\\\\",\\\\\"sampleUntil\\\\\":\\\\\"$sample_until\\\\\",\\\\\"windowOpenInterval\\\\\":\\\\\"$window_open_interval\\\\\",\\\\\"storeDataInterval\\\\\":\\\\\"$store_data_interval\\\\\"}\"" >/dev/null
   # Install unsigned XPIs (unpublished lightbeam)
-  set_config_param $profile "xpinstall.signatures.required" "false"
+  set_config_param $profile "xpinstall.signatures.required" "false" >/dev/null
   # Allow popups from add-ons (lightbeam opens popups to crawl them)
-  set_config_param $profile "dom.disable_open_during_load" "false"
+  set_config_param $profile "dom.disable_open_during_load" "false" >/dev/null
 
   # Set mobile user agent
   if [[ $profile == *"MUA" ]]; then
-    set_config_param $profile "general.useragent.override" "\"$USER_AGENT\""
+    set_config_param $profile "general.useragent.override" "\"$USER_AGENT\"" >/dev/null
   fi
 
-  echo "Done!"
 done
+
+echo "Done!"
