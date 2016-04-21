@@ -15,18 +15,18 @@ declare -A xpis=(
 )
 
 declare -A profiles=(
-  ["Ghostery_Default"]="ghostery lightbeam"
-  ["Ghostery_MaxProtection"]="ghostery lightbeam"
-  ["Adblockplus_Default"]="adblockplus lightbeam"
-  ["Adblockplus_MaxProtection"]="adblockplus lightbeam"
-  ["NoAdblocker"]="lightbeam"
-  ["NoAdblocker_DNT"]="lightbeam"
-  ["Ghostery_Default_MUA"]="ghostery lightbeam"
-  ["Ghostery_MaxProtection_MUA"]="ghostery lightbeam"
-  ["Adblockplus_Default_MUA"]="adblockplus lightbeam"
-  ["Adblockplus_MaxProtection_MUA"]="adblockplus lightbeam"
-  ["NoAdblocker_MUA"]="lightbeam"
-  ["NoAdblocker_DNT_MUA"]="lightbeam"
+  ["Ghostery_Default"]="ghostery"
+  ["Ghostery_MaxProtection"]="ghostery"
+  ["Adblockplus_Default"]="adblockplus"
+  ["Adblockplus_MaxProtection"]="adblockplus"
+  ["NoAdblocker"]=""
+  ["NoAdblocker_DNT"]=""
+  ["Ghostery_Default_MUA"]="ghostery"
+  ["Ghostery_MaxProtection_MUA"]="ghostery"
+  ["Adblockplus_Default_MUA"]="adblockplus"
+  ["Adblockplus_MaxProtection_MUA"]="adblockplus"
+  ["NoAdblocker_MUA"]=""
+  ["NoAdblocker_DNT_MUA"]=""
 )
 
 killall firefox
