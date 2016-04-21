@@ -15,6 +15,7 @@ sample_from="0"
 sample_until="1000"
 window_open_interval="20000"
 store_data_interval="5000"
+pref_file="user.js"
 
 # Input
 if [ "$1" == "auto" ]; then
@@ -47,9 +48,12 @@ fi
 if [ ! -z "$5" ]; then
   store_data_interval="$5"
 fi
+if [ ! -z "$6" ]; then
+  pref_file="$6"
+fi
 
 echo -e "-------------------------------------\n"\
-"Setting profiles with parameters:\n"\
+"Setting profiles with parameters for file $pref_file:\n"\
 "\tCrawl range: $sample_from - $sample_until\n"\
 "\tWindow open interval: $window_open_interval\n"\
 "\tStore data interval: $store_data_interval\n"\
@@ -65,7 +69,7 @@ set_config_param() {
 
   # Preferences file
   prefs=$(grep Path ~/.mozilla/firefox/profiles.ini | grep "$profile\$")
-  prefs="$HOME/.mozilla/firefox/${prefs#Path=}/user.js"
+  prefs="$HOME/.mozilla/firefox/${prefs#Path=}/$pref_file"
   if cat $prefs | grep $param_name; then
     # If parameter is already specified, replace it
     echo "Replacing user name config: \"$param_name\" = \"$param_value\"..."

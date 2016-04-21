@@ -71,7 +71,8 @@ while [ "$sample_from" -le "$((TOTAL_WEBSITES - 1))" ]; do
   sleep 60
 
   echo -e "Setting Firefox config params..."
-  "$project_dir/setup/setup_account.sh" "auto" $sample_from $sample_until $window_open_interval $store_data_interval
+  "$project_dir/setup/setup_account.sh" "auto" $sample_from $sample_until $window_open_interval $store_data_interval "user.js"
+  "$project_dir/setup/setup_account.sh" "auto" $sample_from $sample_until $window_open_interval $store_data_interval "prefs.js"
 
   echo -e "Start crawling and waiting..."
   open_profiles >/dev/null
