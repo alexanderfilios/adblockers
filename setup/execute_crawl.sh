@@ -45,18 +45,12 @@ open_profiles() {
   done
 }
 
-clear_data() {
-  for profile in ${profiles[@]}; do
-    "/usr/bin/mongo" "myapp_test1" "--eval" "db.data_$profile.remove({crawlDate: \"$(date +"%D")\"})"
-  done
-}
-
 echo -e "Kill process executing:\n"\
   "\tkill -9 $$\n"\
   "\tkill all firefox\n"
 
 echo -e "Clearing data recorded today..."
-clear_data >/dev/null
+"/usr/bin/mongo" "$project_dir/setup/clear_db.js" >/dev/null
 
 while [ "$sample_from" -le "$((TOTAL_WEBSITES - 1))" ]; do
 
