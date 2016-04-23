@@ -11,6 +11,9 @@ npm-debug.log
 
 /.idea/
 
+/backup/
+
+
 /lightbeam/node_modules
 /lightbeam/*debuglog.txt
 /lightbeam/data/libs/
