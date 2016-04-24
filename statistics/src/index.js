@@ -20,6 +20,7 @@ angular.module('main', [demoModule, menuModule])
   .controller('MainController', ['$scope', function($scope) {
     // Setting a global connection
     $scope.connection = new DbConnection();
+    //$scope.connection._host = '192.33.93.101';
   }]);
 
 angular.bootstrap(document.documentElement, ['main']);

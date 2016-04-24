@@ -31,7 +31,7 @@ export default angular
   .controller('StackedBarController', ['$scope', 'stackedBarService', function($scope, stackedBarService) {
     $scope.data = null;
     $scope.$watch(
-      scope => scope.currentGraphStats && scope.selected === Utilities.constants.menuItems.STACKED_BAR,
+      scope => scope.currentGraphStats,
       loaded => {if (loaded) $scope.data = stackedBarService.getStackedBar($scope.graphStats);}
     );
   }])

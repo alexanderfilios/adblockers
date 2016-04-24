@@ -36,6 +36,7 @@ const GraphStats = function(data, undirected = true) {
       .map(n => [('t.' + n), {f: false}]));
     //graph.add
     graph.addEdgesFrom(jQuery.map(links, (connections, src) => connections.map(dst => ['s.' + src, 't.' + dst])));
+    console.log('Graph object created!');
     return graph;
   };
   self.graph = _getGraphObject(data, true);

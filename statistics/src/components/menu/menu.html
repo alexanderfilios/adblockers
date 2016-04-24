@@ -1,68 +1,55 @@
 <div>
   <nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-    <a class="navbar-brand" href="#">Statistics</a>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Statistics</a>
 
-  </div>
-  <div class="collapse navbar-collapse">
-    <ul class="nav navbar-nav">
-      <li ng-class="selected === menuItems.TABLE ? 'active' : ''">
-        <a href="#" ng-click="selected = menuItems.TABLE">Table</a>
-      </li>
-      <li ng-class="selected === menuItems.BUNDLE ? 'active' : ''">
-        <a href="#" ng-click="selected = menuItems.BUNDLE">Bundle</a>
-      </li>
-      <li ng-class="selected === menuItems.BAR ? 'active' : ''">
-        <a href="#" ng-click="selected = menuItems.BAR">Bar</a>
-      </li>
-      <li ng-class="selected === menuItems.NETWORK ? 'active' : ''">
-        <a href="#" ng-click="selected = menuItems.NETWORK">Network</a>
-      </li>
-      <li ng-class="selected === menuItems.STACKED_BAR ? 'active' : ''">
-        <a href="#" ng-click="selected = menuItems.STACKED_BAR">Stacked Bar</a>
-      </li>
-      <li ng-class="selected === menuItems.LINE_CHART ? 'active' : ''">
-        <a href="#" ng-click="selected = menuItems.LINE_CHART">Line Chart</a>
-      </li>
-    </ul>
-  </div>
-    <div class="datepicker">
-      <label for="date">Choose date:</label>
-      <input type="date" ng-model="date" name="date">
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li ng-repeat="(menuItem, menuKey) in menuItems"
+              ng-class="selected === menuKey ? 'active' : ''">
+            <a href="#" ng-click="select(menuKey)">{{menuItem}}</a>
+          </li>
+        </ul>
+      </div>
     </div>
-</nav>
+  </nav>
 
-<div>
-  <div ng-show="selected === menuItems.BUNDLE">
-    <div ng-controller="EdgeBundlingController">
-      <div edge-bundling=""></div>
+  <div>
+    <div ng-show="selected === menuItems.TABLE">
+      <div ng-controller="TableController">
+        <div my-table=""></div>
+      </div>
     </div>
-  </div>
-  <div ng-show="selected === menuItems.TABLE">
-    <div ng-controller="TableController">
-      <div my-table=""></div>
-    </div>
-  </div>
-  <div ng-show="selected === menuItems.BAR">
-    <div ng-controller="BarController">
-      <div bar=""></div>
-    </div>
-  </div>
-  <div ng-show="selected === menuItems.NETWORK">
-    <div ng-controller="ForceDirectedController">
-      <div force-directed=""></div>
-    </div>
-  </div>
-  <div ng-show="selected === menuItems.STACKED_BAR">
-    <div ng-controller="StackedBarController">
-      <div stacked-bar=""></div>
-    </div>
-  </div>
-  <div ng-show="selected === menuItems.LINE_CHART">
     <div ng-controller="LineChartController">
-      <div line-chart=""></div>
+      <div ng-show="selected === menuItems.FIRST_MEANS"
+           line-chart=""
+           metric={{menuItems.FIRST_MEANS}}></div>
+      <div ng-show="selected === menuItems.THIRD_MEANS"
+           line-chart=""
+           metric={{menuItems.THIRD_MEANS}}></div>
+      <div ng-show="selected === menuItems.FIRST_STDEV"
+           line-chart=""
+           metric={{menuItems.FIRST_STDEV}}></div>
+      <div ng-show="selected === menuItems.THIRD_STDEV"
+           line-chart=""
+           metric={{menuItems.THIRD_STDEV}}></div>
+      <div ng-show="selected === menuItems.DIAMETER"
+           line-chart=""
+           metric={{menuItems.DIAMETER}}></div>
+      <div ng-show="selected === menuItems.DENSITY"
+           line-chart=""
+           metric={{menuItems.DENSITY}}></div>
+      <div ng-show="selected === menuItems.BETWEENNESS_CENTRALITY"
+           line-chart=""
+           metric={{menuItems.BETWEENNESS_CENTRALITY}}></div>
+    </div>
+
+    <div ng-show="selected === menuItems.CALCULATED_DATES">
+      <div ng-controller="CalculationTableController">
+        <div calculation-table=""></div>
+      </div>
     </div>
   </div>
-</div>
 </div>

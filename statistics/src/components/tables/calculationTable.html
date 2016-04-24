@@ -1,0 +1,34 @@
+<table class="table table-hover">
+  <thead>
+  <th>Date</th>
+
+  <th></th>
+  </thead>
+  <tbody>
+  <tr ng-repeat="calculatedDate in calculatedDates">
+    <td>{{calculatedDate.date}}</td>
+
+    <td>
+      <!--<div class="btn-group">-->
+
+      <div style="display: block; clear: both;" class="btn-group" ng-repeat="(instanceName, instanceKey) in instances">
+        <div style="width: 250px;" class="btn {{calculatedDate.isCalculated[instanceKey] ? 'btn-success' : 'btn-danger'}}">{{instanceName}}</div>
+        <button ng-click="calculate(calculatedDate.date, instanceKey)" class="btn btn-primary">
+          Calculate
+        </button>
+        <button ng-click="view(calculatedDate.date, instanceKey)" class="btn btn-info">
+          View
+        </button>
+        <button ng-click="clear(calculatedDate.date, instanceKey)" class="btn btn-warning">
+          Clear
+        </button>
+      </div>
+
+        <!--<button ng-click="view(calculatedDate.date)" class="btn btn-success">View</button>-->
+        <!--<button ng-click="clear(calculatedDate.date)" class="btn btn-danger">Clear</button>-->
+
+      <!--</div>-->
+    </td>
+  </tr>
+  </tbody>
+</table>

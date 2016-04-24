@@ -13,69 +13,87 @@ export default angular
   .module('lineChart', ['ui.bootstrap'])
   .controller('LineChartController', ['$scope', function($scope) {
 
-//$scope.connection.clearStats();
-
     $scope.data = null;
-    $scope.$watch(
-      (scope) => scope.selected === Utilities.constants.menuItems.LINE_CHART,
-      (loaded) => {if (loaded) fetchData();});
-    const fetchData = function() {
-      let dataPerDate = {};
+    $scope.$watch(scope => scope.stats, stats => {
+      if (Array.isArray(stats)) {
+        const statDict = stats.reduce((cum, curr) => {
+          cum[curr.name] = jQuery.extend({}, cum[curr.name]);
+          cum[curr.name][curr.crawlDate] = jQuery.extend({date: curr.crawlDate}, cum[curr.name][curr.crawlDate]);
+          cum[curr.name][curr.crawlDate][curr.instance] = curr.value;
+          return cum;
+        }, {});
 
-      Utilities.executeSerially(
-        [
-          {
-            name: 'first-meansafada',
-            title: 'First mean',
-            calculator: data => new GraphStats(data).getMeanDegree(true)
-          },
-          {
-            name: 'first-stdev',
-            title: 'First std',
-            calculator: data => new GraphStats(data).getStdevDegree(true)
-          },
-          {
-            name: 'third-meansafada',
-            title: 'Third mean',
-            calculator: data => new GraphStats(data).getMeanDegree(false)
-          },
-          {
-            name: 'third-stdev',
-            title: 'Third std',
-            calculator: data => new GraphStats(data).getStdevDegree(false)
-          },
-          {
-            name: 'density',
-            title: 'Density',
-            calculator: data => new GraphStats(data).getDensity()
-          },
-          {
-            name: 'betweenness-centrality3',
-            title: 'Mean betweenness centrality',
-            calculator: data => new GraphStats(data).getMeanBetweennessCentrality()
-          },
-          {
-            name: 'diameter2',
-            title: 'Diameter',
-            calculator: data => new GraphStats(data).getDiameter()
-          }
-        ],
-        (input, output) => output.forEach(dataOfDay => {
-            dataPerDate[dataOfDay.date] = jQuery.extend({date: dataOfDay.date}, dataPerDate[dataOfDay.date]);
-            dataPerDate[dataOfDay.date][input.title] = dataOfDay.value;
-          }),
-        (input) => $scope.connection.findOrCalculateStats(input.name, input.calculator, '03/30/2016', moment(new Date()).format(Utilities.constants.DATE_FORMAT))
-      ).then(() => {
-          //console.log(JSON.stringify(Object.values(dataPerDate));
-          $scope.data = {
-            units: '.',
-            charts: Object.values(dataPerDate)
-              .sort((data1, data2) => new Date(data1.date) - new Date(data2.date))
+        for (const stat in statDict) {
+          statDict[stat] = {
+            units: stat,
+            charts: Object.values(statDict[stat])
+            .sort((o1, o2) => new Date(o1.date) - new Date(o2.date))
           };
+        }
+        $scope.data = statDict;
+      }
 
-          $scope.$apply();
-        });
-    };
+    });
+    //$scope.$watch(
+    //  (scope) => scope.selected === Utilities.constants.menuItems.LINE_CHART,
+    //  (loaded) => {if (loaded) fetchData();});
+    //const fetchData = function() {
+    //  let dataPerDate = {};
+    //
+    //  Utilities.executeSerially(
+    //    [
+    //      {
+    //        name: 'first-meansafada',
+    //        title: 'First mean',
+    //        calculator: data => new GraphStats(data).getMeanDegree(true)
+    //      },
+    //      {
+    //        name: 'first-stdev',
+    //        title: 'First std',
+    //        calculator: data => new GraphStats(data).getStdevDegree(true)
+    //      },
+    //      {
+    //        name: 'third-meansafada',
+    //        title: 'Third mean',
+    //        calculator: data => new GraphStats(data).getMeanDegree(false)
+    //      },
+    //      {
+    //        name: 'third-stdev',
+    //        title: 'Third std',
+    //        calculator: data => new GraphStats(data).getStdevDegree(false)
+    //      },
+    //      {
+    //        name: 'density',
+    //        title: 'Density',
+    //        calculator: data => new GraphStats(data).getDensity()
+    //      },
+    //      {
+    //        name: 'betweenness-centrality3',
+    //        title: 'Mean betweenness centrality',
+    //        calculator: data => new GraphStats(data).getMeanBetweennessCentrality()
+    //      },
+    //      {
+    //        name: 'diameter2',
+    //        title: 'Diameter',
+    //        calculator: data => new GraphStats(data).getDiameter()
+    //      }
+    //    ],
+    //    (input, output) => output.forEach(dataOfDay => {
+    //        dataPerDate[dataOfDay.date] = jQuery.extend({date: dataOfDay.date}, dataPerDate[dataOfDay.date]);
+    //        dataPerDate[dataOfDay.date][input.title] = dataOfDay.value;
+    //      }),
+    //    (input) => $scope.connection.findOrCalculateStats(input.name, input.calculator, '03/30/2016', moment(new Date()).format(Utilities.constants.DATE_FORMAT))
+    //  ).then(() => {
+    //      //console.log(JSON.stringify(Object.values(dataPerDate));
+    //      $scope.data = {
+    //        units: '.',
+    //        charts: Object.values(dataPerDate)
+    //          .sort((data1, data2) => new Date(data1.date) - new Date(data2.date))
+    //      };
+    //
+    //      $scope.$apply();
+    //    });
+    //};
   }])
   .directive('lineChart', function($compile) {
     return {
@@ -85,14 +103,15 @@ export default angular
           // Clear previous data (if existing)
           element.find('svg').remove();
           element.find('div').remove();
-          if (scope.data === null || !Array.isArray(scope.data.charts) || scope.data.charts.length === 0) {
-            // If no data is present, display a message
+
+          if (scope.data === null || !(attrs.metric in scope.data)) {
             var message = d3.select(element[0])
               .append('div')
               .attr('class', 'message')
-              .text('No data for ' + moment(scope.date).format('DD.MM.YYYY'));
+              .text('No data loaded yet');
             return;
           }
+          const data = scope.data[attrs.metric];
 
           var margin = {top: 20, right: 80, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
@@ -133,24 +152,24 @@ export default angular
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          color.domain(d3.keys(scope.data.charts[0]).filter(function (key) {
+          color.domain(d3.keys(data.charts[0]).filter(function (key) {
             return key !== "date";
           }));
 
-          scope.data.charts.forEach(function (d) {
+          data.charts.forEach(function (d) {
             d.date = parseDate(d.date);
           });
 
           var cities = color.domain().map(function (name) {
             return {
               name: name,
-              values: scope.data.charts.map(function (d) {
+              values: data.charts.map(function (d) {
                 return {date: d.date, val: +d[name]};
               })
             };
           });
 
-          x.domain(d3.extent(scope.data.charts, function (d) {
+          x.domain(d3.extent(data.charts, function (d) {
             return d.date;
           }));
 
@@ -180,7 +199,7 @@ export default angular
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(scope.data.units);
+            .text(data.units);
 
           var series = svg.selectAll(".series")
             .data(cities)
