@@ -136,7 +136,8 @@ export default angular
             .orient("left");
 
           var line = d3.svg.line()
-            .interpolate("basis")
+            //.interpolate("basis")
+            .interpolate("cardinal")
             .x(function (d) {
               return x(d.date);
             })
@@ -205,6 +206,40 @@ export default angular
             .data(cities)
             .enter().append("g")
             .attr("class", "series");
+
+
+          // Append points
+          var points = svg.selectAll(".point")
+            .data(cities
+              .map(c => c.values.map(v => {v.name = c.name; return v;}))
+              .reduce((cum, curr) => cum.concat(curr)))
+            .enter().append("svg:circle")
+            .attr("stroke", function(d, i) {return color(d.name);})
+            .attr("fill", function(d, i) { return "black"; })
+            .attr("cx", function(d, i) { return x(d.date) })
+            .attr("cy", function(d, i) { return y(d.val) })
+            .attr("r", function(d, i) { return 3 })
+            .on("mouseover", function(d, i) {
+              jQuery(".dodo[x=\"" + x(d.date) + "\"][y=\"" + y(d.val) + "\"]").show();
+            })
+            .on("mouseout", function(d, i) {
+              jQuery(".dodo[x=\"" + x(d.date) + "\"][y=\"" + y(d.val) + "\"]").hide();
+            });
+            
+           //Append text with values
+          svg.selectAll(".dodo")
+            .data(cities
+              .map(c => c.values)
+              .reduce((cum, curr) => cum.concat(curr)))
+            .enter().append("text")
+            .attr("class", "dodo")
+            .attr("x", function(d) { return x(d.date); })
+            .attr("y", function(d) { return y(d.val); })
+            .attr("dx", ".71em")
+            .attr("dy", "-.7em")
+            .attr("display", "none")
+            .text(function(d) { return d.val.toFixed(3);});
+
 
           series.append("path")
             .attr("class", "line")

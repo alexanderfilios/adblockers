@@ -110,7 +110,7 @@ export default angular
     $scope.date = new Date();
     $scope.graphStats = {};
     $scope.menuItems = Utilities.constants.menuItems;
-    $scope.selected = Utilities.constants.menuItems.CALCULATED_DATES;
+    $scope.selected = Utilities.constants.menuItems.FIRST_MEANS;
 
   }])
   .directive('myMenu', function() {
