@@ -9,7 +9,9 @@
         <ul class="nav navbar-nav">
           <li ng-repeat="(menuItem, menuKey) in menuItems"
               ng-class="selected === menuKey ? 'active' : ''">
-            <a href="#" ng-click="select(menuKey)">{{menuItem}}</a>
+            <a href="#"
+               style="padding: 15px 5px; border-left: solid gray 1px;"
+               ng-click="select(menuKey)"><small>{{menuItem}}</small></a>
           </li>
         </ul>
       </div>

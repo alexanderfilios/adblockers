@@ -14,7 +14,7 @@ export default angular
     this.calculate = function(data, date, instance) {
       const graphStats = new GraphStats(data);
 
-      const stats = [
+      return [
         {
           name: Utilities.constants.menuItems.FIRST_MEANS,
           value: graphStats.getMeanDegree(true),
@@ -58,49 +58,34 @@ export default angular
         //  crawlDate: date
         //}
       ];
-      console.log('Stats calculated');
-      console.log(stats);
-      return stats;
     };
-
-      //data => new GraphStats(data).getMeanDegree(true)
   })
   .controller('CalculationTableController', ['$scope', 'calculationTableService', function($scope, calculationTableService) {
-$scope.instances = Utilities.constants.instances;
-    $scope.connection._insertMultiple = function(data, collection) {
+    $scope.instances = Utilities.constants.instances;
+    $scope.connection._insertMultiple = function (data, collection) {
       return data.reduce((cum, curr) => cum.then(() =>
-        $scope.connection._insert(curr, collection)
+          $scope.connection._insert(curr, collection)
       ), Promise.resolve());
-      //.then(r => Promise.resolve(res.concat(r)))
     };
-    $scope.calculate = function(date, instance) {
-      //Object.values(Utilities.constants.instances).forEach(instance => {
-console.log('calculate for instance: ' + instance);
-        //$scope.connection.clearStats({crawlDate: date})
-        //  .then(() =>
-        $scope.connection._find(instance,
-          {crawlDate: moment(new Date(date)).format(Utilities.constants.DATE_FORMAT)})
-          //)
-          .then(data => Promise.resolve(calculationTableService.calculate(data, date, instance))        )
-          .then((data) => $scope.connection._insertMultiple(data, $scope.connection._statsTable))
-          .then((data) => $scope.connection._find($scope.connection._statsTable))
-          .then((data) => console.log('Completed ' + instance + '!'));
-        //.then((data) => {$scope.stats = data; $scope.$apply();});
-        //});
-      //});
-
+    $scope.calculate = function (date, instance) {
+      console.log('Calculating stats for instance ' + instance + '...');
+      const start = moment();
+      $scope.connection._find(instance,
+        {crawlDate: moment(new Date(date)).format(Utilities.constants.DATE_FORMAT)})
+        //)
+        .then(data => Promise.resolve(calculationTableService.calculate(data, date, instance)))
+        .then((data) => $scope.connection._insertMultiple(data, $scope.connection._statsTable))
+        .then((data) => $scope.connection._find($scope.connection._statsTable))
+        .then((data) => alert('Completed stats calculation of instance ' + instance + ' for ' + date + ' in ' + moment().diff(start, 'seconds') + ' seconds. Reload the page to see the results!'));
     };
-    $scope.clear = function(date, instance) {
+    $scope.clear = function (date, instance) {
       $scope.connection._find($scope.connection._statsTable, {crawlDate: date, instance: instance})
         .then((data) => data
           // For double security, refilter the data
           .filter(d => d.crawlDate === date)
           .filter(d => d.instance === instance)
           .forEach(d => $scope.connection._delete($scope.connection._statsTable, d._id)));
-      //$scope.connection.clearStats({crawlDate: date})
-      //  .then((data) => {$scope.stats = data; $scope.$apply();});
     };
-
   }])
   .directive('calculationTable', function($compile) {
     return {

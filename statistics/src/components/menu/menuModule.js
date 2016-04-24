@@ -25,7 +25,14 @@ Utilities.constants.instances = {
   GHOSTERY_MAXPROTECTION: 'data_Ghostery_MaxProtection',
   ADBLOCKPLUS_MAXPROTECTION: 'data_Adblockplus_MaxProtection',
   NOADBLOCKER: 'data_NoAdblocker',
-  NOADBLOCKER_DNT: 'data_NoAdblocker_DNT'
+  NOADBLOCKER_DNT: 'data_NoAdblocker_DNT',
+
+  GHOSTERY_DEFAULT_MUA: 'data_Ghostery_Default_MUA',
+  ADBLOCKPLUS_DEFAULT_MUA: 'data_Adblockplus_Default_MUA',
+  GHOSTERY_MAXPROTECTION_MUA: 'data_Ghostery_MaxProtection_MUA',
+  ADBLOCKPLUS_MAXPROTECTION_MUA: 'data_Adblockplus_MaxProtection_MUA',
+  NOADBLOCKER_MUA: 'data_NoAdblocker_MUA',
+  NOADBLOCKER_DNT_MUA: 'data_NoAdblocker_DNT_MUA'
 };
 // TODO
 Utilities.constants.menuItems = {
@@ -55,7 +62,6 @@ export default angular
   .controller('DataController', ['$scope', function($scope) {
 
     $scope.calculatedDates = {};
-      //$scope.minDate = moment().
 
     $scope.connection._find($scope.connection._statsTable)
       .then(data => {
@@ -93,10 +99,12 @@ export default angular
 
 
     $scope.activate = (menuItem) => $scope.selected = menuItem;
-
-
-
-    //$scope.$watch(scope => scope.selected, selected => console.log('selected: ' + selected));
+    $scope.select = (menuItem) => $scope.selected = menuItem;
+    $scope.view = function(date, instance) {
+      $scope.date = date;
+      $scope.selected = Utilities.constants.menuItems.TABLE;
+      $scope.instance = instance;
+    };
 
     $scope.instance = Utilities.constants.instances.GHOSTERY_DEFAULT;
     $scope.date = new Date();
@@ -104,29 +112,6 @@ export default angular
     $scope.menuItems = Utilities.constants.menuItems;
     $scope.selected = Utilities.constants.menuItems.CALCULATED_DATES;
 
-    $scope.select = function(menuItem) {
-      $scope.selected = menuItem;
-      //$scope.$apply();
-    };
-    $scope.setDate = function(date) {
-      $scope.date = new Date(date);
-    };
-
-    $scope.view = function(date, instance) {
-      $scope.date = date;
-      $scope.selected = Utilities.constants.menuItems.TABLE;
-      $scope.instance = instance;
-    }
-
-    //$scope.$watch(scope => scope.date || scope.instance,
-    //    date => $scope.connection
-    //    ._find($scope.instance, {crawlDate: moment($scope.date).format(Utilities.constants.DATE_FORMAT)})
-    //    .then(function(data) {
-    //        $scope.graphStats[$scope.instance] = new GraphStats(data);
-    //        $scope.currentGraphStats = $scope.graphStats[$scope.instance];
-    //        $scope.$apply();
-    //    })
-    //);
   }])
   .directive('myMenu', function() {
 

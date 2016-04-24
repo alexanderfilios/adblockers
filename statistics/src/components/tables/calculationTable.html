@@ -11,8 +11,12 @@
     <td>
       <!--<div class="btn-group">-->
 
-      <div style="display: block; clear: both;" class="btn-group" ng-repeat="(instanceName, instanceKey) in instances">
-        <div style="width: 250px;" class="btn {{calculatedDate.isCalculated[instanceKey] ? 'btn-success' : 'btn-danger'}}">{{instanceName}}</div>
+      <div style="width: 45%; display: block; float: left;"
+           class="btn-group"
+           ng-repeat="(instanceName, instanceKey) in instances">
+        <div style="width: 170px;" class="btn {{calculatedDate.isCalculated[instanceKey] ? 'btn-success' : 'btn-danger'}}">
+          <span style="font-size: 10px;">{{instanceName}}</span>
+        </div>
         <button ng-click="calculate(calculatedDate.date, instanceKey)" class="btn btn-primary">
           Calculate
         </button>
@@ -23,11 +27,6 @@
           Clear
         </button>
       </div>
-
-        <!--<button ng-click="view(calculatedDate.date)" class="btn btn-success">View</button>-->
-        <!--<button ng-click="clear(calculatedDate.date)" class="btn btn-danger">Clear</button>-->
-
-      <!--</div>-->
     </td>
   </tr>
   </tbody>
