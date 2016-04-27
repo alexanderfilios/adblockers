@@ -34,66 +34,6 @@ export default angular
       }
 
     });
-    //$scope.$watch(
-    //  (scope) => scope.selected === Utilities.constants.menuItems.LINE_CHART,
-    //  (loaded) => {if (loaded) fetchData();});
-    //const fetchData = function() {
-    //  let dataPerDate = {};
-    //
-    //  Utilities.executeSerially(
-    //    [
-    //      {
-    //        name: 'first-meansafada',
-    //        title: 'First mean',
-    //        calculator: data => new GraphStats(data).getMeanDegree(true)
-    //      },
-    //      {
-    //        name: 'first-stdev',
-    //        title: 'First std',
-    //        calculator: data => new GraphStats(data).getStdevDegree(true)
-    //      },
-    //      {
-    //        name: 'third-meansafada',
-    //        title: 'Third mean',
-    //        calculator: data => new GraphStats(data).getMeanDegree(false)
-    //      },
-    //      {
-    //        name: 'third-stdev',
-    //        title: 'Third std',
-    //        calculator: data => new GraphStats(data).getStdevDegree(false)
-    //      },
-    //      {
-    //        name: 'density',
-    //        title: 'Density',
-    //        calculator: data => new GraphStats(data).getDensity()
-    //      },
-    //      {
-    //        name: 'betweenness-centrality3',
-    //        title: 'Mean betweenness centrality',
-    //        calculator: data => new GraphStats(data).getMeanBetweennessCentrality()
-    //      },
-    //      {
-    //        name: 'diameter2',
-    //        title: 'Diameter',
-    //        calculator: data => new GraphStats(data).getDiameter()
-    //      }
-    //    ],
-    //    (input, output) => output.forEach(dataOfDay => {
-    //        dataPerDate[dataOfDay.date] = jQuery.extend({date: dataOfDay.date}, dataPerDate[dataOfDay.date]);
-    //        dataPerDate[dataOfDay.date][input.title] = dataOfDay.value;
-    //      }),
-    //    (input) => $scope.connection.findOrCalculateStats(input.name, input.calculator, '03/30/2016', moment(new Date()).format(Utilities.constants.DATE_FORMAT))
-    //  ).then(() => {
-    //      //console.log(JSON.stringify(Object.values(dataPerDate));
-    //      $scope.data = {
-    //        units: '.',
-    //        charts: Object.values(dataPerDate)
-    //          .sort((data1, data2) => new Date(data1.date) - new Date(data2.date))
-    //      };
-    //
-    //      $scope.$apply();
-    //    });
-    //};
   }])
   .directive('lineChart', function($compile) {
     return {
@@ -225,7 +165,7 @@ export default angular
             .on("mouseout", function(d, i) {
               jQuery(".dodo[x=\"" + x(d.date) + "\"][y=\"" + y(d.val) + "\"]").hide();
             });
-            
+
            //Append text with values
           svg.selectAll(".dodo")
             .data(cities

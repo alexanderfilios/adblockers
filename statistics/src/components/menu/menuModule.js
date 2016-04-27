@@ -15,6 +15,7 @@ import barModule from '../../components/charts/barModule';
 import forceDirectedModule from '../../components/charts/forceDirectedModule';
 import stackedBarModule from '../../components/charts/stackedBarModule';
 import lineChartModule from '../../components/charts/lineChartModule';
+import mapModule from '../../components/charts/mapModule';
 import {DbConnection} from 'adblocker-utils';
 import GraphStats from '../../GraphStats';
 import jStat from 'jStat';
@@ -44,6 +45,7 @@ Utilities.constants.menuItems = {
   THIRD_STDEV: 'third-stdev',
   //DIAMETER: 'diameter',
   DENSITY: 'density',
+  MAP: 'map'
   //BETWEENNESS_CENTRALITY: 'betweenness-centrality'
 };
 
@@ -54,6 +56,7 @@ export default angular
     barModule,
     stackedBarModule,
     lineChartModule,
+    mapModule,
     calculationTableModule,
   forceDirectedModule])
   .service('statsCalculator', function() {
@@ -110,7 +113,7 @@ export default angular
     $scope.date = new Date();
     $scope.graphStats = {};
     $scope.menuItems = Utilities.constants.menuItems;
-    $scope.selected = Utilities.constants.menuItems.FIRST_MEANS;
+    $scope.selected = Utilities.constants.menuItems.MAP;
 
   }])
   .directive('myMenu', function() {

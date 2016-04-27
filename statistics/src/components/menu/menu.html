@@ -47,6 +47,11 @@
            line-chart=""
            metric={{menuItems.BETWEENNESS_CENTRALITY}}></div>
     </div>
+    <div ng-show="selected === menuItems.MAP">
+      <div ng-controller="MapController">
+        <div map-chart=""></div>
+      </div>
+    </div>
 
     <div ng-show="selected === menuItems.CALCULATED_DATES">
       <div ng-controller="CalculationTableController">
