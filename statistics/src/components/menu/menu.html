@@ -23,7 +23,6 @@
       </div>
     </div>
   </nav>
-
   <div>
     <div ng-show="selected === menuItems.TABLE">
       <div ng-controller="TableController">
@@ -66,6 +65,7 @@
     </div>
 
     <div ng-show="selected === menuItems.CALCULATED_DATES">
+      <a id="download-csv">Download as ZIP</a>
       <div ng-controller="CalculationTableController">
         <div calculation-table=""></div>
       </div>

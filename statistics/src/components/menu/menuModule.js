@@ -7,6 +7,7 @@ import {Utilities} from 'adblocker-utils';
 import jQuery from 'jquery';
 require('angular-ui-bootstrap');
 import moment from 'moment';
+import JSZip from 'jszip';
 
 import tableModule from '../../components/tables/tableModule';
 import calculationTableModule from '../../components/tables/calculationTableModule';
@@ -61,20 +62,71 @@ export default angular
     mapModule,
     calculationTableModule,
   forceDirectedModule])
-  .service('statsCalculator', function() {
+  .service('csvService', function() {
+    const self = this;
+    self.getCsvDataInRange = function(dataDict, dateRange) {
+      const dates = [];
+      for (let d = moment(dateRange.min);
+           !d.isAfter(dateRange.max);
+           d = d.add(1, 'days')) {
+        dates.push(d.format(Utilities.constants.DATE_FORMAT));
+      }
+      const instances = Object.values(Utilities.constants.instances);
 
+      return 'Date,' + instances.join(',') + '\n'
+      + dates.map(date =>
+          date + ',' + instances
+            .map(instance => dataDict[date] && dataDict[date][instance] && dataDict[date][instance].value || '')
+            .join(',')
+      ).join('\n');
+      //Object.values(Utilities.constants.instances)
+      //  .map(v => v.)
+    };
+    self.getAllCsvData = function(data) {
+      const dateRange = data
+        .map(d => new Date(d.crawlDate))
+        .reduce((cum, cur) => ({
+          min: Math.min(cum.min, cur),
+          max: Math.max(cum.max, cur)
+        }), {min: new Date(), max: new Date(0)});
+
+      const dataDict = data
+        .reduce((cum, cur) => {
+          if (!(cur.name in cum)) {
+            cum[cur.name] = {};
+          }
+          if (!(cur.crawlDate in cum[cur.name])) {
+            cum[cur.name][cur.crawlDate] = {};
+          }
+          cum[cur.name][cur.crawlDate][cur.instance] = cur;
+          return cum;
+        }, {});
+
+      return Object.keys(dataDict)
+        .reduce((cum, metric) => {
+          cum.file(metric + '.csv', self.getCsvDataInRange(dataDict[metric], dateRange))
+          return cum;
+        }, new JSZip())
+        .generateAsync({type: 'blob'});
+    };
   })
-  .controller('DataController', ['$scope', function($scope) {
+  .controller('DataController', ['$scope', 'csvService', function($scope, csvService) {
 
+    $scope.filename = 'graphs.zip';
+    $scope.csvData = null;
     $scope.calculatedDates = {};
-
     $scope.connection._find($scope.connection._statsTable)
       .then(data => {
         $scope.stats = data;
-        const minDate = data
+        return csvService.getAllCsvData(data);
+      })
+      .then(csvData => {
+        $scope.csvData = csvData;
+
+        const minDate = $scope.stats
           .map(o => new Date(o.crawlDate))
           .reduce((min, curr) => Math.min(min, curr), new Date('04/15/2016'));
-        const calculatedDates = data
+        const calculatedDates = $scope.stats
           .map(o => ({
             date: moment(new Date(o.crawlDate)).format(Utilities.constants.DATE_FORMAT),
             instance: o.instance
@@ -100,6 +152,7 @@ export default angular
         $scope.$apply();
       });
   }])
+
   .controller('MenuController', ['$scope', function($scope) {
 
 
@@ -116,12 +169,11 @@ export default angular
         });
 
     };
-
     $scope.instance = null;//Utilities.constants.instances.GHOSTERY_DEFAULT;
     $scope.date = new Date();
     $scope.graphStats = {};
     $scope.menuItems = Utilities.constants.menuItems;
-    $scope.selected = Utilities.constants.menuItems.MAP;
+    $scope.selected = Utilities.constants.menuItems.CALCULATED_DATES;
 
   }])
   .filter('formatDate', function() {
@@ -130,7 +182,17 @@ export default angular
   .directive('myMenu', function() {
 
     return {
-      template: require('./menu.html')
+      template: require('./menu.html'),
+      link: function (scope, element, attrs) {
+        scope.$watch('csvData', function() {
+          if (!!scope.csvData) {
+            const button = jQuery(element).find('#download-csv')
+              .attr('class', 'btn btn-default')
+              .attr('href', window.URL.createObjectURL(scope.csvData))
+              .attr('download', scope.filename);
+          }
+        });
+      }
     };
   })
   .name;
