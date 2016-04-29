@@ -28,6 +28,7 @@ const GraphStats = function(data, undirected = true) {
 
   };
   const _getGraphObject = function (data, srcToTgt = true) {
+    console.log('Creating graph object');
     const links = _getGraphLinks(data, srcToTgt);
     const graph = undirected ? new Graph() : new DiGraph();
     graph.addNodesFrom(Object.keys(links).map(n => [('s.' + n), {f: true}]));
@@ -80,6 +81,28 @@ const GraphStats = function(data, undirected = true) {
     Array.from(algorithms.shortestPathLength(self.graph).values())
       .map(node => jStat.max(Array.from(node.values()))))
     : 0;
+};
+
+/*
+ * Utility function to substitute the first party of each request with the actual redirected
+ * When we are redirected by a website, the first party will differ from the newly-redirected website
+ * This newly-redirected website will however be the source for many requests which will be categorized
+ * as third-party requests although they are not. To address this issue, we will substitute the firstParty
+ * with the new address.
+ */
+GraphStats.replaceRedirections = function(requestData, redirectionData) {
+  console.log('Replacing redirections');
+  // Re-format from [{original_url: ..., actual_url: ...}] to {original_url: actual_url}
+  // for faster indexing
+  const redirectionDict = redirectionData
+    .reduce((cum, cur) => {
+      cum[Utilities.parseUri(cur.original_url).host] = Utilities.parseUri(cur.actual_url).host;
+      return cum;
+    }, {});
+
+  // Substitute the original first party with the redirected
+  return requestData.map(req => jQuery.extend(
+      {}, req, {firstParty: redirectionDict[req.firstParty] || req.firstParty}));
 };
 
 export default GraphStats;

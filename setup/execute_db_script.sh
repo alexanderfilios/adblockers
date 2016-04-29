@@ -57,7 +57,7 @@ count_first_parties() {
 }
 
 get_first_parties() {
-  /usr/bin/mongo "myapp_test1" --eval "cursor = db.first_parties.find({}, {'url': 1, '_id': 0}).limit(3); while (cursor.hasNext()) print(cursor.next().url);"
+  /usr/bin/mongo "myapp_test1" --eval "cursor = db.first_parties.find({}, {'url': 1, '_id': 0}); while (cursor.hasNext()) print(cursor.next().url);" | sed 1,2d
 }
 
 get_third_parties() {

@@ -15,6 +15,12 @@
           </li>
         </ul>
       </div>
+      <div class="navbar-header">
+        <ul class="nav">
+          <li><strong>Selected Instance:</strong> {{instance || 'No instance'}}</li>
+          <li><strong>Selected Date:</strong> {{(date | formatDate) || 'No date'}}</li>
+        </ul>
+      </div>
     </div>
   </nav>
 
