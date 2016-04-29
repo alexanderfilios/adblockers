@@ -11,9 +11,11 @@ export default angular
   .module('calculationTable', ['ui.bootstrap'])
   .service('calculationTableService', function() {
 
-    this.calculate = function(data, date, instance) {
+    this.calculate = function(data, redirectionMappingData, date, instance) {
+      if (!!redirectionMappingData && Array.isArray(redirectionMappingData)) {
+        data = GraphStats.replaceRedirections(data, redirectionMappingData);
+      }
       const graphStats = new GraphStats(data);
-
       return [
         {
           name: Utilities.constants.menuItems.FIRST_MEANS,
@@ -70,10 +72,15 @@ export default angular
     $scope.calculate = function (date, instance) {
       console.log('Calculating stats for instance ' + instance + '...');
       const start = moment();
+      let requestData = [];
       $scope.connection._find(instance,
         {crawlDate: moment(new Date(date)).format(Utilities.constants.DATE_FORMAT)})
         //)
-        .then(data => Promise.resolve(calculationTableService.calculate(data, date, instance)))
+        .then(data => {
+          requestData = data;
+          return $scope.connection._find($scope.connection._redirectionMappingTable);
+        })
+        .then(redirectionMappingData => Promise.resolve(calculationTableService.calculate(requestData, redirectionMappingData, date, instance)))
         .then((data) => $scope.connection._insertMultiple(data, $scope.connection._statsTable))
         .then((data) => $scope.connection._find($scope.connection._statsTable))
         .then((data) => alert('Completed stats calculation of instance ' + instance + ' for ' + date + ' in ' + moment().diff(start, 'seconds') + ' seconds. Reload the page to see the results!'));

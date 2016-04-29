@@ -107,15 +107,24 @@ export default angular
       $scope.date = date;
       $scope.selected = Utilities.constants.menuItems.TABLE;
       $scope.instance = instance;
+      $scope.connection._find(instance, {crawlDate: date})
+        .then(data => {
+          $scope.graphStats = new GraphStats(data);
+          $scope.$apply();
+        });
+
     };
 
-    $scope.instance = Utilities.constants.instances.GHOSTERY_DEFAULT;
+    $scope.instance = null;//Utilities.constants.instances.GHOSTERY_DEFAULT;
     $scope.date = new Date();
     $scope.graphStats = {};
     $scope.menuItems = Utilities.constants.menuItems;
     $scope.selected = Utilities.constants.menuItems.MAP;
 
   }])
+  .filter('formatDate', function() {
+    return (date) => moment(date).format(Utilities.constants.DATE_FORMAT);
+  })
   .directive('myMenu', function() {
 
     return {
