@@ -26,3 +26,9 @@ npm-debug.log
 /adblocker-utils/node_modules
 /adblocker-utils/dist
 /adblocker-utils/build
+
+/paper/*.bbl
+/paper/*.pdf
+/paper/*.blg
+/paper/*.log
+/paper/*.aux

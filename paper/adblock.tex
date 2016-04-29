@@ -97,7 +97,7 @@ The more third parties a first party loads, the more likely the user is tracked.
 \paragraph{Degree of third party}
 The more often a third party is accessed over the users' series of websites $S_U$, the less privacy the user experiences from this particular third party. This intuition can be explained as follows. Let's assume that a third party is only loaded once from a first party in the series of websites $S_U$ loaded by $U$. This third party will learn that the user has accessed the respective first party, but has a limited view of the surf behavior of $U$. If the third party, however, is requested in over 80\% of the users' visited websites, the third party is likely to recover 80\% of the users' web behavior.
 
-We capture this privacy notion, by assessing the degree of the third party nodes in the graph $G$ with respect to first parties. 
+We capture this privacy notion, by assessing the degree of the third party nodes in the graph $G$ with respect to first parties.
 Similar to the degree of first parties, we can then evaluate the improvement in the offered privacy of an adblock software.
 
 \paragraph{Graph density}
@@ -130,7 +130,34 @@ Does DNT change something (has been studied before).
 
 \subsection{Experimental setup}
 
-\subsubsection{Lightbeam first party heuristic}
+\subsubsection{Lightbeam first-party heuristics}
+\textbf{Definitions:} The evaluation of the setups examined consists in the comparison of the graphs that correspond to each setup and depict the requests sent by the crawled first parties to third-party websites. In the following, we will use the term \textit{third-party request} (TPR) to denote the requests that are sent to a target domain that differs from the domain initially crawled and corresponds to a graph edge and the term \textit{first-party request} (FPR) for the rest. In this case, the crawled and the target domain will be referred to as \textit{first-party domain} (FPD) and \textit{third-party domain} (TPD) and will correspond to FPD and TPD graph nodes, respectively. Each domain can be represented by at most one FPD and one TPD node.
+
+\textbf{Lightbeam heuristics:} The distinction between FPRs and TPRs is crucial in our attempt to precisely quantify the efficiency of each setup, since they will define the exact topology of the derived request graph. Although Lightbeam already implements an algorithm to decide over the ``first-partyness'' of a request, so as to create this graph, it does not have the exact knowledge of the actual website crawled. To compensate for this lack of information, Lightbeam applies some heuristics in order to estimate which source domain initiated the request, compare it to the already-known target domain of the request and followingly classify it as a FPR or TPR.
+
+By examining the request logs after a complete crawl cycle and comparing the estimated source to the actual crawled domain, two types of false-positive cases (Table \ref{table:false_positive_examples}) are to be pointed out:
+
+\begin{itemize}
+\item \textbf{Unrecognized TPRs:} The request is mistakenly considered to be a FPR according to the Lightbeam heuristics, this way ``hiding'' a TPR edge from the graph.
+\item \textbf{Misclassified TPRs:} The request is correctly found to be a TPR, but not for the correct FPD node, i.e. the one corresponding to the actually crawled domain. The inaccuracy introduced to the graph results from the potential introduction of a bogus FPD node, as well as the false number of TPR edges starting from the correct and the bogus FPD nodes.
+\end{itemize}
+
+As results from the experimental evaluation, the misclassified and unrecognized TPRs make up for approximately 3.5\% and 4.5\% of the total requests, accordingly.
+
+\begin{table}
+\centering
+\small
+\begin{tabular}{|c|c c c|}
+\hline
+& Crawled Domain & Estimated Source & Target \\
+\hline
+Misclassified & wp.pl & facebook.com & fbcdn.net \\
+Unrecognized & wp.pl & facebook.com & facebook.com \\
+\hline
+\end{tabular}
+\label{table:false_positive_examples}
+\caption{Examples of misclassified and unrecognized TPRs}
+\end{table}
 
 \subsection{Blocked pure third parties}
 

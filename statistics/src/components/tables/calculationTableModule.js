@@ -16,7 +16,7 @@ export default angular
         data = GraphStats.replaceRedirections(data, redirectionMappingData);
       }
       const graphStats = new GraphStats(data);
-      
+
       return [
         {
           name: Utilities.constants.menuItems.FIRST_MEANS,
