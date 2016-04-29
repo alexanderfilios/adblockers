@@ -16,6 +16,7 @@ export default angular
         data = GraphStats.replaceRedirections(data, redirectionMappingData);
       }
       const graphStats = new GraphStats(data);
+      
       return [
         {
           name: Utilities.constants.menuItems.FIRST_MEANS,
@@ -47,6 +48,18 @@ export default angular
           instance: instance,
           crawlDate: date
         },
+        {
+          name: Utilities.constants.menuItems.MISCLASSIFIED_REQUESTS,
+          value: graphStats.getMisclassifiedRequests(),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.UNRECOGNIZED_THIRD_PARTY_REQUESTS,
+          value: graphStats.getUnrecognizedThirdPartyRequests(),
+          instance: instance,
+          crawlDate: date
+        }
         //{
         //  name: Utilities.constants.menuItems.BETWEENNESS_CENTRALITY,
         //  value: graphStats.getMeanBetweennessCentrality(),

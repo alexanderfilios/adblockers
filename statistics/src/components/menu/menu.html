@@ -52,6 +52,12 @@
       <div ng-show="selected === menuItems.BETWEENNESS_CENTRALITY"
            line-chart=""
            metric={{menuItems.BETWEENNESS_CENTRALITY}}></div>
+      <div ng-show="selected === menuItems.UNRECOGNIZED_THIRD_PARTY_REQUESTS"
+           line-chart=""
+           metric={{menuItems.UNRECOGNIZED_THIRD_PARTY_REQUESTS}}></div>
+      <div ng-show="selected === menuItems.MISCLASSIFIED_REQUESTS"
+           line-chart=""
+           metric={{menuItems.MISCLASSIFIED_REQUESTS}}></div>
     </div>
     <div ng-show="selected === menuItems.MAP">
       <div ng-controller="MapController">

@@ -45,7 +45,9 @@ Utilities.constants.menuItems = {
   THIRD_STDEV: 'third-stdev',
   //DIAMETER: 'diameter',
   DENSITY: 'density',
-  MAP: 'map'
+  MAP: 'map',
+  UNRECOGNIZED_THIRD_PARTY_REQUESTS: 'unrecognized',
+  MISCLASSIFIED_REQUESTS: 'misclassified'
   //BETWEENNESS_CENTRALITY: 'betweenness-centrality'
 };
 

@@ -55,7 +55,9 @@ const GraphStats = function(data, undirected = true) {
         return cum;
       }, {});
 
-
+  /**
+   * Graph related metrics
+   */
   self.getMeanDegree = (forFirstParties = true) => self.isNotEmpty()
     ? jStat.mean(Object.values(self.getVertexDegrees(forFirstParties)))
     : 0;
@@ -80,6 +82,24 @@ const GraphStats = function(data, undirected = true) {
     ? jStat.max(
     Array.from(algorithms.shortestPathLength(self.graph).values())
       .map(node => jStat.max(Array.from(node.values()))))
+    : 0;
+
+  /**
+   * Request-related metrics
+   */
+  self.getMisclassifiedRequests = () => self.isNotEmpty()
+    ? 100 * self.data
+      .filter(r => Utilities.isTp(r)
+        && !Utilities._urisMatch(r.firstParty, r.source)
+        && !Utilities._urisMatch(r.source, r.target))
+      .length / self.data.length
+    : 0;
+  self.getUnrecognizedThirdPartyRequests = () => self.isNotEmpty()
+    ? 100 * self.data
+      .filter(r => Utilities.isTp(r)
+        && !Utilities._urisMatch(r.firstParty, r.source)
+        && Utilities._urisMatch(r.source, r.target))
+      .length / self.data.length
     : 0;
 };
 
