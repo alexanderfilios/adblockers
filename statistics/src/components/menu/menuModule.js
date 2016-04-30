@@ -39,6 +39,7 @@ Utilities.constants.instances = {
 // TODO
 Utilities.constants.menuItems = {
   TABLE: 'table',
+  MAP: 'map',
   CALCULATED_DATES: 'calculated-dates',
   FIRST_MEANS: 'first-means',
   THIRD_MEANS: 'third-means',
@@ -46,7 +47,6 @@ Utilities.constants.menuItems = {
   THIRD_STDEV: 'third-stdev',
   //DIAMETER: 'diameter',
   DENSITY: 'density',
-  MAP: 'map',
   UNRECOGNIZED_THIRD_PARTY_REQUESTS: 'unrecognized',
   MISCLASSIFIED_REQUESTS: 'misclassified'
   //BETWEENNESS_CENTRALITY: 'betweenness-centrality'
@@ -171,13 +171,18 @@ export default angular
     };
     $scope.instance = null;//Utilities.constants.instances.GHOSTERY_DEFAULT;
     $scope.date = new Date();
-    $scope.graphStats = {};
+    $scope.graphStats = null;
     $scope.menuItems = Utilities.constants.menuItems;
     $scope.selected = Utilities.constants.menuItems.CALCULATED_DATES;
 
   }])
   .filter('formatDate', function() {
-    return (date) => moment(date).format(Utilities.constants.DATE_FORMAT);
+    return (date) => moment(new Date(date)).format(Utilities.constants.DATE_FORMAT);
+  })
+  .filter('formatCase', function() {
+    return (string) => string.split('_')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ');
   })
   .directive('myMenu', function() {
 
@@ -187,7 +192,6 @@ export default angular
         scope.$watch('csvData', function() {
           if (!!scope.csvData) {
             const button = jQuery(element).find('#download-csv')
-              .attr('class', 'btn btn-default')
               .attr('href', window.URL.createObjectURL(scope.csvData))
               .attr('download', scope.filename);
           }
