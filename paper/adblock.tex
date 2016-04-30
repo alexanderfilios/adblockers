@@ -79,6 +79,8 @@ We model the tracking of a user $U$ through third parties as undirected graph $G
 
 We augment \emph{G} by incorporating the logical relationship between third party domains. Two \emph{tp}, belonging to the same logical entity are thus combined into one vertice, resulting in a hierarchical graph. Figure~\ref{fig:graph} visualizes the different components of the build graph. Given \emph{G}, we evaluate the respective privacy provisions based on the following metrics.
 
+{\color{red}Can you please write here how exactly we build the graph? We need to write what fields are there and what these fields are.}
+
 \begin{figure}[htb!]
   \centering
   \includegraphics[width=0.45\textwidth]{figures/graph.eps}
@@ -131,9 +133,11 @@ Does DNT change something (has been studied before).
 \subsection{Experimental setup}
 
 \subsubsection{Lightbeam first-party heuristics}
-\textbf{Definitions:} The evaluation of the setups examined consists in the comparison of the graphs that correspond to each setup and depict the requests sent by the crawled first parties to third-party websites. In the following, we will use the term \textit{third-party request} (TPR) to denote the requests that are sent to a target domain that differs from the domain initially crawled and corresponds to a graph edge and the term \textit{first-party request} (FPR) for the rest. In this case, the crawled and the target domain will be referred to as \textit{first-party domain} (FPD) and \textit{third-party domain} (TPD) and will correspond to FPD and TPD graph nodes, respectively. Each domain can be represented by at most one FPD and one TPD node.
+\textbf{Definitions:} {\color{red}The first sentence is unfortunately not very clear. When you mention a Graph, please refer to a graph G that we defined in Section 3} The evaluation of the setups examined consists in the comparison of the graphs that correspond to each setup and depict the requests sent by the crawled first parties to third-party websites.
 
-\textbf{Lightbeam heuristics:} The distinction between FPRs and TPRs is crucial in our attempt to precisely quantify the efficiency of each setup, since they will define the exact topology of the derived request graph. Although Lightbeam already implements an algorithm to decide over the ``first-partyness'' of a request, so as to create this graph, it does not have the exact knowledge of the actual website crawled. To compensate for this lack of information, Lightbeam applies some heuristics in order to estimate which source domain initiated the request, compare it to the already-known target domain of the request and followingly classify it as a FPR or TPR.
+In the following, we will use the term \textit{third-party request} (TPR) to denote the requests that are sent to a target domain that differs from the domain initially {\color{red}visited}crawled and corresponds to a graph edge {\color{red}split sentence and elaborate what a first-party request is}and the term \textit{first-party request} (FPR) for the rest. In this case{\color{red}in which case?}, the {\color{red}please use visited instead of }crawled and the target domain will be referred to as \textit{first-party domain} (FPD) and \textit{third-party domain} (TPD) and will correspond to FPD and TPD graph nodes, respectively. Each domain can be represented by at most one FPD and one TPD node.
+
+\textbf{Lightbeam heuristics:} {\color{red}Nice start of the sentence!}The distinction between FPRs and TPRs is crucial in our attempt to precisely quantify the efficiency of each setup{\color{red}please define setup before}, since they will define the exact topology of the derived request graph. Although Lightbeam already implements an algorithm to decide over the ``first-partyness'' of a request, so as to create this graph, it does not have the exact knowledge of the actual website {\color{red}visited}crawled. To compensate for this lack of information, Lightbeam applies {\color{red}a few}some heuristics in order to estimate which source domain initiated the request, compares it to the already-known target domain of the request and followingly classifies it as a FPR or TPR.
 
 By examining the request logs after a complete crawl cycle and comparing the estimated source to the actual crawled domain, two types of false-positive cases (Table \ref{table:false_positive_examples}) are to be pointed out:
 
