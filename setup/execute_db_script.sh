@@ -69,7 +69,7 @@ get_third_parties() {
     unique=("${unique[@]}" "${current[@]}")
     unique=($(printf "%s\n" "${unique[@]}" | sort | uniq -c | sort -rnk1 | awk '{ print $2 }'))
   done
-  for third_party in ${unique[@]}; do echo $third_party; done | head -n 40
+  for third_party in ${unique[@]}; do echo $third_party; done
 }
 
 count_third_parties() {
