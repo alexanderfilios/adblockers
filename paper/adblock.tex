@@ -91,9 +91,6 @@ We augment \emph{G} by incorporating the logical relationship between third part
 
 \paragraph{Add metric of how the BL changes (+ or - entries)}
 \paragraph{Randomness of advertisement?}
-\paragraph{Language extensions --> ghostery do we have the international profile?}
-
-Crawl 5 times per day independently to quantify ad variance.
 
 \paragraph{Degree of first party}
 The more third parties a first party loads, the more likely the user is tracked. We therefore assess the number of edges of the first parties, equivalent to the degree of the first party vertices in graph $G$. By comparing the reduction in first parties with and without adblocker, we can objectively compare the improvement in the offered privacy of an adblocker.
@@ -121,12 +118,6 @@ The presented metrics capture the raw third party URLs. Since the URL informatio
 \paragraph{Logical entity}
 Instead of focusing on the URL of a third party, we link the third parties based on their respective owner information. Third parties such as \url{doubleclick.net} and \url{google.com} for example are both owned by the same entity Google Inc. Their collusion therefore seems more likely, and affects the privacy of a web user $U$ more significantly, than if both were belonging to two different logical entities. By incorporating the logical relation among third party domains, we therefore capture a more realistic privacy leakage through user web surf activity.
 
-\paragraph{Cookies}
-Capture if a third party sets a cookie
-
-\paragraph{Active vs. static content}
-Active content is more critical than static
-
 \paragraph{DNT influence}
 Does DNT change something (has been studied before).
 
@@ -134,27 +125,17 @@ Does DNT change something (has been studied before).
 
 \subsection{Experimental setup}
 
-\subsubsection{User profiles}
-In order to compare the efficacy of different adblockers, as well as the influence of different browser settings on their adblocking efficiency, we create 12 user profiles, $U$, each of which will be defined as a combination of the following parameters:
-
-\begin{itemize}
- \item Ad-blocker installed
- \item Blacklists applied (default or maximal protection)
- \item Mobile or Desktop User Agent
- \item Do Not Track (DNT) header enabled
-\end{itemize}
-
 \subsubsection{Lightbeam first-partyness heuristics}
-The distinction between FPRs and TPRs is crucial in our attempt to precisely quantify the ad-blocking efficiency for each user profile $U$, since they will define the exact topology of the derived graph $G$. Although Lightbeam already implements an algorithm to decide over the ``first-partyness'' of a request, so as to create this graph, it does not have the exact knowledge of the actual website visited. To compensate for this lack of information, Lightbeam applies a few heuristics in order to estimate which source domain initiated the request, compares it to the already-known target domain of the request and followingly classifies it as a FPR or TPR.
+The distinction between FPRs and TPRs is crucial in our attempt to precisely quantify the ad-blocking efficiency for each user profile $U$, since they define the exact topology of the derived graph $G$. Although Lightbeam already implements an algorithm to decide over the ``first-partyness'' of a request, so as to create this graph, it does not have the exact knowledge of the actual website visited. To compensate for this lack of information, Lightbeam applies a few heuristics in order to estimate which source domain initiated the request, compares it to the already-known target domain of the request and followingly classifies it as a FPR or TPR.
 
-By examining the request logs after a complete crawl cycle and comparing the estimated source to the actual crawled domain, two types of false-positive cases (Table \ref{table:false_positive_examples}) are to be pointed out:
+By examining the request logs after a complete crawl cycle and comparing the estimated source to the actual crawled domain, two types of false-positive cases (Table \ref{table:false_positive_examples}) arise:
 
 \begin{itemize}
 \item \textbf{Unrecognized TPRs:} The request is mistakenly considered to be a FPR according to the Lightbeam heuristics, this way ``hiding'' a TPR edge from the graph.
 \item \textbf{Misclassified TPRs:} The request is correctly found to be a TPR, but not for the correct FPD node, i.e. the one corresponding to the actually crawled domain. The inaccuracy introduced to the graph results from the potential introduction of a bogus FPD node, as well as the false number of TPR edges starting from the correct and the bogus FPD nodes.
 \end{itemize}
 
-As results from the experimental evaluation, the misclassified and unrecognized TPRs make up for approximately 3.5\% and 4.5\% of the total requests, accordingly.
+As results from the experimental evaluation, the misclassified and unrecognized TPRs make up for approximately 3.5\% and 4.5\% {\color{red}what is the exact value? For how many first parties did we check this. What is the error of unrecognized TPRs, what is the error of misclassified TPRs?}of the total requests, accordingly.
 
 \begin{table}
 \centering
@@ -172,40 +153,57 @@ Unrecognized & wp.pl & facebook.com & facebook.com \\
 \caption{Examples of misclassified and unrecognized TPRs}
 \end{table}
 
-\subsection{Blocked pure third parties}
+\subsubsection{Our crawler}
+\paragraph{User profiles}
+In order to compare the efficacy of different adblockers, as well as the influence of different browser settings on their adblocking efficiency, we create 12 user profiles, $U$, each of which will be defined as a combination of the following parameters{\color{red}Please make a table with all the profiles}:
 
-\paragraph{Degree of first party}
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.45\textwidth]{figures/degree_first_parties.eps}
-  \caption{Degree of first party nodes in the resulting graph of the respective adblock software. Intuitively, in the case of no adblocker, the first party degrees are highest.}\label{fig:degree_first_parties}
-\end{figure}
-\paragraph{Degree of third party}
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.45\textwidth]{figures/degree_third_parties.eps}
-  \caption{Degree of third party nodes in the resulting graph of the respective adblock software. Intuitively, in the case of no adblocker, the third party degrees are highest.}\label{fig:degree_third_parties}
-\end{figure}
-\paragraph{Graph density}
+\begin{itemize}
+ \item Ad-blocker installed
+ \item Blacklists applied (default or maximal protection)
+ \item Mobile or Desktop User Agent
+ \item Do Not Track (DNT) header enabled
+\end{itemize}
 
-\begin{table}[htb!]
-\centering
-\begin{tabular}{l l }
-\toprule
-Adblocker & Graph density\\
-\midrule
-No adblocker & 0.00296\\
-Adblock & 0.00268\\
-Ghostery & 0.00201\\
-\bottomrule
-\end{tabular}
-\caption{Graph density of the respective adblocker. Intuitively, if no adblock software present, the graph density is at it's maximum.}\label{tb:graph_density}
-\end{table}
+\paragraph{Crawled URLs}
 
-\subsection{Blocked logical third parties}
-\subsection{DNT influence}
-See if DNT has an influence on the number of third party changes
-\subsection{Blacklist latency}
+{\color{red}Please describe how our crawler works.}
+
+\subsection{Experimental Results}
+{\color{red}We do have data for 1 week now for all three metrics. Please add this to the paper and describe the experimental results plus plots for this week.}
+\subsubsection{First Party Node Degree}
+\subsubsection{Third Party Node Degree}
+\subsubsection{Graph Density}
+%\paragraph{Degree of first party}
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[width=0.45\textwidth]{figures/degree_first_parties.eps}
+%  \caption{Degree of first party nodes in the resulting graph of the respective adblock software. Intuitively, in the case of no adblocker, the first party degrees are highest.}\label{fig:degree_first_parties}
+%\end{figure}
+%\paragraph{Degree of third party}
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[width=0.45\textwidth]{figures/degree_third_parties.eps}
+%  \caption{Degree of third party nodes in the resulting graph of the respective adblock software. Intuitively, in the case of no adblocker, the third party degrees are highest.}\label{fig:degree_third_parties}
+%\end{figure}
+%\paragraph{Graph density}
+%
+%\begin{table}[htb!]
+%\centering
+%\begin{tabular}{l l }
+%\toprule
+%Adblocker & Graph density\\
+%\midrule
+%No adblocker & 0.00296\\
+%Adblock & 0.00268\\
+%Ghostery & 0.00201\\
+%\bottomrule
+%\end{tabular}
+%\caption{Graph density of the respective adblocker. Intuitively, if no adblock software present, the graph density is at it's maximum.}\label{tb:graph_density}
+%\end{table}
+
+\subsubsection{DNT influence}
+
+\subsubsection{Blacklist latency}
 
 \subsection{Practical considerations}
 \begin{itemize}
@@ -213,6 +211,7 @@ See if DNT has an influence on the number of third party changes
 \end{itemize}
 
 \section{Related work}
+{\color{red}Can you add all papers that we know about and describe each in 2-3 sentences? Here we can make the link with the Lightbeam mistakes.}
 NSDI 2013 Google, alexis
 https://cyberlaw.stanford.edu/files/publication/files/trackingsurvey12.pdf
 Advertisement bidding
