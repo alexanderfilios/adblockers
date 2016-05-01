@@ -75,11 +75,11 @@ The literature employed the number of blacklisted domains as a privacy indicatio
 \section{Privacy metrics} \label{sec:background}
 In this Section we introduce the privacy metrics used in order to quantify the privacy provisions of adblocker.
 
-{\color{blue}We model the tracking of a user $U$ through third parties as undirected graph $G=(E,V)$, where $E$ are edges, and $V$ vertices. A vertice can represent either a first party \emph{fp} (i.e. the URL the user visits) or a third party \emph{tp} (i.e. the URL of a resource that a first party fetches). An edge is built between a \emph{fp} that fetches a \emph{tp}. By visiting a series of websites $S_U = \{w_1, w_2, .. , w_n\}$, the complete tracking graph $G$ becomes apparent.}
+%{\color{blue}We model the tracking of a user $U$ through third parties as undirected graph $G=(E,V)$, where $E$ are edges, and $V$ vertices. A vertice can represent either a first party \emph{fp} (i.e. the URL the user visits) or a third party \emph{tp} (i.e. the URL of a resource that a first party fetches). An edge is built between a \emph{fp} that fetches a \emph{tp}. By visiting a series of websites $S_U = \{w_1, w_2, .. , w_n\}$, the complete tracking graph $G$ becomes apparent.}
 
-{\color{red} We model the tracking of a user $U$ through third parties as undirected graph $G=(E,V)$, where $E$ are edges, and $V$ vertices. A vertex $V_S$ represents a domain and is connected to another vertex $V_T$ through an edge $E$, if and only if at least one request has been sent from $V_S$ to $V_T$. In that case, $V_S$ is the \textit{source} of the request and $V_T$ the \textit{target} of the request.
+We model the tracking of a user $U$ through third parties as undirected graph $G=(E,V)$, where $E$ are edges, and $V$ vertices. A vertex $V_S$ represents a domain and is connected to another vertex $V_T$ through an edge $E$, if and only if at least one request has been sent from $V_S$ to $V_T$. In that case, $V_S$ is the \textit{source} of the request and $V_T$ the \textit{target} of the request.
 
-In the following, we will use the term \textit{third-party request} (TPR) to denote the requests that are sent to a target domain that differs from the source domain and corresponds to a graph edge, $E$. On the contrary, the requests whose source and target coincide will be designated as \textit{first-party requests} (FPR) and will not be taken into consideration for the construction of $G$. The source and the target domain will be referred to as \textit{first-party domain} (FPD) and \textit{third-party domain} (TPD) and will correspond to FPD and TPD graph nodes, respectively.}
+In the following, we will use the term \textit{third-party request} (TPR) to denote the requests that are sent to a target domain that differs from the source domain and corresponds to a graph edge, $E$. On the contrary, the requests whose source and target coincide will be designated as \textit{first-party requests} (FPR) and will not be taken into consideration for the construction of $G$. The source and the target domain will be referred to as \textit{first-party domain} (FPD) and \textit{third-party domain} (TPD) and will correspond to FPD and TPD graph nodes, respectively.
 
 We augment \emph{G} by incorporating the logical relationship between third party domains. Two \emph{tp}, belonging to the same logical entity are thus combined into one vertice, resulting in a hierarchical graph. Figure~\ref{fig:graph} visualizes the different components of the build graph. Given \emph{G}, we evaluate the respective privacy provisions based on the following metrics.
 
@@ -135,7 +135,7 @@ Does DNT change something (has been studied before).
 \subsection{Experimental setup}
 
 \subsubsection{User profiles}
-{\color{red}In order to compare the efficacy of different adblockers, as well as the influence of different browser settings on their adblocking efficiency, we will create 12 user profiles, $U$, each of which will be defined as a combination of the following parameters:
+In order to compare the efficacy of different adblockers, as well as the influence of different browser settings on their adblocking efficiency, we create 12 user profiles, $U$, each of which will be defined as a combination of the following parameters:
 
 \begin{itemize}
  \item Ad-blocker installed
@@ -143,7 +143,7 @@ Does DNT change something (has been studied before).
  \item Mobile or Desktop User Agent
  \item Do Not Track (DNT) header enabled
 \end{itemize}
-}
+
 \subsubsection{Lightbeam first-partyness heuristics}
 The distinction between FPRs and TPRs is crucial in our attempt to precisely quantify the ad-blocking efficiency for each user profile $U$, since they will define the exact topology of the derived graph $G$. Although Lightbeam already implements an algorithm to decide over the ``first-partyness'' of a request, so as to create this graph, it does not have the exact knowledge of the actual website visited. To compensate for this lack of information, Lightbeam applies a few heuristics in order to estimate which source domain initiated the request, compares it to the already-known target domain of the request and followingly classifies it as a FPR or TPR.
 
