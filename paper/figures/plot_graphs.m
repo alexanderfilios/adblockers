@@ -5,9 +5,29 @@ patharray = strsplit(mfilename('fullpath'), '/');
 filepath_data = strcat(strjoin(patharray(1:end-2), '/'), '/figures/data');
 filepath_plots = strcat(strjoin(patharray(1:end-2), '/'), '/figures/plots');
 
-plot_titles = containers.Map({'first-means', 'third-means', 'first-stdev', 'third-stdev', 'density', 'misclassified', 'unrecognized'}, {' First means', 'Third means', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'});
-plot_labels = containers.Map({'first-means', 'third-means', 'first-stdev', 'third-stdev', 'density', 'misclassified', 'unrecognized'}, {' First means', 'Third means', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'});
-plot_colors = containers.Map({'data_Ghostery_Default', 'data_Ghostery_MaxProtection', 'data_Adblockplus_Default', 'data_Adblockplus_MaxProtection', 'data_NoAdblocker', 'data_NoAdblocker_DNT','data_Ghostery_Default_MUA', 'data_Ghostery_MaxProtection_MUA', 'data_Adblockplus_Default_MUA', 'data_Adblockplus_MaxProtection_MUA', 'data_NoAdblocker_MUA', 'data_NoAdblocker_DNT_MUA' }, {rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3), rand(1, 3)});
+red = 'red';        % Ghostery color
+blue = 'blue';      % Adblockplus color
+green = [0 0.8 0];  % No adblocker color
+
+default_width = 1;  % Line width for default settings
+max_width = 2;      % Line width for max protection settings
+
+desktop_style = '-';% Line style for desktop user agent
+mobile_style = '--';% Line style for mobile user agent
+
+metrics = {'first-means', 'third-means', 'first-stdev', 'third-stdev', 'density', 'misclassified', 'unrecognized'};
+titles = {' First means', 'Third means', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'};
+labels = {' First means', 'Third means', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'};
+instances = {'data_Ghostery_Default', 'data_Ghostery_MaxProtection', 'data_Adblockplus_Default', 'data_Adblockplus_MaxProtection', 'data_NoAdblocker', 'data_NoAdblocker_DNT','data_Ghostery_Default_MUA', 'data_Ghostery_MaxProtection_MUA', 'data_Adblockplus_Default_MUA', 'data_Adblockplus_MaxProtection_MUA', 'data_NoAdblocker_MUA', 'data_NoAdblocker_DNT_MUA'};
+colors = {red, red, blue, blue, green, green, red, red, blue, blue, green, green};
+line_widths = {default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width};
+line_styles = {desktop_style, desktop_style, desktop_style, desktop_style, desktop_style, desktop_style, mobile_style, mobile_style, mobile_style, mobile_style, mobile_style, mobile_style};
+
+plot_titles = containers.Map(metrics, titles);
+plot_labels = containers.Map(metrics, labels);
+plot_colors = containers.Map(instances, colors);
+plot_line_widths = containers.Map(instances, line_widths);
+plot_line_styles = containers.Map(instances, line_styles);
 
 for file_data = transpose(dir(strcat([filepath_data '/*.csv'])))
     % Checking one metric, e.g. density.csv
@@ -48,7 +68,10 @@ for file_data = transpose(dir(strcat([filepath_data '/*.csv'])))
     data_size = size(data);
     title(plot_titles(filename_prefix{1}));
     for instance_idx = 2:data_size(2)
-        plot(data(2:end, 1), data(2:end, instance_idx), 'color', plot_colors(header_cells{1}{instance_idx}));
+        plot(data(2:end, 1), data(2:end, instance_idx), ...
+        plot_line_styles(header_cells{1}{instance_idx}), ...
+        'color', plot_colors(header_cells{1}{instance_idx}), ...
+        'LineWidth', plot_line_widths(header_cells{1}{instance_idx}));
     end
     dateaxis('x', 6);
     legends = strrep(header_cells{1}, '_', '\_');
