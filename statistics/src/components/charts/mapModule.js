@@ -25,7 +25,8 @@ export default angular
               console.log('Zero results for address: ' + address);
               resolve(data.results);
             } else {
-              reject();
+              //console.log('Error: ' + data.status);
+              reject(data.status);
             }
           }
         });
@@ -40,9 +41,9 @@ export default angular
      * ]
      * @returns {*}
      */
-    this.getMarkers = function (thirdPartyDetails) {
+    this.getMarkers = function (thirdPartyDetails, connection) {
       return thirdPartyDetails
-        .slice(0, 20)
+        //.slice(0, 500)
         .reduce((cum, cur) => cum.then(data => new Promise(function (resolve) {
           // If location is already calculated, just return it, don't re-calculate it
           if ('location' in cur) {
@@ -71,12 +72,16 @@ export default angular
 
                 const copiedObject = jQuery.extend({}, cur, {location: match});
                 delete copiedObject._id;
-                $scope.connection
-                  ._update($scope.connection._thirdPartyDetailsTable, cur._id, copiedObject);
+                connection
+                  ._update(connection._thirdPartyDetailsTable, cur._id, copiedObject);
 
                 // The _id is not included, but we will get rid of it anyway
                 resolve(data.concat(copiedObject));
-              });
+              },
+            errorStatus => {
+              console.log('Error occurred: ' + errorStatus);
+              resolve(data);
+            });
           }
 
         })), Promise.resolve([]))
@@ -105,7 +110,7 @@ export default angular
   .controller('MapController', ['$scope', 'mapService', function($scope, mapService) {
     $scope.markers = [];
     $scope.connection._find('third_party_details')
-      .then(data => mapService.getMarkers(data))
+      .then(data => mapService.getMarkers(data, $scope.connection))
       .then(markers => {
         console.log(markers);
         $scope.markers = markers;
