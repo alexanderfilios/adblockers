@@ -169,7 +169,7 @@ export default angular
            //Append text with values
           svg.selectAll(".dodo")
             .data(cities
-              .map(c => c.values)
+              .map(c => c.values.map(v => {v.name = c.name; return v;}))
               .reduce((cum, curr) => cum.concat(curr)))
             .enter().append("text")
             .attr("class", "dodo")
@@ -178,7 +178,7 @@ export default angular
             .attr("dx", ".71em")
             .attr("dy", "-.7em")
             .attr("display", "none")
-            .text(function(d) { return d.val.toFixed(3);});
+            .text(function(d) { return d.val.toFixed(3) + ' - ' + d.name;});
 
 
           series.append("path")

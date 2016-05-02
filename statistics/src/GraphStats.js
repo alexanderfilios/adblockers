@@ -90,14 +90,14 @@ const GraphStats = function(data, undirected = true) {
   self.getMisclassifiedRequests = () => self.isNotEmpty()
     ? 100 * self.data
       .filter(r => Utilities.isTp(r)
-        && !Utilities._urisMatch(r.firstParty, r.source)
+        && !Utilities._urisMatch(r.heuristics.browserUri, r.source)
         && !Utilities._urisMatch(r.source, r.target))
       .length / self.data.length
     : 0;
   self.getUnrecognizedThirdPartyRequests = () => self.isNotEmpty()
     ? 100 * self.data
       .filter(r => Utilities.isTp(r)
-        && !Utilities._urisMatch(r.firstParty, r.source)
+        && !Utilities._urisMatch(r.heuristics.browserUri, r.source)
         && Utilities._urisMatch(r.source, r.target))
       .length / self.data.length
     : 0;
