@@ -6,10 +6,15 @@
   </thead>
   <tbody>
   <tr ng-repeat="calculatedDate in calculatedDates">
-    <td>{{calculatedDate.date}}</td>
+    <td>
+      <div>{{calculatedDate.date}}</div>
+      <div class="btn btn-default" ng-click="calculateAll(calculatedDate.date)">Calculate all</div>
+      <div class="btn btn-default" ng-click="clearAll(calculatedDate.date)">Delete all</div>
+    </td>
 
     <td>
       <!--<div class="btn-group">-->
+
 
       <div style="width: 45%; display: block; float: left;"
            class="btn-group"

@@ -8,7 +8,8 @@ import {algorithms, functions, Graph, DiGraph} from 'jsnetworkx';
 
 const GraphStats = function(data, undirected = true) {
   const self = this;
-  self.data = data;
+  self.data = data
+    //.map(row => {row.firstParty = row.heuristics.browserUri; return row;});
 
   const _getGraphLinks = function (data, srcToTgt = true) {
     const links = data

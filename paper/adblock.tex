@@ -135,11 +135,14 @@ By examining the request logs after a complete crawl cycle and comparing the est
 \item \textbf{Misclassified TPRs:} The request is correctly found to be a TPR, but not for the correct FPD node, i.e. the one corresponding to the actually crawled domain. The inaccuracy introduced to the graph results from the potential introduction of a bogus FPD node, as well as the false number of TPR edges starting from the correct and the bogus FPD nodes.
 \end{itemize}
 
-As results from the experimental evaluation, the misclassified and unrecognized TPRs make up for approximately 3.5\% and 4.5\% {\color{red}what is the exact value? For how many first parties did we check this. What is the error of unrecognized TPRs, what is the error of misclassified TPRs?}of the total requests, accordingly.
+{\color{red}what is the exact value? For how many first parties did we check this. What is the error of unrecognized TPRs, what is the error of misclassified TPRs?}
+{\color{blue}
+As results from the experimental evaluation on the data of one full crawl cycle (1000 visited first parties) and 12 different user profiles, the misclassified and unrecognized TPRs make up for 2.0\%-12.0\% and 4.0\%-11.0\% of the total requests, accordingly. The percentages differ for the various user profiles examined.}
 
 \begin{table}
 \centering
 \small
+\label{table:false_positive_examples}
 \begin{tabular}{|c|c c c|}
 \hline
 & Visited Domain & Estimated Source & Target \\
@@ -149,30 +152,100 @@ Misclassified & wp.pl & facebook.com & fbcdn.net \\
 Unrecognized & wp.pl & facebook.com & facebook.com \\
 \hline
 \end{tabular}
-\label{table:false_positive_examples}
 \caption{Examples of misclassified and unrecognized TPRs}
 \end{table}
 
 \subsubsection{Our crawler}
 \paragraph{User profiles}
-In order to compare the efficacy of different adblockers, as well as the influence of different browser settings on their adblocking efficiency, we create 12 user profiles, $U$, each of which will be defined as a combination of the following parameters{\color{red}Please make a table with all the profiles}:
+In order to compare the efficacy of different adblockers, as well as the influence of different browser settings on their adblocking efficiency, we create 12 user profiles, $U$, each of which will be defined as a combination of the following parameters (Table \ref{table:user_profiles}){\color{red}Please make a table with all the profiles}:
 
 \begin{itemize}
  \item Ad-blocker installed
- \item Blacklists applied (default or maximal protection)
+ \item Block policy: The blacklists applied or the list of blocked trackers is set to its default state or set so as to provide a maximal protection
  \item Mobile or Desktop User Agent
  \item Do Not Track (DNT) header enabled
 \end{itemize}
 
-\paragraph{Crawled URLs}
+\begin{table}
+\newcommand\solidthinrule[1][.5cm]{\rule[0.5ex]{#1}{.4pt}}
+\newcommand\solidthickrule[1][.5cm]{\rule[0.5ex]{#1}{1.5pt}}
+\newcommand\dashedthinrule{\mbox{%
+  \solidthinrule[1mm]\hspace{1mm}\solidthinrule[1mm]\hspace{1mm}\solidthinrule[1mm]}}
+\newcommand\dashedthickrule{\mbox{%
+  \solidthickrule[1mm]\hspace{1mm}\solidthickrule[1mm]\hspace{1mm}\solidthickrule[1mm]}}
+  
+\centering
+\tiny
+\label{table:user_profiles}
+\begin{tabular}{|c|c c c c c|}
+\hline
+User Profile & Adblocker & Block Policy & DNT & User Agent & Legend \\
+\hline
+Ghostery\_Default & Ghostery & Default & No & Desktop  & {\color{red}\solidthinrule} \\
+Ghostery\_MaxProtection & Ghostery & Max & No & Desktop & {\color{red}\solidthickrule} \\
+Adblockplus\_Default & AdblockPlus & Default & No & Desktop & {\color{blue}\solidthinrule} \\
+Adblockplus\_MaxProtection & AdblockPlus & Max & No & Desktop & {\color{blue}\solidthickrule} \\
+NoAdblocker & None & - & No & Desktop & {\color{red}\solidthinrule} \\
+NoAdblocker\_DNT & None & - & Yes & Desktop & {\color{green}\solidthickrule} \\
+Ghostery\_Default\_MUA & Ghostery & Default & No & Mobile & {\color{green}\dashedthinrule} \\
+Ghostery\_MaxProtection\_MUA & Ghostery & Max & No & Mobile & {\color{red}\dashedthickrule} \\
+Adblockplus\_Default\_MUA & AdblockPlus & Default & No & Mobile & {\color{blue}\dashedthinrule} \\
+Adblockplus\_MaxProtection\_MUA & AdblockPlus & Max & No & Mobile & {\color{blue}\dashedthickrule} \\
+NoAdblocker\_MUA & None & - & No & Mobile & {\color{green}\dashedthinrule} \\
+NoAdblocker\_DNT\_MUA & None & - & Yes & Mobile & {\color{green}\dashedthickrule} \\
+\hline
+\end{tabular}
+\caption{Overview of user profiles examined}
+\end{table}
 
+\paragraph{Crawled URLs}
 {\color{red}Please describe how our crawler works.}
+{\color{blue}
+An appropriate criterion for the evaluation of an adblocker is its performance in the most frequent case. Consequently, it would be plausible to test its efficiency for the \textit{500 domains with the highest incoming web traffic}. Nonetheless, considering only the top-visited domains in our evaluation would imply the risk of favoring an adblocker optimized to perform better for a certain group of websites, eventually biasing our experimental results. An appropriate countermeasure would hence be to extend our URL sample set with another \textit{500 randomly chosen domains} among the top 1 million most-visited domains. The sample set $W$ of 1000 URLs is extracted with the use of the Alexa Traffic Rank will as a reference point and is stored and kept unchanged throughout the whole evaluation period.
+
+Since nowadays most of the web applications are based on asynchronous calls to fetch their data, waiting for the DOM to fully render will in many cases load only a part of their content. Therefore, to better simulate the common user browsing behavior, the crawler will wait 20 seconds on each website of our sample set $W$ and record any requests sent, before closing it and proceeding to the next domain. Additionally, to achieve independency from any heuristics in our attempt to determine the source of a request, we augment the request data provided by \textit{Lightbeam} with the actual knowledge of the currently visited first-party.
+
+Last but not least, in order to decorrelate the experiment conditions from the influence of any time- or location-related effects --i.e. variations of the served content, locale-based personalization-- all user profiles $U$ will execute the same crawling routine simultaneously, whilst running on the same machine, thus behind the same IP address.
+}
 
 \subsection{Experimental Results}
-{\color{red}We do have data for 1 week now for all three metrics. Please add this to the paper and describe the experimental results plus plots for this week.}
+{\color{blue} For a more effective overview of the experimental results for each user profile $U$, the following conventions are used:
+\begin{itemize}
+ \item The \textit{color} denotes the adblocker installed.
+ \item The \textit{line width} indicates the protection degree --i.e. default settings as opposed to the maximal protection achieved through the use of more blacklists or the DNT header.
+ \item Profiles with mobile agent are plotted in \textit{dashed lines}.
+\end{itemize}
+
+
+}
+
 \subsubsection{First Party Node Degree}
+
+\begin{figure}
+  \centering
+  \label{fig:first_means}
+  \includegraphics[width=0.45\textwidth]{figures/plots/first-means.eps}
+  \caption{Mean value of the degree of the first-party nodes, $V_S$ over time for each user profile $U$}
+\end{figure}
+
 \subsubsection{Third Party Node Degree}
+
+\begin{figure}
+  \centering
+  \label{fig:third_means}
+  \includegraphics[width=0.45\textwidth]{figures/plots/third-means.eps}
+  \caption{Mean value of the degree of the third-party nodes, $V_T$ over time for each user profile $U$}
+\end{figure}
+
 \subsubsection{Graph Density}
+
+\begin{figure}
+  \centering
+  \label{fig:density}
+  \includegraphics[width=0.45\textwidth]{figures/plots/density.eps}
+  \caption{Density of graph $G$ over time for each user profile $U$}
+\end{figure}
+
 %\paragraph{Degree of first party}
 %\begin{figure}[h]
 %  \centering

@@ -165,6 +165,9 @@ export default angular
       $scope.connection._find(instance, {crawlDate: date})
         .then(data => {
           $scope.graphStats = new GraphStats(data);
+          window.graphStats = $scope.graphStats;
+          window.from = Array.from;
+          window.Utilities = Utilities;
           $scope.$apply();
         });
 
