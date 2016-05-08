@@ -18,7 +18,7 @@ mobile_style = '--';% Line style for mobile user agent
 metrics = {'first-means', 'third-means', 'first-stdev', 'third-stdev', 'density', 'misclassified', 'unrecognized'};
 titles = {' First means', 'First means', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'};
 labels = {' Mean node degree', 'Mean node degree', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'};
-instances = {'data_Ghostery_Default', 'data_Ghostery_MaxProtection', 'data_Adblockplus_Default', 'data_Adblockplus_MaxProtection', 'data_NoAdblocker', 'data_NoAdblocker_DNT','data_Ghostery_Default_MUA', 'data_Ghostery_MaxProtection_MUA', 'data_Adblockplus_Default_MUA', 'data_Adblockplus_MaxProtection_MUA', 'data_NoAdblocker_MUA', 'data_NoAdblocker_DNT_MUA'};
+instances = {'data_Ghostery_Default', 'data_Ghostery_MaxProtection', 'data_Adblockplus_Default', 'data_Adblockplus_MaxProtection', 'data_NoAdblocker', 'data_NoAdblocker_DNT','data_Ghostery_Default_MUA', 'data_Ghostery_MaxProtection_MUA', 'data_Adblockplus_MaxProtection_MUA', 'data_Adblockplus_Default_MUA', 'data_NoAdblocker_MUA', 'data_NoAdblocker_DNT_MUA'};
 colors = {red, red, blue, blue, green, green, red, red, blue, blue, green, green};
 line_widths = {default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width};
 line_styles = {desktop_style, desktop_style, desktop_style, desktop_style, desktop_style, desktop_style, mobile_style, mobile_style, mobile_style, mobile_style, mobile_style, mobile_style};
@@ -75,7 +75,7 @@ for file_data = transpose(dir(strcat([filepath_data '/*.csv'])))
     end
     dateaxis('x', 6);
     legends = strrep(header_cells{1}, '_', '\_');
-%     legend(legends{2:end});
+%      legend(legends{2:end});
     hold off;
     xlabel('Date');
     ylabel(plot_labels(filename_prefix{1}));

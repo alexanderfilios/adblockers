@@ -32,7 +32,7 @@ npm-debug.log
 /paper/*.blg
 /paper/*.log
 /paper/*.aux
+/paper/*.dvi
 /paper/figures/data/*
-/paper/figures/plots/*
 /paper/figures/*.m~
 /paper/*.backup
