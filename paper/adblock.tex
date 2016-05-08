@@ -17,7 +17,7 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 
-\usepackage{subfig}
+\usepackage{subcaption}
 
 \newcommand{\nn}{\nonumber}
 \newcommand{\set}[1]{\mathcal{#1}}        			% Set
@@ -190,9 +190,6 @@ Last but not least, in order to decouple the experiment conditions from the infl
 The plot legends for each user profile $U$ are listed in more detail in Table \ref{table:user_profiles}.
 }
 
-\afterpage{
-
-  \begin{table}
   % Defining dash lines
   \newcommand\solidthinrule[1][.5cm]{\rule[0.5ex]{#1}{.4pt}}
   \newcommand\solidthickrule[1][.5cm]{\rule[0.5ex]{#1}{1.5pt}}
@@ -201,6 +198,9 @@ The plot legends for each user profile $U$ are listed in more detail in Table \r
   \newcommand\dashedthickrule{\mbox{%
     \solidthickrule[1mm]\hspace{1mm}\solidthickrule[1mm]\hspace{1mm}\solidthickrule[1mm]}}
   \definecolor{darkgreen}{rgb}{0, 0.8, 0}
+
+  \begin{table}
+
     
   \centering
   \tiny
@@ -229,26 +229,24 @@ The plot legends for each user profile $U$ are listed in more detail in Table \r
   \begin{figure}
    \centering
    
-   \subfigure{
-    \includegraphics[width=0.45\textwidth]{figures/plots/first-means.eps}
+   \begin{subfigure}{.45\textwidth}
+    \includegraphics[width=\textwidth]{figures/plots/first-means.eps}
     \caption{Mean value of the degree of the first-party nodes, $V_S$ over time for each user profile $U$}
     \label{fig:first_means}
-  }
-  \subfigure{
-    \includegraphics[width=0.45\textwidth]{figures/plots/third-means.eps}
+  \end{subfigure}
+  
+  \begin{subfigure}{.45\textwidth}
+    \includegraphics[width=\textwidth]{figures/plots/third-means.eps}
     \caption{Mean value of the degree of the third-party nodes, $V_T$ over time for each user profile $U$}
     \label{fig:third_means}
-  }
+  \end{subfigure}
 
-  \subfigure{
-    \includegraphics[width=0.45\textwidth]{figures/plots/density.eps}
+  \begin{subfigure}{.45\textwidth}
+    \includegraphics[width=\textwidth]{figures/plots/density.eps}
     \caption{Density of graph $G$ over time for each user profile $U$}
     \label{fig:density}
-  }
+  \end{subfigure}
   \end{figure}
-
-  
-}
 
 \subsubsection{First Party Node Degree}
 {\color{blue}As depicted in Figure \ref{fig:first_means}, the user profiles \textit{Ghostery\_Default} and \textit{NoAdblocker} have the worst performance, since the first parties they visit load the highest mean number of third parties. Although we would expect that the use of an adblocker, such as Ghostery, should provide us with better results, a closer look at its initial settings show that the adblocker functions as a third-party tracker that does not block any third parties by default, unless configured appropriately. The metric has a consistently but only slightly lower value for the profile \textit{NoAdblocker\_DNT}.
