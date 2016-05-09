@@ -27,12 +27,24 @@
       </div>
     </div>
     <div ng-controller="LineChartController">
-      <div ng-show="selected === menuItems.FIRST_MEANS"
+      <div ng-show="selected === menuItems.TOP_1000_FIRST_DEGREE"
            line-chart=""
-           metric={{menuItems.FIRST_MEANS}}></div>
-      <div ng-show="selected === menuItems.THIRD_MEANS"
+           metric={{menuItems.TOP_1000_FIRST_DEGREE}}></div>
+      <div ng-show="selected === menuItems.TOP_1000_THIRD_DEGREE"
            line-chart=""
-           metric={{menuItems.THIRD_MEANS}}></div>
+           metric={{menuItems.TOP_1000_THIRD_DEGREE}}></div>
+      <div ng-show="selected === menuItems.TOP_10_FIRST_DEGREE"
+           line-chart=""
+           metric={{menuItems.TOP_10_FIRST_DEGREE}}></div>
+      <div ng-show="selected === menuItems.TOP_10_THIRD_DEGREE"
+           line-chart=""
+           metric={{menuItems.TOP_10_THIRD_DEGREE}}></div>
+      <div ng-show="selected === menuItems.TOP_1_FIRST_DEGREE"
+           line-chart=""
+           metric={{menuItems.TOP_1_FIRST_DEGREE}}></div>
+      <div ng-show="selected === menuItems.TOP_1_THIRD_DEGREE"
+           line-chart=""
+           metric={{menuItems.TOP_1_THIRD_DEGREE}}></div>
       <div ng-show="selected === menuItems.FIRST_STDEV"
            line-chart=""
            metric={{menuItems.FIRST_STDEV}}></div>
@@ -48,12 +60,41 @@
       <div ng-show="selected === menuItems.BETWEENNESS_CENTRALITY"
            line-chart=""
            metric={{menuItems.BETWEENNESS_CENTRALITY}}></div>
+
       <div ng-show="selected === menuItems.UNRECOGNIZED_THIRD_PARTY_REQUESTS"
            line-chart=""
            metric={{menuItems.UNRECOGNIZED_THIRD_PARTY_REQUESTS}}></div>
       <div ng-show="selected === menuItems.MISCLASSIFIED_REQUESTS"
            line-chart=""
            metric={{menuItems.MISCLASSIFIED_REQUESTS}}></div>
+
+      <div ng-show="selected === menuItems.DENSITY_ENTITIES"
+           line-chart=""
+           metric={{menuItems.DENSITY_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.TOP_1000_FIRST_DEGREE_ENTITIES"
+           line-chart=""
+           metric={{menuItems.TOP_1000_FIRST_DEGREE_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.TOP_1000_THIRD_DEGREE_ENTITIES"
+           line-chart=""
+           metric={{menuItems.TOP_1000_THIRD_DEGREE_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.TOP_10_FIRST_DEGREE_ENTITIES"
+           line-chart=""
+           metric={{menuItems.TOP_10_FIRST_DEGREE_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.TOP_10_THIRD_DEGREE_ENTITIES"
+           line-chart=""
+           metric={{menuItems.TOP_10_THIRD_DEGREE_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.TOP_1_FIRST_DEGREE_ENTITIES"
+           line-chart=""
+           metric={{menuItems.TOP_1_FIRST_DEGREE_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.TOP_1_THIRD_DEGREE_ENTITIES"
+           line-chart=""
+           metric={{menuItems.TOP_1_THIRD_DEGREE_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.FIRST_STDEV_ENTITIES"
+           line-chart=""
+           metric={{menuItems.FIRST_STDEV_ENTITIES}}></div>
+      <div ng-show="selected === menuItems.THIRD_STDEV_ENTITIES"
+           line-chart=""
+           metric={{menuItems.THIRD_STDEV_ENTITIES}}></div>
     </div>
     <div ng-show="selected === menuItems.MAP">
       <div ng-controller="MapController">

@@ -27,7 +27,7 @@ export default angular
           description: 'First means',
           value: stats
             .filter(s => s.crawlDate === moment(new Date(date)).format(Utilities.constants.DATE_FORMAT))
-            .filter(s => s.name === Utilities.constants.menuItems.FIRST_MEANS)
+            .filter(s => s.name === Utilities.constants.menuItems.TOP_1000_FIRST_DEGREE)
             .filter(s => s.instance === instance)
             .map(s => s.value)
         },
@@ -35,7 +35,7 @@ export default angular
           description: 'Third means',
           value: stats
             .filter(s => s.crawlDate === moment(new Date(date)).format(Utilities.constants.DATE_FORMAT))
-            .filter(s => s.name === Utilities.constants.menuItems.THIRD_MEANS)
+            .filter(s => s.name === Utilities.constants.menuItems.TOP_1000_THIRD_DEGREE)
             .filter(s => s.instance === instance)
             .map(s => s.value)
         },

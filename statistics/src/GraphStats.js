@@ -6,8 +6,9 @@ import {Utilities} from 'adblocker-utils';
 import {jStat} from 'jStat';
 import {algorithms, functions, Graph, DiGraph} from 'jsnetworkx';
 
-const GraphStats = function(data, undirected = true) {
+const GraphStats = function(data, entityDetails, undirected = true) {
   const self = this;
+  self.entityDetails = entityDetails;
   self.data = data
     //.map(row => {row.firstParty = row.heuristics.browserUri; return row;});
 
@@ -41,47 +42,100 @@ const GraphStats = function(data, undirected = true) {
     console.log('Graph object created!');
     return graph;
   };
-  self.graph = _getGraphObject(data, true);
+  self.graph = null;
+  self.entityGraph = null;
 
-  self.getLinks = (forFirstParties = true) => Array.from(self.graph.edges())
-    .filter(e => e[0].startsWith(forFirstParties ? 's.' : 't.'))
+  const _getEntityGraphObject = (entityDetails) => {
+    const entityMapping = entityDetails
+      .reduce((cum, cur) => {
+        cum[cur.domain] = cur.admin_org || cur.tech_org || cur.regis_org;
+        return cum;}, {});
+    const entityEdges = Array.from(self.getGraph().edges())
+      .map(e => [e[0], entityMapping[e[1].replace(/^t\./, '')] || e[1]]);
+    const entityNodes = entityEdges.reduce((cum, cur) => cum.concat(cur), []);
+    const entityGraph = undirected ? new Graph() : new DiGraph();
+    entityGraph.addNodesFrom(entityNodes);
+    entityGraph.addEdgesFrom(entityEdges);
+    return entityGraph;
+  };
+
+  self.getLinks = (forFirstParties = true, forEntities = false) => Array
+    .from(self.getGraph(forEntities).edges())
+    .filter(e => (forFirstParties && e[0].startsWith('s.')) || (!forFirstParties && !e[0].startsWith('s.')))
     .map(e => ({source: e[0], target: e[1]}));
 
-  self.isNotEmpty = () => Array.isArray(data) && data.length > 0;
-  self.getVertexDegrees = (forFirstParties = true) =>
-    Array.from(self.graph.degree(Array.from(self.graph.nodesIter()), false))
-      .filter(node => node[0].startsWith(forFirstParties ? 's.' : 't.'))
+  self.isNotEmpty = (forEntities = false) => self.getGraph(forEntities) !== null;
+  self.getVertexDegrees = (forFirstParties = true, forEntities = false) =>
+    Array.from(self.getGraph(forEntities)
+      .degree(Array.from(self.getGraph(forEntities).nodesIter()), false))
+      .filter(node => ((forFirstParties && node[0].startsWith('s.')) || !forFirstParties && !node[0].startsWith('t.')))
       .reduce((cum, curr) => {
         cum[curr[0]] = curr[1];
         return cum;
       }, {});
 
+  const _getTopValues = (nodes, n) =>
+    nodes.reduce((cum, cur) => {
+      if (cum.length < n) {
+        return cum.concat(cur);
+      } else {
+        // Find the minimum element in the array so far
+        const minIndex = cum
+          .map((val, idx) => ({val: val, idx: idx}))
+          .reduce((cumMin, current) =>
+            (cumMin.val < current.val) ? cumMin : current, {val: +Infinity, idx: -1})
+          .idx;
+        // If the min is less than the current, then replace it
+        cum[minIndex] = Math.max(cum[minIndex], cur);
+        return cum;
+      }
+    }, []);
+
+  self.getGraph = function(forEntities = false) {
+    // The graph must be in any case calculated
+    if (!self.graph && Array.isArray(self.data)) {
+      self.graph = _getGraphObject(data);
+    }
+
+    if (forEntities) {
+      if (!self.entityGraph && Array.isArray(self.entityDetails)) {
+        self.entityGraph = _getEntityGraphObject(self.entityDetails)
+      }
+      return self.entityGraph;
+    } else {
+      return self.graph;
+    }
+  };
+
   /**
    * Graph related metrics
    */
-  self.getMeanDegree = (forFirstParties = true) => self.isNotEmpty()
-    ? jStat.mean(Object.values(self.getVertexDegrees(forFirstParties)))
+  self.getTopMeanDegree = (forFirstParties = true, topN = 10, forEntities = false) => self.isNotEmpty(forEntities)
+    ? jStat.mean(_getTopValues(Object.values(self.getVertexDegrees(forFirstParties, forEntities)), topN))
     : 0;
-  self.getStdevDegree = (forFirstParties = true) => self.isNotEmpty()
-    ? jStat.stdev(Object.values(self.getVertexDegrees(forFirstParties)))
+  self.getMeanDegree = (forFirstParties = true, forEntities = false) => self.isNotEmpty(forEntities)
+    ? jStat.mean(Object.values(self.getVertexDegrees(forFirstParties, forEntities)))
     : 0;
-  self.getDensity = () => self.isNotEmpty()
-    ? functions.density(self.graph)
+  self.getStdevDegree = (forFirstParties = true, forEntities = false) => self.isNotEmpty(forEntities)
+    ? jStat.stdev(Object.values(self.getVertexDegrees(forFirstParties, forEntities)))
     : 0;
-  self.getBetweennessCentrality = () => self.isNotEmpty()
-    ? Array.from(algorithms.betweennessCentrality(self.graph))
+  self.getDensity = (forEntities = false) => self.isNotEmpty(forEntities)
+    ? functions.density(self.getGraph(forEntities))
+    : 0;
+  self.getBetweennessCentrality = (forEntities = false) => self.isNotEmpty(forEntities)
+    ? Array.from(algorithms.betweennessCentrality(self.getGraph(forEntities)))
     .filter(n => n[0].startsWith('s.'))
     .reduce((cum, curr) => {
       cum[curr[0]] = curr[1];
       return cum;
     }, {})
     : {};
-  self.getMeanBetweennessCentrality = () => self.isNotEmpty()
-    ? jStat.mean(Object.values(self.getBetweennessCentrality()))
+  self.getMeanBetweennessCentrality = (forEntities = false) => self.isNotEmpty(forEntities)
+    ? jStat.mean(Object.values(self.getBetweennessCentrality(forEntities)))
     : 0;
-  self.getDiameter = () => self.isNotEmpty()
+  self.getDiameter = (forEntities = false) => self.isNotEmpty(forEntities)
     ? jStat.max(
-    Array.from(algorithms.shortestPathLength(self.graph).values())
+    Array.from(algorithms.shortestPathLength(self.getGraph(forEntities)).values())
       .map(node => jStat.max(Array.from(node.values()))))
     : 0;
 

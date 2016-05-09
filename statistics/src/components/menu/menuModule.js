@@ -41,14 +41,30 @@ Utilities.constants.menuItems = {
   TABLE: 'table',
   MAP: 'map',
   CALCULATED_DATES: 'calculated-dates',
-  FIRST_MEANS: 'first-means',
-  THIRD_MEANS: 'third-means',
-  FIRST_STDEV: 'first-stdev',
-  THIRD_STDEV: 'third-stdev',
+
   //DIAMETER: 'diameter',
   DENSITY: 'density',
   UNRECOGNIZED_THIRD_PARTY_REQUESTS: 'unrecognized',
-  MISCLASSIFIED_REQUESTS: 'misclassified'
+  MISCLASSIFIED_REQUESTS: 'misclassified',
+  TOP_1_FIRST_DEGREE: 'first-mean-top1',
+  TOP_10_FIRST_DEGREE: 'first-mean-top10',
+  TOP_1000_FIRST_DEGREE: 'first-means',
+  FIRST_STDEV: 'first-stdev',
+  TOP_1_THIRD_DEGREE: 'third-mean-top1',
+  TOP_10_THIRD_DEGREE: 'third-mean-top10',
+  TOP_1000_THIRD_DEGREE: 'third-means',
+  THIRD_STDEV: 'third-stdev',
+
+  DENSITY_ENTITIES: 'density-entities',
+  TOP_1_FIRST_DEGREE_ENTITIES: 'first-mean-top1-entities',
+  TOP_10_FIRST_DEGREE_ENTITIES: 'first-mean-top10-entities',
+  TOP_1000_FIRST_DEGREE_ENTITIES: 'first-means-entities',
+  //FIRST_STDEV_ENTITIES: 'first-stdev-entities',
+  TOP_1_THIRD_DEGREE_ENTITIES: 'third-mean-top1-entities',
+  TOP_10_THIRD_DEGREE_ENTITIES: 'third-mean-top10-entities',
+  TOP_1000_THIRD_DEGREE_ENTITIES: 'third-means-entities',
+  //THIRD_STDEV_ENTITIES: 'third-stdev-entities'
+
   //BETWEENNESS_CENTRALITY: 'betweenness-centrality'
 };
 

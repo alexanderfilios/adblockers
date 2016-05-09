@@ -28,7 +28,7 @@ angular.module('main', [demoModule, menuModule])
     //$scope.connection._host = '192.33.93.101';
 
     //TODO
-    $scope.connection._thirdPartyDetailsTable = 'third_party_details';
+    $scope.connection._entityDetailsTable = 'entity_details';
     $scope.connection._redirectionMappingTable = 'redirection_mapping';
     $scope.connection._update = function(collection, id, data, database = $scope.connection._database, host = $scope.connection._host, port = $scope.connection._port) {
       return new Promise(function (resolve, reject) {

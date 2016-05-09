@@ -11,15 +11,17 @@ export default angular
   .module('calculationTable', ['ui.bootstrap'])
   .service('calculationTableService', function() {
 
-    this.calculate = function(data, date, instance) {
+    this.calculate = function(data, date, instance, entityDetails) {
       //if (!!redirectionMappingData && Array.isArray(redirectionMappingData)) {
       //  data = GraphStats.replaceRedirections(data, redirectionMappingData);
       //}
-      const graphStats = new GraphStats(data);
+
+      const graphStats = new GraphStats(data, entityDetails);
+window.graphStats = graphStats;
 
       return [
         {
-          name: Utilities.constants.menuItems.FIRST_MEANS,
+          name: Utilities.constants.menuItems.TOP_1000_FIRST_DEGREE,
           value: graphStats.getMeanDegree(true),
           instance: instance,
           crawlDate: date
@@ -31,7 +33,7 @@ export default angular
           crawlDate: date
         },
         {
-          name: Utilities.constants.menuItems.THIRD_MEANS,
+          name: Utilities.constants.menuItems.TOP_1000_THIRD_DEGREE,
           value: graphStats.getMeanDegree(false),
           instance: instance,
           crawlDate: date
@@ -59,7 +61,73 @@ export default angular
           value: graphStats.getUnrecognizedThirdPartyRequests(),
           instance: instance,
           crawlDate: date
-        }
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_10_FIRST_DEGREE,
+          value: graphStats.getTopMeanDegree(true, 10),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_10_THIRD_DEGREE,
+          value: graphStats.getTopMeanDegree(false, 10),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_1_FIRST_DEGREE,
+          value: graphStats.getTopMeanDegree(true, 1),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_1_THIRD_DEGREE,
+          value: graphStats.getTopMeanDegree(false, 1),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_1_FIRST_DEGREE_ENTITIES,
+          value: graphStats.getTopMeanDegree(true, 1, true),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_10_FIRST_DEGREE_ENTITIES,
+          value: graphStats.getTopMeanDegree(true, 10, true),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_1000_FIRST_DEGREE_ENTITIES,
+          value: graphStats.getMeanDegree(true, true),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_1_THIRD_DEGREE_ENTITIES,
+          value: graphStats.getTopMeanDegree(false, 1, true),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_10_THIRD_DEGREE_ENTITIES,
+          value: graphStats.getTopMeanDegree(false, 10, true),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.TOP_1000_THIRD_DEGREE_ENTITIES,
+          value: graphStats.getMeanDegree(false, true),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.DENSITY_ENTITIES,
+          value: graphStats.getDensity(true),
+          instance: instance,
+          crawlDate: date
+        },
         //{
         //  name: Utilities.constants.menuItems.BETWEENNESS_CENTRALITY,
         //  value: graphStats.getMeanBetweennessCentrality(),
@@ -94,7 +162,8 @@ export default angular
           //  requestData = data;
           //  return $scope.connection._find($scope.connection._redirectionMappingTable);
           //})
-          .then(data => Promise.resolve(calculationTableService.calculate(data, date, instance)))
+          .then(data => {requestData = data; return $scope.connection._find($scope.connection._entityDetailsTable);})
+          .then(entityDetails => Promise.resolve(calculationTableService.calculate(requestData, date, instance, entityDetails)))
           .then((data) => $scope.connection._insertMultiple(data, $scope.connection._statsTable))
           .then((data) => $scope.connection._find($scope.connection._statsTable))
           .then((data) => {
