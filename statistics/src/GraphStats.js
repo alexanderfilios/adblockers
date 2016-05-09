@@ -51,7 +51,7 @@ const GraphStats = function(data, entityDetails, undirected = true) {
         cum[cur.domain] = cur.admin_org || cur.tech_org || cur.regis_org;
         return cum;}, {});
     const entityEdges = Array.from(self.getGraph().edges())
-      .map(e => [e[0], entityMapping[e[1].replace(/^t\./, '')] || e[1]]);
+      .map(e => [e[0], entityMapping[e[1].replace(/^t\./, '').replace(/^www\./, '')] || e[1]]);
 
     const entityNodes = entityEdges.reduce((cum, cur) => cum.concat(cur), []);
     const entityGraph = undirected ? new Graph() : new DiGraph();
