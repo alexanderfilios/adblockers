@@ -2,7 +2,8 @@
 
 project_dir="$( dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 
-domains=($("$project_dir/setup/execute_db_script.sh" "get_third_parties"))
+#domains=($("$project_dir/setup/execute_db_script.sh" "get_first_parties") $("$project_dir/setup/execute_db_script.sh" "get_third_parties"))
+domains=($("$project_dir/setup/execute_db_script.sh" "get_first_parties"))
 
 declare -A matcher_mapping=(
   ["regis_org"]="Registrant Organization"
@@ -31,6 +32,7 @@ upsert() {
 }
 
 for domain in ${domains[@]}; do
+  domain=${domain#http://www.}
   whois=$(/usr/bin/whois "$domain")
   echo "------------------------------------------"
   echo "Getting data for domain: $domain"
@@ -53,6 +55,6 @@ for domain in ${domains[@]}; do
   done
   json_object=$json_object"\"domain\":\"$domain\"}"
   echo $json_object
-  upsert "third_party_details" "{'domain':'$domain'}" "$json_object"
+  upsert "entity_details" "{'domain':'$domain'}" "$json_object"
   echo "------------------------------------------"
 done
