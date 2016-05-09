@@ -68,7 +68,7 @@ const GraphStats = function(data, entityDetails, undirected = true) {
   self.getVertexDegrees = (forFirstParties = true, forEntities = false) =>
     Array.from(self.getGraph(forEntities)
       .degree(Array.from(self.getGraph(forEntities).nodesIter()), false))
-      .filter(node => ((forFirstParties && node[0].startsWith('s.')) || !forFirstParties && !node[0].startsWith('t.')))
+      .filter(node => ((forFirstParties && node[0].startsWith('s.')) || !forFirstParties && !node[0].startsWith('s.')))
       .reduce((cum, curr) => {
         cum[curr[0]] = curr[1];
         return cum;
