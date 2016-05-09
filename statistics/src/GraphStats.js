@@ -52,9 +52,11 @@ const GraphStats = function(data, entityDetails, undirected = true) {
         return cum;}, {});
     const entityEdges = Array.from(self.getGraph().edges())
       .map(e => [e[0], entityMapping[e[1].replace(/^t\./, '')] || e[1]]);
+
     const entityNodes = entityEdges.reduce((cum, cur) => cum.concat(cur), []);
     const entityGraph = undirected ? new Graph() : new DiGraph();
-    entityGraph.addNodesFrom(entityNodes);
+    entityGraph.addNodesFrom(entityNodes.filter(n => !n.startsWith('s.')).map(n => [n, {f: false}]));
+    entityGraph.addNodesFrom(Array.from(self.graph.nodes()).filter(n => n.startsWith('s.')).map(n => [n, {f: true}]));
     entityGraph.addEdgesFrom(entityEdges);
     return entityGraph;
   };
@@ -74,8 +76,8 @@ const GraphStats = function(data, entityDetails, undirected = true) {
         return cum;
       }, {});
 
-  const _getTopValues = (nodes, n) =>
-    nodes.reduce((cum, cur) => {
+  const _getTopValues = (nodes, n) => {
+    return nodes.reduce((cum, cur) => {
       if (cum.length < n) {
         return cum.concat(cur);
       } else {
@@ -90,6 +92,7 @@ const GraphStats = function(data, entityDetails, undirected = true) {
         return cum;
       }
     }, []);
+  };
 
   self.getGraph = function(forEntities = false) {
     // The graph must be in any case calculated

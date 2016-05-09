@@ -17,7 +17,6 @@ export default angular
       //}
 
       const graphStats = new GraphStats(data, entityDetails);
-window.graphStats = graphStats;
 
       return [
         {
