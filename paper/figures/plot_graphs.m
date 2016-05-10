@@ -15,10 +15,81 @@ max_width = 2;      % Line width for max protection settings
 desktop_style = '-';% Line style for desktop user agent
 mobile_style = '--';% Line style for mobile user agent
 
-metrics = {'first-means', 'third-means', 'first-stdev', 'third-stdev', 'density', 'misclassified', 'unrecognized'};
-titles = {' First means', 'First means', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'};
-labels = {' Mean node degree', 'Mean node degree', 'First StdDev', 'Third StdDev', 'Density', 'Misclassified Reqs', 'Unrecognized Reqs'};
-instances = {'data_Ghostery_Default', 'data_Ghostery_MaxProtection', 'data_Adblockplus_Default', 'data_Adblockplus_MaxProtection', 'data_NoAdblocker', 'data_NoAdblocker_DNT','data_Ghostery_Default_MUA', 'data_Ghostery_MaxProtection_MUA', 'data_Adblockplus_MaxProtection_MUA', 'data_Adblockplus_Default_MUA', 'data_NoAdblocker_MUA', 'data_NoAdblocker_DNT_MUA'};
+FONT_SIZE = 18;
+
+% Plots to be output
+metrics = {
+    'first-means'
+    'third-means'
+    'first-stdev'
+    'third-stdev'
+    'density'
+    'misclassified'
+    'unrecognized'
+    'first-means-entities'
+    'third-means-entities'
+    'density-entities'
+    'first-mean-top1'
+    'first-mean-top10'
+    'third-mean-top1'
+    'third-mean-top10'
+    'first-mean-top1-entities'
+    'first-mean-top10-entities'
+    'third-mean-top1-entities'
+    'third-mean-top10-entities'};
+titles = {
+    'First means'
+    'Third means'
+    'First StdDev'
+    'Third StdDev'
+    'Density'
+    'Misclassified Reqs'
+    'Unrecognized Reqs'
+    'First means with entities'
+    'Third means with entities'
+    'Density with entities'
+    'FPD node degree'
+    'Mean FPD node degree'
+    'TPD node degree'
+    'Mean TPD node degree'
+    'FPD node degree with entities'
+    'Mean FPD node degree with entities'
+    'TPD node degree with entities'
+    'Mean TPD node degree with entities'};
+labels = {
+    'Mean FPD node degree'
+    'Mean TPD node degree'
+    'First StdDev'
+    'Third StdDev'
+    'Density'
+    'Misclassified Reqs'
+    'Unrecognized Reqs'
+    'Mean FPD node degree'
+    'Mean TPD node degree'
+    'Density'
+    'FPD node degree'
+    'Mean FPD node degree'
+    'TPD node degree'
+    'Mean TPD node degree'
+    'FPD node degree'
+    'Mean FPD node degree'
+    'TPD node degree'
+    'Mean TPD node degree'};
+
+% Instances plotted for each graph
+instances = {
+    'data_Ghostery_Default'
+    'data_Ghostery_MaxProtection'
+    'data_Adblockplus_Default'
+    'data_Adblockplus_MaxProtection'
+    'data_NoAdblocker'
+    'data_NoAdblocker_DNT'
+    'data_Ghostery_Default_MUA'
+    'data_Ghostery_MaxProtection_MUA'
+    'data_Adblockplus_MaxProtection_MUA'
+    'data_Adblockplus_Default_MUA'
+    'data_NoAdblocker_MUA'
+    'data_NoAdblocker_DNT_MUA'};
 colors = {red, red, blue, blue, green, green, red, red, blue, blue, green, green};
 line_widths = {default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width, default_width, max_width};
 line_styles = {desktop_style, desktop_style, desktop_style, desktop_style, desktop_style, desktop_style, mobile_style, mobile_style, mobile_style, mobile_style, mobile_style, mobile_style};
@@ -35,6 +106,10 @@ for file_data = transpose(dir(strcat([filepath_data '/*.csv'])))
     % Extracting data-file name and file
     filename_prefix = strsplit(file_data.name, '.');
     filename_prefix = filename_prefix(1);
+    if (isempty(find(ismember(metrics, filename_prefix), 1)))
+        continue;
+    end
+    
     filename_data = strjoin([filepath_data, '/', filename_prefix, '.csv'], '');
     filename_plot = strjoin([filepath_plots, '/', filename_prefix, '.eps'], '');
     
@@ -73,14 +148,18 @@ for file_data = transpose(dir(strcat([filepath_data '/*.csv'])))
         'color', plot_colors(header_cells{1}{instance_idx}), ...
         'LineWidth', plot_line_widths(header_cells{1}{instance_idx}));
     end
-    dateaxis('x', 6);
+    datetick('x', 'keepticks');
+    set(gca, 'FontSize', FONT_SIZE);
+    
     legends = strrep(header_cells{1}, '_', '\_');
 %      legend(legends{2:end});
     hold off;
-    xlabel('Date');
-    ylabel(plot_labels(filename_prefix{1}));
+    xlabel('Date', 'FontSize', FONT_SIZE);
+    xlim([min(data(data(:, 1) ~= 0, 1)), max(data(data(:, 1) ~= 0, 1))]);
+    ylabel(plot_labels(filename_prefix{1}), 'FontSize', FONT_SIZE);
     
     % Save the file under the directory /figures/plots
     saveas(gcf, filename_plot, 'epsc');
 end
+close all;
     
