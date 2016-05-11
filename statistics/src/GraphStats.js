@@ -10,7 +10,7 @@ const GraphStats = function(data, entityDetails, undirected = true) {
   const self = this;
   self.entityDetails = entityDetails;
   self.data = data
-    //.map(row => {row.firstParty = row.heuristics.browserUri; return row;});
+    .map(row => {row.firstParty = row.heuristics.browserUri; return row;});
 
   const _getGraphLinks = function (data, srcToTgt = true) {
     const links = data
@@ -75,6 +75,23 @@ const GraphStats = function(data, entityDetails, undirected = true) {
         cum[curr[0]] = curr[1];
         return cum;
       }, {});
+
+  self.getMeanDegreeOfNodes = function(nodes, forEntities = false) {
+
+    const vertexDegrees = self.getVertexDegrees(true, forEntities);
+    const vd = Object.keys(vertexDegrees)
+      .map(d => ({url: d, degree: vertexDegrees[d]}))
+      .map(d => ({degree: d.degree, url: d.url.replace(/^s\./, '')
+        .replace(/^m\./, '')
+        .replace(/^mobile\./, '')
+        .replace(/^www\./, '')}))
+      .map(d => nodes
+        .filter(n => n.url.endsWith(d.url))
+        .map(n => ({rank: n.rank, url: n.url, degree: d.degree})))
+      .reduce((cum, cur) => cum.concat(cur));
+
+    return jStat.mean(vd.map(d => d.degree));
+  };
 
   const _getTopValues = (nodes, n) => {
     return nodes.reduce((cum, cur) => {

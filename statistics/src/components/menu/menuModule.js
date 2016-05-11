@@ -54,6 +54,8 @@ Utilities.constants.menuItems = {
   TOP_10_THIRD_DEGREE: 'third-mean-top10',
   TOP_1000_THIRD_DEGREE: 'third-means',
   THIRD_STDEV: 'third-stdev',
+  TOP_500_FIRST_DEGREE: 'top500-first-means',
+  LAST_500_FIRST_DEGREE: 'last500-first-means',
 
   DENSITY_ENTITIES: 'density-entities',
   TOP_1_FIRST_DEGREE_ENTITIES: 'first-mean-top1-entities',

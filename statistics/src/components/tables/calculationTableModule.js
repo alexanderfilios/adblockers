@@ -11,13 +11,19 @@ export default angular
   .module('calculationTable', ['ui.bootstrap'])
   .service('calculationTableService', function() {
 
-    this.calculate = function(data, date, instance, entityDetails) {
+    this.calculate = function(data, date, instance, entityDetails, domains, redirectionData) {
       //if (!!redirectionMappingData && Array.isArray(redirectionMappingData)) {
       //  data = GraphStats.replaceRedirections(data, redirectionMappingData);
       //}
 
+      const redirectedDomains = domains
+        .map(d => ({
+          rank: d.rank,
+          url: redirectionData
+          .filter(r => r.original_url === d.url)
+          .map(r => Utilities.parseUri(r.actual_url).host)[0] || Utilities.parseUri(d.url).host
+        }));
       const graphStats = new GraphStats(data, entityDetails);
-
       return [
         {
           name: Utilities.constants.menuItems.TOP_1000_FIRST_DEGREE,
@@ -127,6 +133,18 @@ export default angular
           instance: instance,
           crawlDate: date
         },
+        {
+          name: Utilities.constants.menuItems.TOP_500_FIRST_DEGREE,
+          value: graphStats.getMeanDegreeOfNodes(redirectedDomains.filter(d => d.rank <= 500)),
+          instance: instance,
+          crawlDate: date
+        },
+        {
+          name: Utilities.constants.menuItems.LAST_500_FIRST_DEGREE,
+          value: graphStats.getMeanDegreeOfNodes(redirectedDomains.filter(d => d.rank > 500)),
+          instance: instance,
+          crawlDate: date
+        }
         //{
         //  name: Utilities.constants.menuItems.BETWEENNESS_CENTRALITY,
         //  value: graphStats.getMeanBetweennessCentrality(),
@@ -149,11 +167,14 @@ export default angular
           $scope.connection._insert(curr, collection)
       ), Promise.resolve());
     };
-    $scope.calculate = function (date, instance, alertWhenDone = true) {
-      console.log('Calculating stats for instance ' + instance + '...');
+    $scope.calculate = function (date, instance, alertWhenDone = true, domainData = [], redirectionData = []) {
+
       const start = moment();
       let requestData = [];
+      let domains = [];
+      let redirections = [];
       return new Promise(function(resolve) {
+        console.log('Calculating stats for instance ' + instance + '...');
         $scope.connection._find(instance,
           {crawlDate: moment(new Date(date)).format(Utilities.constants.DATE_FORMAT)})
           //)
@@ -161,8 +182,16 @@ export default angular
           //  requestData = data;
           //  return $scope.connection._find($scope.connection._redirectionMappingTable);
           //})
-          .then(data => {requestData = data; return $scope.connection._find($scope.connection._entityDetailsTable);})
-          .then(entityDetails => Promise.resolve(calculationTableService.calculate(requestData, date, instance, entityDetails)))
+          .then(data => {requestData = data;
+            return redirectionData.length > 0
+              ? Promise.resolve(redirectionData)
+              : $scope.connection._find($scope.connection._redirectionMappingTable);})
+          .then(data => {redirections = data;
+            return domainData.length > 0
+              ? Promise.resolve(domainData)
+              : $scope.connection._find($scope.connection._firstPartyTable);})
+          .then(data => {domains = data; return $scope.connection._find($scope.connection._entityDetailsTable);})
+          .then(entityDetails => Promise.resolve(calculationTableService.calculate(requestData, date, instance, entityDetails, domains, redirections)))
           .then((data) => $scope.connection._insertMultiple(data, $scope.connection._statsTable))
           .then((data) => $scope.connection._find($scope.connection._statsTable))
           .then((data) => {
@@ -176,10 +205,17 @@ export default angular
     };
     $scope.calculateAll = function(date) {
       console.log('start');
-      Object.values(Utilities.constants.instances).reduce((cum, inst) => {
-        console.log('Calculate for instance ' + inst);
-        return cum.then(() => $scope.calculate(date, inst, false));
-      }, Promise.resolve())
+      let redirections = [];
+      let domains = [];
+      $scope.connection._find($scope.connection._redirectionMappingTable)
+        .then(data => {redirections = data; return $scope.connection._find($scope.connection._firstPartyTable);})
+        .then(data => {
+          domains = data;
+          return Object.values(Utilities.constants.instances).reduce((cum, inst) => {
+            console.log('Calculate for instance ' + inst);
+            return cum.then(() => $scope.calculate(date, inst, false, domains, redirections));
+          }, Promise.resolve());
+        })
         .then(() => alert('Finished for date ' + date + '!'));
     };
 
