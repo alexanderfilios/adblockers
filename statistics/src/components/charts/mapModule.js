@@ -25,7 +25,8 @@ export default angular
       console.log('max: ' + jStat.max(Object.values(a)));
       console.log('sum: ' + jStat.sum(Object.values(a)));
       for (let country in a) {
-        a[country] = '#0000' + Math.floor(a[country] * 255 / max).toString(16);
+        const hex = ('0' + Math.floor((1 - a[country]/max) * 255).toString(16)).substr(-2);
+        a[country] = '#' + hex + hex + 'ff';
       }
       return a;
     };
@@ -204,7 +205,7 @@ export default angular
                 initial: {
                   fill: '#F8E23B',
                   stroke: '#383f47',
-                  r: 1
+                  r: 0
                 }
               },
               series: {
