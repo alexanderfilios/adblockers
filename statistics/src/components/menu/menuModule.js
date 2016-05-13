@@ -194,7 +194,7 @@ export default angular
     $scope.date = new Date();
     $scope.graphStats = null;
     $scope.menuItems = Utilities.constants.menuItems;
-    $scope.selected = Utilities.constants.menuItems.CALCULATED_DATES;
+    $scope.selected = Utilities.constants.menuItems.MAP;
 
   }])
   .filter('formatDate', function() {

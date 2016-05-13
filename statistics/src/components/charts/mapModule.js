@@ -8,14 +8,31 @@ const d3 = require('d3');
 import {Utilities} from 'adblocker-utils';
 import GraphStats from '../../GraphStats';
 import jQuery from 'jquery';
+import {jStat} from 'jStat';
 
 export default angular
   .module('mapChart', ['ui.bootstrap'])
   .service('mapService', function() {
     const self = this;
+    this.getRegions = function(markers) {
+
+      const a = markers.map(m => m.country)
+        .reduce((cum, country) => {
+          cum[country] = country in cum ? cum[country] + 1 : 1;
+          return cum;
+        }, {});
+      const max = jStat.max(Object.values(a));
+      console.log('max: ' + jStat.max(Object.values(a)));
+      console.log('sum: ' + jStat.sum(Object.values(a)));
+      for (let country in a) {
+        a[country] = '#0000' + Math.floor(a[country] * 255 / max).toString(16);
+      }
+      return a;
+    };
     this.fetchCoordinates = address => new Promise(function (resolve, reject) {
-      //console.log('calculating coordinates for address: ' + address);
-      //resolve([{geometry: {location: {lat: 1, lng: 2}}}]);
+      if (!address) {
+        resolve([]);
+      }
       jQuery.getJSON('http://maps.googleapis.com/maps/api/geocode/json',
         {address: address}, function (data) {
           if (data.status === 'OK') {
@@ -29,8 +46,41 @@ export default angular
               reject(data.status);
             }
           }
-        });
-    });
+        }, function(error) {console.log('error');});
+    })
+    .then(
+        matches => {
+          if (!Array.isArray(matches) || matches.length === 0)
+            return Promise.resolve({lat: null, lng: null, country: null});
+
+          const match = matches[0] && matches[0].geometry && matches[0].geometry.location;
+
+          return new Promise(function(resolve, reject) {
+            jQuery.getJSON('http://maps.googleapis.com/maps/api/geocode/json',
+              {latlng: match.lat + ',' + match.lng, sensor: false}, function (data) {
+                if (data.status === 'OK') {
+
+                  const countryCode = data.results
+                    .reduce((cum, cur) => cum.concat(cur.address_components), [])
+                    .filter(ac => ac.types.indexOf('country') > -1)
+                    .filter(ac => ac.types.indexOf('political') > -1)
+                    .map(ac => ac.short_name)[0];
+
+                  resolve({lat: match.lat, lng: match.lng, country: countryCode});
+                } else {
+                  if (data.status === 'ZERO_RESULTS') {
+                    resolve({lat: match.lat, lng: match.lng, country: null});
+                  } else {
+                    //console.log('Error: ' + data.status);
+                    reject(data.status);
+                  }
+                }
+              });
+          });
+          //return Promise.resolve(matches)
+        },
+        errorData => Promise.reject(errorData)
+    );
     /**
      * Returns an associative mapping
      * domain (third party) -> {latLng: ..., name: ...}
@@ -43,13 +93,12 @@ export default angular
      */
     this.getMarkers = function (thirdPartyDetails, connection) {
       return thirdPartyDetails
-        //.slice(0, 500)
+        .slice(0, 200)
         .reduce((cum, cur) => cum.then(data => new Promise(function (resolve) {
           // If location is already calculated, just return it, don't re-calculate it
-          if ('location' in cur) {
+          if ('location' in cur && 'country' in cur.location) {
             resolve(data.concat(cur));
           } else {
-
             const address = ['admin_street', 'admin_city', 'admin_country']
                 .map(attr => cur[attr])
                 .filter(d => d && d.length > 0)
@@ -64,19 +113,16 @@ export default angular
                 .join(', ').replace(/_/g, ' ');
 
             self.fetchCoordinates(address)
-              .then(matches => {
-                console.log('NEW: ' + cur.domain + ' -------------------------------');
-                const match = !Array.isArray(matches) || matches.length === 0
-                  ? {lat: null, lng: null}
-                  : matches[0] && matches[0].geometry && matches[0].geometry.location;
-
+              .then(match => {
                 const copiedObject = jQuery.extend({}, cur, {location: match});
                 delete copiedObject._id;
+
                 connection
-                  ._update(connection._thirdPartyDetailsTable, cur._id, copiedObject);
+                  ._update('third_party_details', cur._id, copiedObject);
 
                 // The _id is not included, but we will get rid of it anyway
                 resolve(data.concat(copiedObject));
+
               },
             errorStatus => {
               console.log('Error occurred: ' + errorStatus);
@@ -87,7 +133,7 @@ export default angular
         })), Promise.resolve([]))
         .then((data) => Promise.resolve(data
             .filter(p => !!p.location.lat && !!p.location.lng)
-            .map(p => ({name: p.domain, latLng: [p.location.lat, p.location.lng]}))
+            .map(p => ({country: p.location.country, name: p.domain, latLng: [p.location.lat, p.location.lng]}))
 
         ));
     };
@@ -112,10 +158,12 @@ export default angular
     $scope.connection._find('third_party_details')
       .then(data => mapService.getMarkers(data, $scope.connection))
       .then(markers => {
-        console.log(markers);
+        console.log(markers.length + ' found!');
         $scope.markers = markers;
+        $scope.regions = mapService.getRegions(markers);
+        console.log($scope.regions);
         $scope.displayedMarkers = mapService.filterThirdPartyMarkers($scope.graphStats, $scope.markers);
-        //$scope.$apply();
+        $scope.$apply();
       });
     $scope.$watch((scope) => scope.graphStats, (graphStats) => {
       console.log('graph stats loaded');
@@ -127,8 +175,8 @@ export default angular
   .directive('mapChart', function($compile) {
     return {
       link: function (scope, element, attrs) {
-        scope.$watch('graphStats', function() {
-          createMap(element, scope.displayedMarkers);
+        scope.$watch('markers', function() {
+          createMap(element, scope.displayedMarkers, scope.regions);
         });
 
         /**
@@ -141,8 +189,8 @@ export default angular
          *  {latLng: [43.73, 7.41], name: 'Monaco'}
          * ]
          */
-        const createMap = function(element, markers) {
-          jQuery(element)
+        const createMap = function(element, markers, regions) {
+          const vectorMap = jQuery(element)
             .empty()
             .css('width', '1000px')
             .css('height', '400px')
@@ -156,12 +204,22 @@ export default angular
                 initial: {
                   fill: '#F8E23B',
                   stroke: '#383f47',
-                  r: 5
+                  r: 1
                 }
+              },
+              series: {
+                regions: [{
+                  //values: {
+                  //  US: '#3e9d01'
+                  //},
+                  values: regions,
+                  attribute: 'fill'
+                }]
               },
               markers: markers
             });
-        }
+          window.vm = vectorMap;
+        };
       }
     }
   }).name;
