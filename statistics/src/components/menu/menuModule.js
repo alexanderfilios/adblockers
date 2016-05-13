@@ -17,6 +17,7 @@ import forceDirectedModule from '../../components/charts/forceDirectedModule';
 import stackedBarModule from '../../components/charts/stackedBarModule';
 import lineChartModule from '../../components/charts/lineChartModule';
 import mapModule from '../../components/charts/mapModule';
+import scatterplotModule from '../../components/charts/scatterplotModule';
 import {DbConnection} from 'adblocker-utils';
 import GraphStats from '../../GraphStats';
 import jStat from 'jStat';
@@ -43,6 +44,7 @@ Utilities.constants.menuItems = {
   CALCULATED_DATES: 'calculated-dates',
 
   //DIAMETER: 'diameter',
+  SCATTERPLOT: 'scatterplot',
   DENSITY: 'density',
   UNRECOGNIZED_THIRD_PARTY_REQUESTS: 'unrecognized',
   MISCLASSIFIED_REQUESTS: 'misclassified',
@@ -77,6 +79,7 @@ export default angular
     barModule,
     stackedBarModule,
     lineChartModule,
+    scatterplotModule,
     mapModule,
     calculationTableModule,
   forceDirectedModule])
@@ -178,14 +181,12 @@ export default angular
     $scope.select = (menuItem) => $scope.selected = menuItem;
     $scope.view = function(date, instance) {
       $scope.date = date;
-      $scope.selected = Utilities.constants.menuItems.TABLE;
+      $scope.selected = Utilities.constants.menuItems.SCATTERPLOT;
       $scope.instance = instance;
       $scope.connection._find(instance, {crawlDate: date})
         .then(data => {
+          console.log('CHANGED IT!');
           $scope.graphStats = new GraphStats(data);
-          window.graphStats = $scope.graphStats;
-          window.from = Array.from;
-          window.Utilities = Utilities;
           $scope.$apply();
         });
 
