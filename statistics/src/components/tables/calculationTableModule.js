@@ -135,13 +135,13 @@ export default angular
         },
         {
           name: Utilities.constants.menuItems.TOP_500_FIRST_DEGREE,
-          value: graphStats.getMeanDegreeOfNodes(redirectedDomains.filter(d => d.rank <= 500)),
+          value: graphStats.getMeanDegreeOfNodes(redirectedDomains, (d => d.rank <= 500)),
           instance: instance,
           crawlDate: date
         },
         {
           name: Utilities.constants.menuItems.LAST_500_FIRST_DEGREE,
-          value: graphStats.getMeanDegreeOfNodes(redirectedDomains.filter(d => d.rank > 500)),
+          value: graphStats.getMeanDegreeOfNodes(redirectedDomains, (d => d.rank > 500)),
           instance: instance,
           crawlDate: date
         }

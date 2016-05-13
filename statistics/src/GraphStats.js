@@ -76,21 +76,29 @@ const GraphStats = function(data, entityDetails, undirected = true) {
         return cum;
       }, {});
 
-  self.getMeanDegreeOfNodes = function(nodes, forEntities = false) {
+  self._rankDegree = [];
+  self.getRankDegree = function(nodes) {
+    if (self._rankDegree.length === 0) {
+      const vertexDegrees = self.getVertexDegrees(true);
+      self._rankDegree = Object.keys(vertexDegrees)
+        .map(d => ({url: d, degree: vertexDegrees[d]}))
+        .map(d => ({degree: d.degree, url: d.url.replace(/^s\./, '')
+          .replace(/^m\./, '')
+          .replace(/^mobile\./, '')
+          .replace(/^www\./, '')}))
+        .map(d => nodes
+          .filter(n => n.url.endsWith(d.url))
+          .map(n => ({rank: n.rank, url: n.url, degree: d.degree})))
+        .reduce((cum, cur) => cum.concat(cur));
+    }
+    return self._rankDegree;
+  };
 
-    const vertexDegrees = self.getVertexDegrees(true, forEntities);
-    const vd = Object.keys(vertexDegrees)
-      .map(d => ({url: d, degree: vertexDegrees[d]}))
-      .map(d => ({degree: d.degree, url: d.url.replace(/^s\./, '')
-        .replace(/^m\./, '')
-        .replace(/^mobile\./, '')
-        .replace(/^www\./, '')}))
-      .map(d => nodes
-        .filter(n => n.url.endsWith(d.url))
-        .map(n => ({rank: n.rank, url: n.url, degree: d.degree})))
-      .reduce((cum, cur) => cum.concat(cur));
 
-    return jStat.mean(vd.map(d => d.degree));
+  self.getMeanDegreeOfNodes = function(nodes, filter = () => true) {
+    return jStat.mean(self.getRankDegree(nodes)
+      .filter(filter)
+      .map(d => d.degree));
   };
 
   const _getTopValues = (nodes, n) => {
