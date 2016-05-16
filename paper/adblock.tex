@@ -80,10 +80,14 @@ In this Section we introduce the privacy metrics used in order to quantify the p
 
 %{\color{blue}We model the tracking of a user $U$ through third parties as undirected graph $G=(E,V)$, where $E$ are edges, and $V$ vertices. A vertice can represent either a first party \emph{fp} (i.e. the URL the user visits) or a third party \emph{tp} (i.e. the URL of a resource that a first party fetches). An edge is built between a \emph{fp} that fetches a \emph{tp}. By visiting a series of websites $S_U = \{w_1, w_2, .. , w_n\}$, the complete tracking graph $G$ becomes apparent.}
 
+\subsection{Request graph} \label{sec:graph_definition}
 We model the tracking of a user $U$ through third parties as undirected graph $G=(E,V)$, where $E$ are edges, and $V$ vertices. A vertex $V_S$ represents a domain and is connected to another vertex $V_T$ through an edge $E$, if and only if at least one request has been sent from $V_S$ to $V_T$. In that case, $V_S$ is the \textit{source} of the request and $V_T$ the \textit{target} of the request.
 
-{\color{red}The following paragraph is to the point, but could you make it a bit more understandable?}
-In the following, we will use the term \textit{third-party request} (TPR) to denote the requests that are sent to a target domain that differs from the source domain and corresponds to a graph edge, $E$. On the contrary, the requests whose source and target coincide will be designated as \textit{first-party requests} (FPR) and will not be taken into consideration for the construction of $G$. The source and the target domain will be referred to as \textit{first-party domain} (FPD) and \textit{third-party domain} (TPD) and will correspond to FPD and TPD graph nodes, respectively.
+{\color{blue}
+In the following, we will use the term \textit{third-party request} (TPR) to denote the requests that are sent to a target domain $T$ that differs from the source domain $S$ and corresponds to a graph edge $E$ between the nodes $V_S$ and $V_T$. On the contrary, the requests whose source and target coincide will be designated as \textit{first-party requests} (FPR) and will not be taken into consideration for the construction of $G$.
+
+The source and the target domain will be referred to as \textit{first-party domain} (FPD) and \textit{third-party domain} (TPD) and will correspond to FPD and TPD graph nodes, $V_S$ and $V_T$, respectively.
+}
 
 We augment \emph{G} by incorporating the logical relationship between third party domains. Two \emph{tp}, belonging to the same logical entity are thus combined into one vertice, resulting in a hierarchical graph. Figure~\ref{fig:graph} visualizes the different components of the build graph. Given \emph{G}, we evaluate the respective privacy provisions based on the following metrics.
 
@@ -93,6 +97,7 @@ We augment \emph{G} by incorporating the logical relationship between third part
   \caption{Graph built based on the regular crawling of the respective first parties. The colored third party has a node degree of 3, the colored first party has a node degree of 2.}\label{fig:graph}
 \end{figure}
 
+\subsection{Metrics}
 \paragraph{Degree of first party}
 The degree of a FPD node of graph $G$ refers to the number of TPDs that it has sent at least one third-party request to. That is, the more edges a FPD node has --or, equivalently, the more third parties loaded by a first-party-- the more exposed to tracking the user is while visiting this website. Henceforth, the comparison of the FPD-node degrees provides a metric to evaluate directly the impact on the privacy that an adblocker has.
 
@@ -108,7 +113,7 @@ In addition to the outlined privacy metrics, we consider the graph density of $G
 D = \frac{2 |E|}{|V|(|V|-1)}
 \end{equation}
 
-Note that we cannot achieve the maximum density of 1, because the first parties in $G$ are not directly connected, because according to our definition {\color{red}please make a link to this definition}, the FPD nodes cannot be directly connected.
+Note that we cannot achieve the maximum density of 1, because the first parties in $G$ are not directly connected, because according to our definition {\color{blue}in Section \ref{sec:graph_definition}}, the FPD nodes cannot be directly connected.
 
 \paragraph{Blacklist latency}
 The formerly presented metrics only allow us to reason about the privacy provisions of the advertisement blocking software at a given time $t$. The advertisement industry, however, operates dynamically by using e.g., new advertisement techniques and new third party URLs. In order to capture the temporal privacy provisions of the adblocker, we evaluate the the aforementioned privacy metrics over a timespan of several months. This allows us to reason quantitatively about how fast an adblocker adapts to a changing advertisement environment.
@@ -158,7 +163,8 @@ Unrecognized & wp.pl & facebook.com & facebook.com \\
 \end{table}
 
 \subsubsection{Methodology}
-{\color{red}Please add intro sentence.}
+{\color{blue}In this part, we will go through the experiment settings, as well as the result-extraction routine.}
+
 \paragraph{User profiles}
 \label{sec:user_profiles}
 In order to compare the efficacy of different adblockers, as well as the influence of different browser settings on their adblocking efficiency, we create 12 user profiles, $U$, each of which will be defined as a combination of the following parameters (Table \ref{table:user_profiles}):
@@ -172,11 +178,12 @@ In order to compare the efficacy of different adblockers, as well as the influen
 
 
 \paragraph{Crawled URLs}
+\label{sec:crawled_urls}
 An appropriate criterion for the evaluation of an adblocker is its performance in the most frequent case. Consequently, it would be plausible to test its efficiency for the \textit{500 domains with the highest incoming web traffic}. Nonetheless, considering only the top-visited domains in our evaluation would imply the risk of favoring an adblocker optimized to perform better for a certain group of websites, eventually biasing our experimental results. An appropriate countermeasure would hence be to extend our URL sample set with another \textit{500 randomly chosen domains} among the top 1 million most-visited domains. The sample set $S$ of 1000 URLs is extracted using the Alexa Traffic Rank as a reference point and is stored and kept unchanged throughout the whole evaluation period, so as to decorrelate any variations of the results between two different days from the selection of the sample set $S$.
 
 Since nowadays most of the web applications are based on asynchronous calls to fetch data, when the DOM has finished rendering, only a part of the content has been downloaded in most of the cases, or equivalently, not all of the requests have been sent to any first or third parties to fully load the page content. Therefore, to collect the complete data and better simulate the common user browsing behavior, the crawler waits 20 seconds on each website of our sample set $S$ and record any requests sent, before closing it and proceeding to the next domain. Additionally, to achieve independency from any heuristics in our attempt to determine the source of a request, we augment the request data provided by \textit{Lightbeam} with the actual knowledge of the currently visited first-party.
 
-Last but not least, in order to decouple the experiment conditions from the influence of any time- or location-related effects --i.e. variations of the served content, locale-based personalization-- all user profiles $U$ execute the same crawling routine simultaneously, whilst running on the same machine, thus behind the same IP address, Browser and Operating System. {\color{red}Please describe how you use the MUA (since its the same operating system).}
+Last but not least, in order to decouple the experiment conditions from the influence of any time- or location-related effects --i.e. variations of the served content, locale-based personalization-- all user profiles $U$ execute the same crawling routine simultaneously, whilst running on the same machine, thus behind the same IP address, Browser and Operating System. {\color{blue}However, some of the instances will be configured to send their requests with a User-Agent HTTP header that corresponds to a mobile device (iPhone with iOS 6), so that we can extend our observations for the mobile users.}
 
 \subsection{Experimental Results}
 In the present, we will discuss the outcome of the experiments, i.e. the performance of the different user profiles and metrics, so as to lay the foundations for the ensuing conclusions regarding the influence of the individual parameters.
@@ -327,9 +334,6 @@ The data collected for user profile $U$ on a specific date correspond to a diffe
   \label{fig:metrics_with_entities}
   \end{figure}
 
-{\color{red}Please add the CDF plots described in bitbucket.}
-{\color{red}Please add one plot where you compare Top 500 with random 500.}
-
 \subsubsection{Result evaluation}
 
 \textbf{Metrics \textit{without} entity grouping (Figure \ref{fig:metrics_without_entities}):} As depicted in Figures \ref{fig:first_means} and \ref{fig:third_means}, the user profiles \textit{Ghostery\_Default} and \textit{NoAdblocker} have the worst performance, since the first parties they visit load the highest mean number of third parties. Although we would expect that the use of an adblocker, such as Ghostery, should provide us with better results, a closer look at its initial settings show that the adblocker functions as a third-party tracker that does not block any third parties by default, unless configured appropriately. The metric has a consistently but only slightly lower value for the profile \textit{NoAdblocker\_DNT}.
@@ -349,7 +353,7 @@ Looking at the Figure \ref{fig:metrics_with_entities} where this logical-entity 
 \textbf{Highest-degree domains (Figures \ref{fig:highest_degree_nodes_without_entities}, \ref{fig:highest_degree_nodes_with_entities}):} After an examination of the Figures \ref{fig:highest_degree_nodes_without_entities} and \ref{fig:highest_degree_nodes_with_entities}, we observe that in the worst case, a first-party website can be tracked by up to 170 third parties (Figure \ref{fig:first_mean_top1_without_entities}), whilst a third-party can have access and collect information about our browsing behavior from almost 500 first-party websites that we visited (Figure \ref{fig:third_mean_top1_without_entities}). However, it is important to mention that the performances of the user profiles $U$ remain approximately in the same relative order as in the previously analyzed cases, with the use of the adblockers to considerably enhance the user's protection against tracking. Of course the results are now expected to present higher variations and thus be less accurate, since the values are now not averaged at all or averaged on 10 values, accordingly.
 
 \subsubsection{Metric evaluation}
-Notwithstanding that the relative performance of the user profiles remained practically unaltered with the use of the different metrics, as illustrated above, the discrepancies between the results of the profiles are not always trivial to tell apart. As a consequence, the mean TPD node degree is less suitable than the mean FPD node degree when profiles with smaller efficiency differences are to be distinguished, {\color{red}Please reformulate: while the discernibility plummets markedly when the graph density is used as a metric}.
+Notwithstanding that the relative performance of the user profiles remained practically unaltered with the use of the different metrics, as illustrated above, the discrepancies between the results of the profiles are not always trivial to tell apart. As a consequence, the mean TPD node degree is less suitable than the mean FPD node degree when profiles with smaller efficiency differences are to be discerned, {\color{blue}while their distignuishability weakens markedly further when the graph density is used as a metric}.
 
 
 \subsection{Influence of profile parameters}
@@ -367,13 +371,67 @@ As explained in \ref{sec:user_profiles}, the user profiles $U$ are created as a 
 {\color{red}Can you add the study of when the blacklists are updated?}
 
 \subsection{Geographical impact}
-{\color{red}Please add and describe the map here (heatmap plot would be best).}
+{\color{blue}
+Another interesting finding after the execution of our experiments and the entity analysis is the classification of the third parties according to their geographical location. With the entity data extracted from WHOIS, we assign a country to each third-party domain (TPD node) of the request graphs and visualize the comparison between the different countries on the world map in Figure \ref{fig:third_party_map}. The darkest regions (blue) are the countries with the most TPDs loaded, while the white ones host none of the TPDs found in our graphs.
 
-\subsection{Correlation between Alexa Rank and Number of Third Parties}
-{\color{red}Please add scatter plot:\\
-- x axis -> Alexa rank\\
-- y axis -> First party node degree
+As we would expect, the USA and China host most of the third-party domains loaded, while regions such as Africa or Latin America contain very few or even no TPDs at all.
 }
+
+\begin{figure*}
+ \centering
+ \includegraphics[width=\textwidth]{figures/third_party_map.eps}
+ \caption{World map depicting the locations of the third parties loaded during our experiments.}
+ \label{fig:third_party_map}
+\end{figure*}
+
+
+\subsection{Rank impact}
+{\color{red}Please add one plot where you compare Top 500 with random 500.}
+{\color{blue}
+%The top-visited domains of the Alexa Rank have been extensively used as the sample URL set in the bibliography so far and the performance of a web tool is thus often tested against roughly the domains. Henceforth, it would be a plausible motivation for the ad-blocking tools to optimize their blacklists so as to be more efficient for this particular subset of URL candidates.
+In order to investigate whether the ad-blocking tools have been subject to optimizations that would enable better performances for the top-visited domains, our URL sample set $W$ includes, as explained in Section \ref{sec:crawled_urls}, an additional set of 500 domains with a rank randomly selected between 500 - 1M from the Alexa Top Rank. To this end, we will separate the original graph $G$ into two independent graphs $G_T$ and $G_R$ for the 500 top-visited and the 500 randomly-selected URLs, respectively, and followingly directly compare their performances. Another index of whether the aforementioned hypothesis holds true can be provided by the correlation between the rank of the URL and a performance metric --i.e. the FPD node degree, as well as its cumulative distribution function (CDF).
+
+\textbf{Graph separation:} Figure \ref{fig:top_last_domains_comparison} provides a direct comparison of the efficiency of the user profiles $U$ for the two URL subsets. Unsurprisingly, the relative performance of the different profiles remains roughly unaffected. Nonetheless, the efficiency on the last 500 domains yields better results, with the mean FPD node degree to be considerably and consistently lower than the one calculated for the top 500 domains, contradicting our initial assumption. On the other hand, a higher number of loaded third parties can be justified, if the size and the popularity of the first domains is taken into consideration, as opposed to that of the last domains.
+
+\textbf{Correlation:} In Figure \ref{fig:first_party_degree_relative_rank} the FPD node degree has been plotted with respect to the domain rank to provide a finer visualization of the previous result, for a specific user profile $U$ and a specific date. Since the last 500 domains have been randomly selected from a wide range of ranks, instead of the absolute domain rank --as provided by the Alexa Rank-- we will order the domains according to it and use the relative domain rank instead. As results from the graph, the points do not present any trend that can suggest a clear relationship between the relative rank and the node degree. Our visual observation is confirmed by the calculation of the correlation of the two parameters that yields 10.67\%.
+
+\textbf{CDF:} Examining the CDF of the FPD node degree of Figure \ref{fig:cdf_first_node_degree} we can profile the extent to which the visited URLs are being tracked by third party domains.
+
+Still check whether we will keep this graph.
+}
+
+    \begin{figure}
+   \centering
+
+  \begin{subfigure}{.45\textwidth}
+    \includegraphics[width=\textwidth]{figures/plots/top500-first-means.eps}
+    \caption{Mean value of the degree of the 500 top-visited FPD nodes}
+    \label{fig:top500_first_means}
+  \end{subfigure}
+
+  \begin{subfigure}{.45\textwidth}
+    \includegraphics[width=\textwidth]{figures/plots/last500-first-means.eps}
+    \caption{Mean value of the degree of the 500 randomly-selected FPD nodes}
+    \label{fig:density_entities}
+  \end{subfigure}
+  \caption{Comparison of the performance of the user profiles $U$ when tested the top-visited domains and the randomly-selected ones.}
+  \label{fig:top_last_domains_comparison}
+  \end{figure}
+
+  \begin{figure}
+ \centering
+ \includegraphics[width=.45\textwidth]{figures/plots/scatterplot.eps}
+ \caption{FPD node degree against FPD relative rank for the profile {\color{red} some profile at some date}}
+ \label{fig:first_party_degree_relative_rank}
+\end{figure}
+
+\begin{figure}
+ \centering
+ \includegraphics[width=.45\textwidth]{figures/plots/cdf-first-node-degree.eps}
+ \caption{Cumulative distribution function of FPD node degree for the profile {\color{red} profile at some date}}
+ \label{fig:cdf_first_node_degree}
+\end{figure}
+
 
 \section{Related work}
 
