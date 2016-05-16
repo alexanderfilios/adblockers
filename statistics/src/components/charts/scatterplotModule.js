@@ -28,19 +28,17 @@ export default angular
       return {units: 'Requests', bars: bars};
     }
   })
-  .controller('ScatterplotController', ['$scope', 'scatterplotService', function($scope, scatterplotService) {
+  .controller('ScatterplotController', ['$scope', 'scatterplotService', 'csvService', function($scope, scatterplotService, csvService) {
     $scope.data = null;
     $scope.$watch(
       (scope) => scope.graphStats,
       (graphStats) => {
-        console.log('RECALCULATED!');
         let redirections = [];
-        let domains = [];
         $scope.connection._find($scope.connection._redirectionMappingTable)
           .then(data => {redirections = data; return $scope.connection._find($scope.connection._firstPartyTable);})
           .then(data => {
-            domains = data;
-            const redirectedDomains = domains
+            // Substitute URLs from first-party collection with the actual URLs from redirection-mapping collection
+            const redirectedDomains = data
               .map(d => ({
                 rank: d.rank,
                 url: redirections
@@ -48,9 +46,12 @@ export default angular
                   .map(r => Utilities.parseUri(r.actual_url).host)[0] || Utilities.parseUri(d.url).host
               }));
             $scope.data = graphStats.getRankDegree(redirectedDomains);
+            return csvService.getCsvDataInRange($scope.data, redirectedDomains.map(d => d.rank));
+          }).
+          then(data => {
+            $scope.csvData = data;
             $scope.$apply();
-          })
-
+          });
       }
     );
   }])
@@ -69,7 +70,13 @@ export default angular
               .text('No data for ' + moment(scope.date).format('DD.MM.YYYY'));
             return;
           }
-          console.log(scope.data);
+            d3.select(element[0])
+              .append('a')
+              .attr('class', 'btn btn-primary')
+              .text('Download scatterplot data')
+              .attr('href', window.URL.createObjectURL(scope.csvData))
+              .attr('download', 'scatterplot');
+
           var margin = {top: 20, right: 20, bottom: 30, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
@@ -96,15 +103,9 @@ export default angular
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          //d3.tsv("data.tsv", function (error, data) {
-          //  createScatterplot(data);
-          //});
-
-
           createScatterplot(scope.data);
           function createScatterplot(data, error) {
 
-            console.log(data);
             if (error) throw error;
 
             data.forEach(function (d) {

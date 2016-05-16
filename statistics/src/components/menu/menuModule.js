@@ -85,7 +85,19 @@ export default angular
   forceDirectedModule])
   .service('csvService', function() {
     const self = this;
-    self.getCsvDataInRange = function(dataDict, dateRange) {
+    self.getCsvDataInRange = function(data, xVals) {
+      const dataDict = data.reduce((cum, cur) => {
+        cum[cur.rank] = cur.degree;
+        return cum;
+      }, {});
+      const csvContent = 'Rank,Degree' + '\n'
+        + xVals.map((xVal, idx) => (xVal + ',' + (idx + 1) + ',' + (dataDict[xVal] || 0))).join('\n');
+
+      return new JSZip()
+        .file('scatterplot.csv', csvContent)
+        .generateAsync({type: 'blob'});
+    };
+    self.getCsvDataInDateRange = function(dataDict, dateRange) {
       const dates = [];
       for (let d = moment(dateRange.min);
            !d.isAfter(dateRange.max);
@@ -100,8 +112,6 @@ export default angular
             .map(instance => dataDict[date] && dataDict[date][instance] && dataDict[date][instance].value || '')
             .join(',')
       ).join('\n');
-      //Object.values(Utilities.constants.instances)
-      //  .map(v => v.)
     };
     self.getAllCsvData = function(data) {
       const dateRange = data
@@ -125,7 +135,7 @@ export default angular
 
       return Object.keys(dataDict)
         .reduce((cum, metric) => {
-          cum.file(metric + '.csv', self.getCsvDataInRange(dataDict[metric], dateRange))
+          cum.file(metric + '.csv', self.getCsvDataInDateRange(dataDict[metric], dateRange))
           return cum;
         }, new JSZip())
         .generateAsync({type: 'blob'});
@@ -185,7 +195,6 @@ export default angular
       $scope.instance = instance;
       $scope.connection._find(instance, {crawlDate: date})
         .then(data => {
-          console.log('CHANGED IT!');
           $scope.graphStats = new GraphStats(data);
           $scope.$apply();
         });

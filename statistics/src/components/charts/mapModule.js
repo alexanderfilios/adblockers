@@ -94,7 +94,7 @@ export default angular
      */
     this.getMarkers = function (thirdPartyDetails, connection) {
       return thirdPartyDetails
-        .slice(0, 200)
+        //.slice(0, 600)
         .reduce((cum, cur) => cum.then(data => new Promise(function (resolve) {
           // If location is already calculated, just return it, don't re-calculate it
           if ('location' in cur && 'country' in cur.location) {
@@ -121,6 +121,7 @@ export default angular
                 connection
                   ._update('third_party_details', cur._id, copiedObject);
 
+                console.log('Fetched coordinates');
                 // The _id is not included, but we will get rid of it anyway
                 resolve(data.concat(copiedObject));
 
