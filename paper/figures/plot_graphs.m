@@ -190,12 +190,12 @@ values = csvread(strcat([filepath_data '/scatterplot.csv']), 1);
 
 
 % Scatterplot and correlation
-scatter(values(:, 2), values(:, 3), '.');
+scatter(values(1:500, 2), values(1:500, 3), '.');
 xlabel('Node degree', 'FontSize', FONT_SIZE);
 ylabel('Relative rank', 'FontSize', FONT_SIZE);
 set(gca, 'FontSize', FONT_SIZE);
 
-corr(values(:, 2), values(:, 3))
+corr(values(1:500, 2), values(1:500, 3))
 
 % Save the file under the directory /figures/plots
 saveas(gcf, strcat([filepath_plots '/scatterplot.eps']), 'epsc');
@@ -210,7 +210,7 @@ set(h, 'color', blue);
 [h, stats] = cdfplot(values(501:1000, 3));
 set(h, 'color', green);
 hold off;
-legend('Total 1000', 'Top 500', 'Random 500');
+legend('Total 1000', 'Top-ranked 500', 'Uniformly-selected 500');
 xlabel('Node degree', 'FontSize', FONT_SIZE);
 ylabel('CDF', 'FontSize', FONT_SIZE);
 set(gca, 'FontSize', FONT_SIZE);
