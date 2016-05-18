@@ -145,7 +145,7 @@ export default angular
       }
 
       // Wrap it in a dict for faster search
-      const thirdPartiesDict = Array.from(graphStats.graph.nodes(true))
+      const thirdPartiesDict = Array.from(graphStats.getGraph().nodes(true))
         .filter(n => !n[1].f)
         .map(n => n[0].slice(2))
         .reduce((cum, n) => {

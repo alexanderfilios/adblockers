@@ -11,18 +11,7 @@ export default angular
   .module('calculationTable', ['ui.bootstrap'])
   .service('calculationTableService', function() {
 
-    this.calculate = function(data, date, instance, entityDetails, domains, redirectionData) {
-      //if (!!redirectionMappingData && Array.isArray(redirectionMappingData)) {
-      //  data = GraphStats.replaceRedirections(data, redirectionMappingData);
-      //}
-
-      const redirectedDomains = domains
-        .map(d => ({
-          rank: d.rank,
-          url: redirectionData
-          .filter(r => r.original_url === d.url)
-          .map(r => Utilities.parseUri(r.actual_url).host)[0] || Utilities.parseUri(d.url).host
-        }));
+    this.calculate = function(data, date, instance, entityDetails, firstPartyData, redirectionMappingData) {
       const graphStats = new GraphStats(data, entityDetails);
       return [
         {
@@ -135,13 +124,13 @@ export default angular
         },
         {
           name: Utilities.constants.menuItems.TOP_500_FIRST_DEGREE,
-          value: graphStats.getMeanDegreeOfNodes(redirectedDomains, (d => d.rank <= 500)),
+          value: graphStats.getMeanDegreeOfNodes(redirectionMappingData, firstPartyData, (d => d.rank <= 500)),
           instance: instance,
           crawlDate: date
         },
         {
           name: Utilities.constants.menuItems.LAST_500_FIRST_DEGREE,
-          value: graphStats.getMeanDegreeOfNodes(redirectedDomains, (d => d.rank > 500)),
+          value: graphStats.getMeanDegreeOfNodes(redirectionMappingData, firstPartyData, (d => d.rank > 500)),
           instance: instance,
           crawlDate: date
         }

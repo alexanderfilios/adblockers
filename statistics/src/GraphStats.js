@@ -6,9 +6,10 @@ import {Utilities} from 'adblocker-utils';
 import {jStat} from 'jStat';
 import {algorithms, functions, Graph, DiGraph} from 'jsnetworkx';
 
-const GraphStats = function(data, entityDetails, undirected = true) {
+const GraphStats = function(data, entityDetails = null, undirected = true) {
   const self = this;
   self.entityDetails = entityDetails;
+
   self.data = data
     .map(row => {row.firstParty = row.heuristics.browserUri; return row;});
 
@@ -45,14 +46,31 @@ const GraphStats = function(data, entityDetails, undirected = true) {
   self.graph = null;
   self.entityGraph = null;
 
-  const _getEntityGraphObject = (entityDetails) => {
-    const entityMapping = entityDetails
-      .reduce((cum, cur) => {
-        cum[cur.domain] = cur.admin_org || cur.tech_org || cur.regis_org;
-        return cum;}, {});
-    const entityEdges = Array.from(self.getGraph().edges())
-      .map(e => [e[0], entityMapping[e[1].replace(/^t\./, '').replace(/^www\./, '')] || e[1]]);
+  self._entityMapping = null;
+  self._replaceWithEntity = (url) => {
+    if (self.entityDetails === null) {
+      return url;
+    } else if (self._entityMapping === null) {
+      self._entityMapping = self.entityDetails
+        .reduce((cum, cur) => {
+          cum[cur.domain] = cur.admin_org || cur.tech_org || cur.regis_org;
+          return cum;}, {});
+    }
+    return self._entityMapping[url
+        .replace(/^t\./, '')
+        .replace(/^s\./, '')
+        .replace(/^www\./, '')] || url;
+  };
 
+  const _getEntityGraphObject = () => {
+    //const entityMapping = entityDetails
+    //  .reduce((cum, cur) => {
+    //    cum[cur.domain] = cur.admin_org || cur.tech_org || cur.regis_org;
+    //    return cum;}, {});
+    //const entityEdges = Array.from(self.getGraph().edges())
+    //  .map(e => [e[0], entityMapping[e[1].replace(/^t\./, '').replace(/^www\./, '')] || e[1]]);
+    const entityEdges = Array.from(self.getGraph().edges())
+      .map(e => [e[0], self._replaceWithEntity(e[1])]);
     const entityNodes = entityEdges.reduce((cum, cur) => cum.concat(cur), []);
     const entityGraph = undirected ? new Graph() : new DiGraph();
     entityGraph.addNodesFrom(entityNodes.filter(n => !n.startsWith('s.')).map(n => [n, {f: false}]));
@@ -77,8 +95,16 @@ const GraphStats = function(data, entityDetails, undirected = true) {
       }, {});
 
   self._rankDegree = [];
-  self.getRankDegree = function(nodes) {
+  self.getRankDegree = function(redirectionMappingData, firstPartyData) {
     if (self._rankDegree.length === 0) {
+      const nodes = firstPartyData
+        .map(d => ({
+          rank: d.rank,
+          url: redirectionMappingData
+            .filter(r => r.original_url === d.url)
+            .map(r => Utilities.parseUri(r.actual_url).host)[0] || Utilities.parseUri(d.url).host
+        }));
+
       const vertexDegrees = self.getVertexDegrees(true);
       self._rankDegree = Object.keys(vertexDegrees)
         .map(d => ({url: d, degree: vertexDegrees[d]}))
@@ -95,25 +121,48 @@ const GraphStats = function(data, entityDetails, undirected = true) {
   };
 
 
-  self.getMeanDegreeOfNodes = function(nodes, filter = () => true) {
-    return jStat.mean(self.getRankDegree(nodes)
+  self.getMeanDegreeOfNodes = function(redirectionMappingData, firstPartyData, filter = () => true) {
+    return jStat.mean(self.getRankDegree(redirectionMappingData, firstPartyData)
       .filter(filter)
       .map(d => d.degree));
   };
 
-  const _getTopValues = (nodes, n) => {
-    return nodes.reduce((cum, cur) => {
+  /**
+   * If the redirectionMappingData and firstPartyData is given, we will get the rank and the original URL, as well
+   * @param n
+   * @param forFirstParties
+   * @param forEntities
+   * @param redirectionMappingData
+   * @param firstPartyData
+   * @returns {*}
+   */
+  self.getTopValues = (n, forFirstParties = true,
+                       forEntities = false,
+                       redirectionMappingData = null,
+                       firstPartyData = null) => {
+    let nodes = [];
+    if (redirectionMappingData !== null && firstPartyData !== null) {
+      nodes = self.getRankDegree(redirectionMappingData, firstPartyData);
+    } else {
+      const vertexDegrees = self.getVertexDegrees(forFirstParties, forEntities);
+      nodes = Object.keys(vertexDegrees)
+        .map(d => ({url: d, degree: vertexDegrees[d]}));
+    }
+
+    return nodes
+      .map(d => jQuery.extend({}, d, {entity: self._replaceWithEntity(d.url)}))
+      .reduce((cum, cur) => {
       if (cum.length < n) {
         return cum.concat(cur);
       } else {
         // Find the minimum element in the array so far
         const minIndex = cum
-          .map((val, idx) => ({val: val, idx: idx}))
+          .map((node, idx) => jQuery.extend({}, node, {idx: idx}))
           .reduce((cumMin, current) =>
-            (cumMin.val < current.val) ? cumMin : current, {val: +Infinity, idx: -1})
+            (cumMin.degree < current.degree) ? cumMin : current, {degree: +Infinity, idx: -1, domain: null})
           .idx;
         // If the min is less than the current, then replace it
-        cum[minIndex] = Math.max(cum[minIndex], cur);
+        cum[minIndex] = cum[minIndex].degree > cur.degree ? cum[minIndex] : cur;
         return cum;
       }
     }, []);
@@ -139,7 +188,7 @@ const GraphStats = function(data, entityDetails, undirected = true) {
    * Graph related metrics
    */
   self.getTopMeanDegree = (forFirstParties = true, topN = 10, forEntities = false) => self.isNotEmpty(forEntities)
-    ? jStat.mean(_getTopValues(Object.values(self.getVertexDegrees(forFirstParties, forEntities)), topN))
+    ? jStat.mean(self.getTopValues(topN, forFirstParties, forEntities).map(v => v.degree))
     : 0;
   self.getMeanDegree = (forFirstParties = true, forEntities = false) => self.isNotEmpty(forEntities)
     ? jStat.mean(Object.values(self.getVertexDegrees(forFirstParties, forEntities)))

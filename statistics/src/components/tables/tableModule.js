@@ -94,7 +94,7 @@ export default angular
         },
         {
           description: 'Total first parties (US)',
-          value: Array.from(graphStats.graph.nodes(true)).filter(n => n[1].f).length
+          value: Array.from(graphStats.getGraph().nodes(true)).filter(n => n[1].f).length
         },
         {
           description: 'Total first parties (LB)',
@@ -102,7 +102,7 @@ export default angular
         },
         {
           description: 'Total third parties (US & LB)',
-          value: Array.from(graphStats.graph.nodes(true)).filter(n => !n[1].f).length
+          value: Array.from(graphStats.getGraph().nodes(true)).filter(n => !n[1].f).length
         },
         {
           description: 'Density',

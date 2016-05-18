@@ -186,6 +186,10 @@ export default angular
 
   .controller('MenuController', ['$scope', function($scope) {
 
+    let requestData = [];
+    let firstPartyData = [];
+    let redirectionMappingData = [];
+    let entityDetailsData = [];
 
     $scope.activate = (menuItem) => $scope.selected = menuItem;
     $scope.select = (menuItem) => $scope.selected = menuItem;
@@ -194,8 +198,21 @@ export default angular
       $scope.selected = Utilities.constants.menuItems.SCATTERPLOT;
       $scope.instance = instance;
       $scope.connection._find(instance, {crawlDate: date})
+        .then(data => {requestData = data; return $scope.connection._find($scope.connection._firstPartyTable)})
+        .then(data => {firstPartyData = data; return $scope.connection._find($scope.connection._redirectionMappingTable)})
+        .then(data => {redirectionMappingData = data; return $scope.connection._find($scope.connection._entityDetailsTable);})
         .then(data => {
-          $scope.graphStats = new GraphStats(data);
+          entityDetailsData = data;
+          console.log('wanna calculate');
+          $scope.graphStats = new GraphStats(requestData, entityDetailsData);
+          console.log('ready');
+          window.firstPartyData = firstPartyData;
+          window.redirectionMappingData = redirectionMappingData;
+          window.values = Object.values;
+          window.jStat = jStat;
+          window.graphStats = $scope.graphStats;
+          window.Utilities = Utilities;
+          console.log(graphStats.getTopValues(10, true, false, redirectionMappingData, firstPartyData));
           $scope.$apply();
         });
 

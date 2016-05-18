@@ -45,8 +45,8 @@ export default angular
                   .filter(r => r.original_url === d.url)
                   .map(r => Utilities.parseUri(r.actual_url).host)[0] || Utilities.parseUri(d.url).host
               }));
-            $scope.data = graphStats.getRankDegree(redirectedDomains);
-            return csvService.getCsvDataInRange($scope.data, redirectedDomains.map(d => d.rank));
+            $scope.data = graphStats.getRankDegree(redirections, data);
+            return csvService.getCsvDataInRange($scope.data, $scope.data.map(d => d.rank));
           }).
           then(data => {
             $scope.csvData = data;
