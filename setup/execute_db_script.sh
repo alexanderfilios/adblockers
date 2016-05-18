@@ -7,9 +7,7 @@ if [ ! -z "$1" ]; then
   operation="$1"
 fi
 
-if [ ! -z "$2" ]; then
-  date=$(date -d $2 +"%Y-%m-%d")
-fi
+
 
 project_dir="$( dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 
@@ -60,16 +58,24 @@ get_first_parties() {
   /usr/bin/mongo "myapp_test1" --eval "cursor = db.first_parties.find({}, {'url': 1, '_id': 0}); while (cursor.hasNext()) print(cursor.next().url);" | sed 1,2d
 }
 
+get_second_level_domain() {
+  url="$1"
+  echo $(echo "$url" | awk -F. '{
+    if ($(NF-1) == "co") printf $(NF-2)".";
+    printf $(NF-1)"."$(NF)"\n";
+  }')
+}
+
 get_third_parties() {
   declare -a unique
 #  unique=(zqtk.net zoznam.sk zotabox.com zorginstituutnederland.nl)
-#unique=(google.com)
+
   for profile in ${profiles[@]}; do
     current=($(/usr/bin/mongo "myapp_test1" --eval "array = db.data_"$profile".distinct('target'); for (i in array) print(array[i]);" | sed 1,2d))
     unique=("${unique[@]}" "${current[@]}")
     unique=($(printf "%s\n" "${unique[@]}" | sort | uniq -c | sort -rnk1 | awk '{ print $2 }'))
   done
-  for third_party in ${unique[@]}; do echo $third_party; done
+  for third_party in ${unique[@]}; do echo $(get_second_level_domain $third_party); done
 }
 
 count_third_parties() {
@@ -95,6 +101,13 @@ if [ "$operation" = "get_first_parties" ]; then
 elif [ "$operation" = "get_third_parties" ]; then
   get_third_parties
   exit 0
+elif [ "$operation" = "get_second_level_domain" ]; then
+  get_second_level_domain "$2"
+  exit 0
+fi
+
+if [ ! -z "$2" ]; then
+  date=$(date -d $2 +"%Y-%m-%d")
 fi
 
 for profile in ${profiles[@]}; do

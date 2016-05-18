@@ -2,8 +2,9 @@
 
 project_dir="$( dirname $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ))"
 
-#domains=($("$project_dir/setup/execute_db_script.sh" "get_first_parties") $("$project_dir/setup/execute_db_script.sh" "get_third_parties"))
-domains=($("$project_dir/setup/execute_db_script.sh" "get_first_parties"))
+domains=($("$project_dir/setup/execute_db_script.sh" "get_first_parties") $("$project_dir/setup/execute_db_script.sh" "get_third_parties"))
+#domains=($("$project_dir/setup/execute_db_script.sh" "get_first_parties"))
+#domains=($("$project_dir/setup/execute_db_script.sh" "get_third_parties"))
 
 declare -A matcher_mapping=(
   ["regis_org"]="Registrant Organization"
