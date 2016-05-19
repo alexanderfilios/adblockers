@@ -13,6 +13,7 @@ export default angular
 
     this.calculate = function(data, date, instance, entityDetails, firstPartyData, redirectionMappingData) {
       const graphStats = new GraphStats(data, entityDetails);
+
       return [
         {
           name: Utilities.constants.menuItems.TOP_1000_FIRST_DEGREE,
@@ -156,6 +157,24 @@ export default angular
           $scope.connection._insert(curr, collection)
       ), Promise.resolve());
     };
+    $scope.$watch(scope => scope.calculatedDates, calculatedDates => {
+      if (!Utilities.constants.autoCalculate
+        || !Array.isArray(calculatedDates)
+        || calculatedDates.length === 0) {
+        return;
+      }
+      const dateToCalculate = calculatedDates
+        .filter(d => !d.isCalculated || Object.keys(d.isCalculated).length < Object.keys(Utilities.constants.instances).length)
+        .map(d => moment(d.date, Utilities.constants.DATE_FORMAT))
+        .reduce((min, cur) => moment.min(cur, min), moment())
+        .format(Utilities.constants.DATE_FORMAT);
+
+      if (!moment().isSame(moment(dateToCalculate, Utilities.constants.DATE_FORMAT), 'day')) {
+        $scope.clearAll(dateToCalculate);
+        $scope.calculateAll(dateToCalculate);
+      }
+    });
+
     $scope.calculate = function (date, instance, alertWhenDone = true, domainData = [], redirectionData = []) {
 
       const start = moment();
@@ -193,7 +212,7 @@ export default angular
       });
     };
     $scope.calculateAll = function(date) {
-      console.log('start');
+      console.log('Start calculating date ' + date);
       let redirections = [];
       let domains = [];
       $scope.connection._find($scope.connection._redirectionMappingTable)
@@ -205,7 +224,9 @@ export default angular
             return cum.then(() => $scope.calculate(date, inst, false, domains, redirections));
           }, Promise.resolve());
         })
-        .then(() => alert('Finished for date ' + date + '!'));
+        .then(() => Utilities.constants.autoCalculate
+          ? window.location.reload()
+          : alert('Finished for date ' + date + '!'));
     };
 
     $scope.clear = function (date, instance) {
@@ -217,6 +238,7 @@ export default angular
           .forEach(d => $scope.connection._delete($scope.connection._statsTable, d._id)));
     };
     $scope.clearAll = function(date) {
+      console.log('Clearing data for date ' + date);
       $scope.connection._find($scope.connection._statsTable, {crawlDate: date})
         .then((data) => data
           // For double security, refilter the data

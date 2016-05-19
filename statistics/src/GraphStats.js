@@ -7,6 +7,7 @@ import {jStat} from 'jStat';
 import {algorithms, functions, Graph, DiGraph} from 'jsnetworkx';
 
 const GraphStats = function(data, entityDetails = null, undirected = true) {
+
   const self = this;
   self.entityDetails = entityDetails;
 
@@ -84,7 +85,7 @@ const GraphStats = function(data, entityDetails = null, undirected = true) {
     .filter(e => (forFirstParties && e[0].startsWith('s.')) || (!forFirstParties && !e[0].startsWith('s.')))
     .map(e => ({source: e[0], target: e[1]}));
 
-  self.isNotEmpty = (forEntities = false) => self.getGraph(forEntities) !== null;
+  self.isNotEmpty = (forEntities = false) => self.getGraph() !== null && self.getGraph(forEntities) !== null;
   self.getVertexDegrees = (forFirstParties = true, forEntities = false) =>
     Array.from(self.getGraph(forEntities)
       .degree(Array.from(self.getGraph(forEntities).nodesIter()), false))
@@ -121,10 +122,12 @@ const GraphStats = function(data, entityDetails = null, undirected = true) {
   };
 
 
-  self.getMeanDegreeOfNodes = function(redirectionMappingData, firstPartyData, filter = () => true) {
-    return jStat.mean(self.getRankDegree(redirectionMappingData, firstPartyData)
+  self.getMeanDegreeOfNodes = (redirectionMappingData, firstPartyData, filter = () => true) => {
+    return self.isNotEmpty()
+      ? jStat.mean(self.getRankDegree(redirectionMappingData, firstPartyData)
       .filter(filter)
-      .map(d => d.degree));
+      .map(d => d.degree))
+      : 0;
   };
 
   /**
@@ -170,7 +173,7 @@ const GraphStats = function(data, entityDetails = null, undirected = true) {
 
   self.getGraph = function(forEntities = false) {
     // The graph must be in any case calculated
-    if (!self.graph && Array.isArray(self.data)) {
+    if (!self.graph && Array.isArray(self.data) && self.data.length > 0) {
       self.graph = _getGraphObject(data);
     }
 

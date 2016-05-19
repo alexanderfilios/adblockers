@@ -72,6 +72,8 @@ Utilities.constants.menuItems = {
   //BETWEENNESS_CENTRALITY: 'betweenness-centrality'
 };
 
+Utilities.constants.autoCalculate = false;
+
 export default angular
   .module('menu', ['ui.bootstrap',
     tableModule,
@@ -156,7 +158,7 @@ export default angular
 
         const minDate = $scope.stats
           .map(o => new Date(o.crawlDate))
-          .reduce((min, curr) => Math.min(min, curr), new Date('04/15/2016'));
+          .reduce((min, curr) => Math.min(min, curr), new Date('04/27/2016'));
         const calculatedDates = $scope.stats
           .map(o => ({
             date: moment(new Date(o.crawlDate)).format(Utilities.constants.DATE_FORMAT),
@@ -203,15 +205,14 @@ export default angular
         .then(data => {redirectionMappingData = data; return $scope.connection._find($scope.connection._entityDetailsTable);})
         .then(data => {
           entityDetailsData = data;
-          console.log('wanna calculate');
+
           $scope.graphStats = new GraphStats(requestData, entityDetailsData);
-          console.log('ready');
-          window.firstPartyData = firstPartyData;
-          window.redirectionMappingData = redirectionMappingData;
-          window.values = Object.values;
-          window.jStat = jStat;
-          window.graphStats = $scope.graphStats;
-          window.Utilities = Utilities;
+          //window.firstPartyData = firstPartyData;
+          //window.redirectionMappingData = redirectionMappingData;
+          //window.values = Object.values;
+          //window.jStat = jStat;
+          //window.graphStats = $scope.graphStats;
+          //window.Utilities = Utilities;
           console.log(graphStats.getTopValues(10, true, false, redirectionMappingData, firstPartyData));
           $scope.$apply();
         });
