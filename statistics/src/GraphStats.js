@@ -58,9 +58,9 @@ const GraphStats = function(data, entityDetails = null, undirected = true) {
           return cum;}, {});
     }
     return self._entityMapping[url
-        .replace(/^t\./, '')
-        .replace(/^s\./, '')
-        .replace(/^www\./, '')] || url;
+        .split(/\./)
+        .splice(url.indexOf('.co.') > -1 ? -3 : -2)
+        .join('.')] || url;
   };
 
   const _getEntityGraphObject = () => {
@@ -109,10 +109,10 @@ const GraphStats = function(data, entityDetails = null, undirected = true) {
       const vertexDegrees = self.getVertexDegrees(true);
       self._rankDegree = Object.keys(vertexDegrees)
         .map(d => ({url: d, degree: vertexDegrees[d]}))
-        .map(d => ({degree: d.degree, url: d.url.replace(/^s\./, '')
-          .replace(/^m\./, '')
-          .replace(/^mobile\./, '')
-          .replace(/^www\./, '')}))
+        .map(d => ({
+          degree: d.degree,
+          url: d.url.split(/\./).splice(d.url.indexOf('.co.') > -1 ? -3 : -2).join('.')
+        }))
         .map(d => nodes
           .filter(n => n.url.endsWith(d.url))
           .map(n => ({rank: n.rank, url: n.url, degree: d.degree})))
