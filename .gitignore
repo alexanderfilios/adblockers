@@ -12,7 +12,7 @@ npm-debug.log
 /.idea/
 
 /backup/
-
+/blacklists/
 
 /lightbeam/node_modules
 /lightbeam/*debuglog.txt
