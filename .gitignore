@@ -36,3 +36,5 @@ npm-debug.log
 /paper/figures/data/*
 /paper/figures/*.m~
 /paper/*.backup
+
+/browser-tasks/node_modules/
