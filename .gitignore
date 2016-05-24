@@ -12,7 +12,7 @@ npm-debug.log
 /.idea/
 
 /backup/
-
+/blacklists/
 
 /lightbeam/node_modules
 /lightbeam/*debuglog.txt
@@ -36,3 +36,5 @@ npm-debug.log
 /paper/figures/data/*
 /paper/figures/*.m~
 /paper/*.backup
+
+/browser-tasks/node_modules/

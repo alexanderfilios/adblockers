@@ -206,13 +206,15 @@ export default angular
         .then(data => {
           entityDetailsData = data;
 
+          console.log('some data');
           $scope.graphStats = new GraphStats(requestData, entityDetailsData);
-          //window.firstPartyData = firstPartyData;
-          //window.redirectionMappingData = redirectionMappingData;
-          //window.values = Object.values;
-          //window.jStat = jStat;
-          //window.graphStats = $scope.graphStats;
-          //window.Utilities = Utilities;
+          console.log('finished');
+          window.firstPartyData = firstPartyData;
+          window.redirectionMappingData = redirectionMappingData;
+          window.values = Object.values;
+          window.jStat = jStat;
+          window.graphStats = $scope.graphStats;
+          window.Utilities = Utilities;
           console.log(graphStats.getTopValues(10, true, false, redirectionMappingData, firstPartyData));
           $scope.$apply();
         });
