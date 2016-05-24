@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="213.7458mm"
-   height="91.623375mm"
-   viewBox="0 0 757.36702 324.64975"
+   width="238.79027mm"
+   height="134.23277mm"
+   viewBox="0 0 846.10725 475.62793"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.91+devel+osxmenu r12922"
    sodipodi:docname="graph.svg">
   <defs
      id="defs4" />
@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="368.97011"
-     inkscape:cy="60.219374"
+     inkscape:cx="408.97011"
+     inkscape:cy="261.26275"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -38,8 +38,8 @@
      inkscape:window-width="1440"
      inkscape:window-height="851"
      inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-y="23"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -56,7 +56,7 @@
      inkscape:label="Capa 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-132.13203,-79.194496)">
+     transform="translate(-132.13203,70.805504)">
     <path
        style="fill:none;fill-rule:evenodd;stroke:#ff9100;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 569,276.8622 15.5,63.5 59.5,-59.5"
@@ -127,9 +127,9 @@
        id="text4168"
        y="379.22446"
        x="572.41589"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff9100;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff9100;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        xml:space="preserve"><tspan
-         style="fill:#ff9100;fill-opacity:1;"
+         style="fill:#ff9100;fill-opacity:1"
          y="379.22446"
          x="572.41589"
          id="tspan4170"
@@ -372,7 +372,7 @@
          sodipodi:role="line"
          x="726.84277"
          y="373.36221"
-         id="tspan6025">First parties</tspan></text>
+         id="tspan6025">First party domain</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -383,7 +383,7 @@
          sodipodi:role="line"
          id="tspan4270"
          x="727.16504"
-         y="258.36221">Third parties</tspan></text>
+         y="258.36221">Third party domain</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -394,7 +394,11 @@
          sodipodi:role="line"
          id="tspan4274"
          x="728"
-         y="118.3622">Entities</tspan></text>
+         y="118.3622">Legal</tspan><tspan
+         sodipodi:role="line"
+         x="728"
+         y="148.3622"
+         id="tspan4216">Entity</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 469,345.3622 -48,-78"
@@ -415,7 +419,7 @@
        r="32.324883" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="312.41589"
        y="259.22446"
        id="text4198"
@@ -424,7 +428,7 @@
          id="tspan4200"
          x="312.41589"
          y="259.22446"
-         style="fill:#ff0000;fill-opacity:1;">tp</tspan></text>
+         style="fill:#ff0000;fill-opacity:1">tp</tspan></text>
     <text
        sodipodi:linespacing="100%"
        id="text6029"
@@ -452,14 +456,90 @@
     <text
        sodipodi:linespacing="100%"
        id="text6037"
-       y="139.36221"
+       y="169.36221"
        x="726.84277"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        xml:space="preserve"><tspan
          id="tspan6039"
-         y="139.36221"
+         y="169.36221"
          x="726.84277"
          sodipodi:role="line"
          style="font-size:17.5px">e.g. Google Inc.</tspan></text>
+    <circle
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:4, 8;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle4218"
+       cx="282.58191"
+       cy="-38.480621"
+       r="32.324883" />
+    <circle
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:4, 8;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle4230"
+       cx="586.33191"
+       cy="-38.480621"
+       r="32.324883" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="556.37097"
+       y="-34.720863"
+       id="text4232"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan4234"
+         x="556.37097"
+         y="-34.720863"
+         style="font-size:16.39999962px;fill:#ffffff;fill-opacity:1">Country</tspan></text>
+    <text
+       sodipodi:linespacing="100%"
+       id="text4236"
+       y="-34.720863"
+       x="252.62097"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="font-size:16.39999962px;fill:#ffffff;fill-opacity:1"
+         y="-34.720863"
+         x="252.62097"
+         id="tspan4238"
+         sodipodi:role="line">Country</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       id="path4241"
+       d="m 283.25,79.1122 0,-86"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4243"
+       d="m 526.125,89.1122 61.75,-106.75"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       sodipodi:nodetypes="cc" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4245"
+       d="m 640.625,92.1122 -50.75,-105.75"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       sodipodi:nodetypes="cc" />
+    <text
+       sodipodi:linespacing="100%"
+       id="text4247"
+       y="-42.887802"
+       x="728"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         id="tspan4251"
+         y="-42.887802"
+         x="728"
+         sodipodi:role="line">Geography</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:100%;font-family:Cardo;-inkscape-font-specification:Cardo;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="726.84277"
+       y="-18.137787"
+       id="text4255"
+       sodipodi:linespacing="100%"><tspan
+         style="font-size:17.5px"
+         sodipodi:role="line"
+         x="726.84277"
+         y="-18.137787"
+         id="tspan4257">e.g. United States</tspan></text>
   </g>
 </svg>
