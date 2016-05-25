@@ -247,7 +247,7 @@ export default angular
     $scope.getAllScatterplots = function(date) {
       $scope.date = date;
       console.log('Start calculating date ' + date);
-      const instances = Object.values(Utilities.instances);
+      const instances = Object.values(Utilities.constants.instances);
       let redirectionMappingData = [];
       let firstPartyData = [];
       const scatterplotData = {};
@@ -273,6 +273,7 @@ export default angular
           const fpd = 'Rank,RelativeRank,' + instances.join(',') + '\n'
           + firstPartyData
             .map(f => f.rank)
+            .sort((o1, o2) => o1 - o2)
             .map((r, idx) => r + ',' + (idx + 1) + ',' + instances
               .map(i => i in scatterplotData && r in scatterplotData[i].fpd ? scatterplotData[i].fpd[r] : 0).join(','))
           .join('\n');
