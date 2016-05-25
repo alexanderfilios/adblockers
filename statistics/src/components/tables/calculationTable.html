@@ -10,6 +10,8 @@
       <div>{{calculatedDate.date}}</div>
       <div class="btn btn-default" ng-click="calculateAll(calculatedDate.date)">Calculate all</div>
       <div class="btn btn-default" ng-click="clearAll(calculatedDate.date)">Delete all</div>
+      <div class="btn btn-default" ng-click="getAllScatterplots(calculatedDate.date)">Calculate scatterplots</div>
+      <a class="btn btn-default" id="download-{{calculatedDate.date | formatDate | replaceSlashes}}">Get scatterplots</a>
     </td>
 
     <td>

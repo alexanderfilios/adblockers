@@ -20,7 +20,7 @@ import mapModule from '../../components/charts/mapModule';
 import scatterplotModule from '../../components/charts/scatterplotModule';
 import {DbConnection} from 'adblocker-utils';
 import GraphStats from '../../GraphStats';
-import jStat from 'jStat';
+import {jStat} from 'jStat';
 
 Utilities.constants.instances = {
   GHOSTERY_DEFAULT: 'data_Ghostery_Default',
@@ -92,12 +92,8 @@ export default angular
         cum[cur.rank] = cur.degree;
         return cum;
       }, {});
-      const csvContent = 'Rank,Degree' + '\n'
+      return 'Rank,Degree' + '\n'
         + xVals.map((xVal, idx) => (xVal + ',' + (idx + 1) + ',' + (dataDict[xVal] || 0))).join('\n');
-
-      return new JSZip()
-        .file('scatterplot.csv', csvContent)
-        .generateAsync({type: 'blob'});
     };
     self.getCsvDataInDateRange = function(dataDict, dateRange) {
       const dates = [];
@@ -115,15 +111,15 @@ export default angular
             .join(',')
       ).join('\n');
     };
-    self.getAllCsvData = function(data) {
-      const dateRange = data
+    self.getAllCsvData = function(statsData, graphDegreeData, rankVals) {
+      const dateRange = statsData
         .map(d => new Date(d.crawlDate))
         .reduce((cum, cur) => ({
           min: Math.min(cum.min, cur),
           max: Math.max(cum.max, cur)
         }), {min: new Date(), max: new Date(0)});
 
-      const dataDict = data
+      const statsDataDict = statsData
         .reduce((cum, cur) => {
           if (!(cur.name in cum)) {
             cum[cur.name] = {};
@@ -135,24 +131,60 @@ export default angular
           return cum;
         }, {});
 
-      return Object.keys(dataDict)
+      const zip = Object.keys(statsDataDict)
         .reduce((cum, metric) => {
-          cum.file(metric + '.csv', self.getCsvDataInDateRange(dataDict[metric], dateRange))
+          cum.file(metric + '.csv', self.getCsvDataInDateRange(statsDataDict[metric], dateRange))
           return cum;
-        }, new JSZip())
-        .generateAsync({type: 'blob'});
+        }, new JSZip());
+
+      const graphDegreeDataDict = graphDegreeData
+        .reduce((cum, cur) => {
+          if (!(cur.rank in cum)) {
+            cum[cur.rank] = {};
+          }
+          cum[cur.rank][cur.instance] =
+            (cur.instance in cum[cur.rank] ? cum[cur.rank][cur.instance] : [])
+              .concat(cur.degree);
+
+          return cum;
+        }, {});
+
+      const instances = Object.values(Utilities.constants.instances);
+
+      const scatterplotMeans = 'Rank,RelativeRank,' + instances.join(',') + '\n'
+        + rankVals.map((rank, idx) =>
+          rank + ',' + (idx + 1) + ',' + instances
+            .map(instance => rank in graphDegreeDataDict
+              && instance in graphDegreeDataDict[rank]
+              && Array.isArray(graphDegreeDataDict[rank][instance])
+              && jStat.mean(graphDegreeDataDict[rank][instance]) || '0')
+            .join(',')
+        ).join('\n');
+      const scatterplotStdev = 'Rank,RelativeRank,' + instances.join(',') + '\n'
+        + rankVals.map((rank, idx) =>
+          rank + ',' + (idx + 1) + ',' + instances
+            .map(instance => rank in graphDegreeDataDict
+            && instance in graphDegreeDataDict[rank]
+            && Array.isArray(graphDegreeDataDict[rank][instance])
+            && jStat.stdev(graphDegreeDataDict[rank][instance]) || '0')
+            .join(',')
+        ).join('\n');
+
+      zip.file('scatterplot-means.csv', scatterplotMeans);
+      zip.file('scatterplot-stdev.csv', scatterplotStdev);
+
+      return zip.generateAsync({type: 'blob'});
     };
   })
   .controller('DataController', ['$scope', 'csvService', function($scope, csvService) {
-
+    let rankVals = [];
     $scope.filename = 'graphs.zip';
     $scope.csvData = null;
     $scope.calculatedDates = {};
     $scope.connection._find($scope.connection._statsTable)
-      .then(data => {
-        $scope.stats = data;
-        return csvService.getAllCsvData(data);
-      })
+      .then(data => {$scope.stats = data; return $scope.connection._find($scope.connection._firstPartyTable);})
+      .then(data => {rankVals = data.map(d => d.rank).sort((o1, o2) => o1 - o2); return $scope.connection._find($scope.connection._graphDegreeTable);})
+      .then(graphDegreeData => csvService.getAllCsvData($scope.stats, graphDegreeData, rankVals))
       .then(csvData => {
         $scope.csvData = csvData;
 
@@ -206,16 +238,15 @@ export default angular
         .then(data => {
           entityDetailsData = data;
 
-          console.log('some data');
           $scope.graphStats = new GraphStats(requestData, entityDetailsData);
-          console.log('finished');
-          window.firstPartyData = firstPartyData;
-          window.redirectionMappingData = redirectionMappingData;
-          window.values = Object.values;
-          window.jStat = jStat;
-          window.graphStats = $scope.graphStats;
-          window.Utilities = Utilities;
-          console.log(graphStats.getTopValues(10, true, false, redirectionMappingData, firstPartyData));
+
+          //window.firstPartyData = firstPartyData;
+          //window.redirectionMappingData = redirectionMappingData;
+          //window.values = Object.values;
+          //window.jStat = jStat;
+          //window.graphStats = $scope.graphStats;
+          //window.Utilities = Utilities;
+          //console.log(graphStats.getTopValues(10, true, false, redirectionMappingData, firstPartyData));
           $scope.$apply();
         });
 

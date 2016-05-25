@@ -198,10 +198,19 @@ export default angular
             .css('height', '400px')
             .vectorMap({
               map: 'world_mill',
+              backgroundColor: '#ffffff',
               scaleColors: ['#C8EEFF', '#0071A4'],
               normalizeFunction: 'polynomial',
               hoverOpacity: 0.7,
               hoverColor: false,
+              regionStyle: {
+                initial: {
+                  //fill: '#000000'
+                  stroke: '#000000',
+                  'stroke-width': '0.2',
+                  'stroke-opacity': '1'
+                }
+              },
               markerStyle: {
                 initial: {
                   fill: '#F8E23B',

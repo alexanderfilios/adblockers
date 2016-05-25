@@ -107,7 +107,7 @@ const GraphStats = function(data, entityDetails = null, undirected = true) {
         }));
 
       const vertexDegrees = self.getVertexDegrees(true);
-      self._rankDegree = Object.keys(vertexDegrees)
+      const rankDegreeDict = Object.keys(vertexDegrees)
         .map(d => ({url: d, degree: vertexDegrees[d]}))
         .map(d => ({
           degree: d.degree,
@@ -116,7 +116,12 @@ const GraphStats = function(data, entityDetails = null, undirected = true) {
         .map(d => nodes
           .filter(n => n.url.endsWith(d.url))
           .map(n => ({rank: n.rank, url: n.url, degree: d.degree})))
-        .reduce((cum, cur) => cum.concat(cur));
+        .reduce((cum, cur) => cum.concat(cur))
+        .reduce((cum, cur) => {
+          cum[cur.rank] = cur.rank in cum && cum[cur.rank].degree > cur.degree ? cum[cur.rank] : cur;
+          return cum;
+        }, {});
+      self._rankDegree = Object.values(rankDegreeDict);
     }
     return self._rankDegree;
   };

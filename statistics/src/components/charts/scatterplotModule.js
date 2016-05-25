@@ -7,6 +7,7 @@ require('angular-ui-bootstrap');
 import moment from 'moment';
 const d3 = require('d3');
 import {Utilities} from 'adblocker-utils';
+import JSZip from 'jszip';
 
 export default angular
   .module('scatterplot', ['ui.bootstrap'])
@@ -37,16 +38,14 @@ export default angular
         $scope.connection._find($scope.connection._redirectionMappingTable)
           .then(data => {redirections = data; return $scope.connection._find($scope.connection._firstPartyTable);})
           .then(data => {
-            // Substitute URLs from first-party collection with the actual URLs from redirection-mapping collection
-            const redirectedDomains = data
-              .map(d => ({
-                rank: d.rank,
-                url: redirections
-                  .filter(r => r.original_url === d.url)
-                  .map(r => Utilities.parseUri(r.actual_url).host)[0] || Utilities.parseUri(d.url).host
-              }));
             $scope.data = graphStats.getRankDegree(redirections, data);
-            return csvService.getCsvDataInRange($scope.data, $scope.data.map(d => d.rank));
+            return new JSZip()
+              .file('scatterplot-fpd.csv', csvService.getCsvDataInRange($scope.data, data.map(d => d.rank)))
+              .file('scatterplot-tpd.csv','Degree\n' + Object.values(graphStats.getVertexDegrees(false)).join('\n'))
+              .generateAsync({type: 'blob'});
+            //return {
+            //  tpd: 'Degree\n' + Object.values(graphStats.getVertexDegrees(false)).join('\n'),
+            //  fpd: csvService.getCsvDataInRange($scope.data, $scope.data.map(d => d.rank))};
           }).
           then(data => {
             $scope.csvData = data;
