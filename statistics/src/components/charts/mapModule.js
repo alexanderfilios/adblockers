@@ -9,6 +9,7 @@ import {Utilities} from 'adblocker-utils';
 import GraphStats from '../../GraphStats';
 import jQuery from 'jquery';
 import {jStat} from 'jStat';
+import Rainbow from '../../RainbowColors';
 
 export default angular
   .module('mapChart', ['ui.bootstrap'])
@@ -22,11 +23,19 @@ export default angular
           return cum;
         }, {});
       const max = jStat.max(Object.values(a));
+      window.a = JSON.parse(JSON.stringify(a));
       console.log('max: ' + jStat.max(Object.values(a)));
       console.log('sum: ' + jStat.sum(Object.values(a)));
+      const logs = Object.values(a).map(a => Math.log(a));
+
+      const maxLog = jStat.max(logs);
+      window.values = Object.values;
       for (let country in a) {
-        const hex = ('0' + Math.floor((1 - a[country]/max) * 255).toString(16)).substr(-2);
-        a[country] = '#' + hex + hex + 'ff';
+        const rainbow = new Rainbow()
+          .setNumberRange(0, 1)
+          .setSpectrum('white', 'yellow', 'red');
+        a[country] = '#' + rainbow.colorAt(Math.log(a[country])/maxLog);
+        //a[country] = '#' + rainbow.colorAt(a[country]/max);
       }
       return a;
     };
@@ -196,6 +205,9 @@ export default angular
             .empty()
             .css('width', '1000px')
             .css('height', '400px')
+            .css('position', 'relative')
+            .css('border-image', 'linear-gradient(to top, white, yellow, red) 1 100%')
+            .css('border-right-width', '10px')
             .vectorMap({
               map: 'world_mill',
               backgroundColor: '#ffffff',
@@ -205,7 +217,7 @@ export default angular
               hoverColor: false,
               regionStyle: {
                 initial: {
-                  //fill: '#000000'
+                  fill: 'white',
                   stroke: '#000000',
                   'stroke-width': '0.2',
                   'stroke-opacity': '1'
@@ -228,7 +240,9 @@ export default angular
                 }]
               },
               markers: markers
-            });
+            })
+          .append('<p style="font-family:times-new-roman;font-weight:bold;position:absolute;top:0;right:0;">100%</p>')
+          .append('<p style="font-family:times-new-roman;font-weight:bold;position:absolute;bottom:0;right:0;">0%</p>');
           window.vm = vectorMap;
         };
       }
