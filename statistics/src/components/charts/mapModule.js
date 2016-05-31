@@ -11,6 +11,12 @@ import jQuery from 'jquery';
 import {jStat} from 'jStat';
 import Rainbow from '../../RainbowColors';
 
+const rainbow = new Rainbow()
+  .setNumberRange(0, 1)
+  .setSpectrum('white', 'yellow', 'red'),
+  mapHeight = 800,
+  mapWidth = 2000;
+
 export default angular
   .module('mapChart', ['ui.bootstrap'])
   .service('mapService', function() {
@@ -22,18 +28,15 @@ export default angular
           cum[country] = country in cum ? cum[country] + 1 : 1;
           return cum;
         }, {});
-      const max = jStat.max(Object.values(a));
-      window.a = JSON.parse(JSON.stringify(a));
+
       console.log('max: ' + jStat.max(Object.values(a)));
       console.log('sum: ' + jStat.sum(Object.values(a)));
       const logs = Object.values(a).map(a => Math.log(a));
 
       const maxLog = jStat.max(logs);
-      window.values = Object.values;
+
       for (let country in a) {
-        const rainbow = new Rainbow()
-          .setNumberRange(0, 1)
-          .setSpectrum('white', 'yellow', 'red');
+
         a[country] = '#' + rainbow.colorAt(Math.log(a[country])/maxLog);
         //a[country] = '#' + rainbow.colorAt(a[country]/max);
       }
@@ -203,11 +206,10 @@ export default angular
         const createMap = function(element, markers, regions) {
           const vectorMap = jQuery(element)
             .empty()
-            .css('width', '1000px')
-            .css('height', '400px')
-            .css('position', 'relative')
-            .css('border-image', 'linear-gradient(to top, white, yellow, red) 1 100%')
-            .css('border-right-width', '10px')
+            .css('width', mapWidth + 'px')
+            .css('height', mapHeight + 'px')
+
+
             .vectorMap({
               map: 'world_mill',
               backgroundColor: '#ffffff',
@@ -240,10 +242,40 @@ export default angular
                 }]
               },
               markers: markers
-            })
-          .append('<p style="font-family:times-new-roman;font-weight:bold;position:absolute;top:0;right:0;">100%</p>')
-          .append('<p style="font-family:times-new-roman;font-weight:bold;position:absolute;bottom:0;right:0;">0%</p>');
-          window.vm = vectorMap;
+            });
+
+          const steps = 80;
+          const maxPercentage = 40;
+          const legendDistance = 10;
+          for (let i = 0; i < steps; i++) {
+            const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            bar.setAttribute('width', '30px');
+            bar.setAttribute('height', (mapHeight / steps) + 'px');
+            bar.setAttribute('x', '1970px');
+            bar.setAttribute('y', (mapHeight * i / steps) + 'px' );
+            bar.setAttribute('fill', '#' + rainbow.colorAt(Math.log(((i + 1) / steps)) / Math.log(1/steps)));
+            vectorMap.find('svg')[0].appendChild(bar);
+
+            if (i % legendDistance === 0) {
+              const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+              text.setAttribute('x', '1920px');
+              text.setAttribute('y', (20 + (mapHeight * i / steps)) + 'px');
+              text.setAttribute('font-size', '18px');
+              text.setAttribute('font-family', 'times-new-roman');
+              text.setAttribute('fill', '#000000');
+              text.textContent = Math.ceil(maxPercentage * (1 - i / steps)) + '%';
+              vectorMap.find('svg')[0].appendChild(text);
+            }
+
+          }
+          const bottomText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          bottomText.setAttribute('x', '1920px');
+          bottomText.setAttribute('y', '800px');
+          bottomText.setAttribute('font-size', '18px');
+          bottomText.setAttribute('font-family', 'times-new-roman');
+          bottomText.setAttribute('fill', '#000000');
+          bottomText.textContent = '0%';
+          vectorMap.find('svg')[0].appendChild(bottomText);
         };
       }
     }
