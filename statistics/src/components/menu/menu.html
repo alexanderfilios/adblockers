@@ -102,10 +102,15 @@
            line-chart=""
            metric={{menuItems.LAST_500_FIRST_DEGREE}}></div>
     </div>
+
     <div ng-show="selected === menuItems.MAP">
-      <div ng-controller="MapController">
-        <div map-chart=""></div>
+      <div ng-controller="ServerMapController">
+        <div map-chart="" log></div>
       </div>
+      <div ng-controller="MapController">
+        <div map-chart="" log></div>
+      </div>
+
     </div>
 
     <div ng-show="selected === menuItems.CALCULATED_DATES">

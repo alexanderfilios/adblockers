@@ -23,24 +23,11 @@ export default angular
     const self = this;
     this.getRegions = function(markers) {
 
-      const a = markers.map(m => m.country)
+      return markers.map(m => m.country)
         .reduce((cum, country) => {
           cum[country] = country in cum ? cum[country] + 1 : 1;
           return cum;
         }, {});
-
-      console.log('max: ' + jStat.max(Object.values(a)));
-      console.log('sum: ' + jStat.sum(Object.values(a)));
-      const logs = Object.values(a).map(a => Math.log(a));
-
-      const maxLog = jStat.max(logs);
-
-      for (let country in a) {
-
-        a[country] = '#' + rainbow.colorAt(Math.log(a[country])/maxLog);
-        //a[country] = '#' + rainbow.colorAt(a[country]/max);
-      }
-      return a;
     };
     this.fetchCoordinates = address => new Promise(function (resolve, reject) {
       if (!address) {
@@ -175,7 +162,7 @@ export default angular
         console.log(markers.length + ' found!');
         $scope.markers = markers;
         $scope.regions = mapService.getRegions(markers);
-        console.log($scope.regions);
+        //console.log($scope.regions);
         $scope.displayedMarkers = mapService.filterThirdPartyMarkers($scope.graphStats, $scope.markers);
         $scope.$apply();
       });
@@ -186,11 +173,46 @@ export default angular
     });
 
   }])
+  .controller('ServerMapController', ['$scope', 'mapService', function($scope, mapService) {
+    $scope.displayedMarkers = [];
+    $scope.connection._find('third_entity_countries')
+      .then(data => {
+        $scope.regions = data.reduce((cum, cur) => {
+          cum[cur.country] = cur.country in cum ? cum[cur.country] + 1 : 1;
+          return cum;
+        }, {});
+
+
+        $scope.$apply();
+        //const max = jStat.max(Object.values(countries));
+      });
+    //$scope.regions = {
+    //  US: 10,
+    //  GR: 5
+    //};
+
+  }])
   .directive('mapChart', function($compile) {
     return {
       link: function (scope, element, attrs) {
-        scope.$watch('markers', function() {
-          createMap(element, scope.displayedMarkers, scope.regions);
+        scope.$watch('regions', function() {
+          let regions = scope.regions || {};
+          let logScale = 'log' in attrs;
+
+          const max = jStat.max(Object.values(regions));
+          const sum = jStat.sum(Object.values(regions));
+          const maxPercentage = Math.ceil(100 * max / sum);
+          if (logScale) {
+            for (let country in regions) {
+              regions[country] = Math.log(regions[country]);
+            }
+          }
+          const maxVal = jStat.max(Object.values(regions));
+
+          for (let country in regions) {
+            regions[country] = '#' + rainbow.colorAt(regions[country]/maxVal);
+          }
+          createMap(element, scope.displayedMarkers, regions, maxPercentage, logScale);
         });
 
         /**
@@ -203,7 +225,8 @@ export default angular
          *  {latLng: [43.73, 7.41], name: 'Monaco'}
          * ]
          */
-        const createMap = function(element, markers, regions) {
+        const createMap = function(element, markers, regions, maxPercentage, logScale) {
+
           const vectorMap = jQuery(element)
             .empty()
             .css('width', mapWidth + 'px')
@@ -245,22 +268,26 @@ export default angular
             });
 
           const steps = 80;
-          const maxPercentage = 40;
-          const legendDistance = 10;
+          const legendDistance = 20;
           for (let i = 0; i < steps; i++) {
             const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             bar.setAttribute('width', '30px');
             bar.setAttribute('height', (mapHeight / steps) + 'px');
             bar.setAttribute('x', '1970px');
             bar.setAttribute('y', (mapHeight * i / steps) + 'px' );
-            bar.setAttribute('fill', '#' + rainbow.colorAt(Math.log(((i + 1) / steps)) / Math.log(1/steps)));
+            if (logScale) {
+              bar.setAttribute('fill', '#' + rainbow.colorAt(Math.log(((i + 1) / steps)) / Math.log(1/steps)));
+            } else {
+              bar.setAttribute('fill', '#' + rainbow.colorAt((i + 1) / steps));
+            }
+
             vectorMap.find('svg')[0].appendChild(bar);
 
             if (i % legendDistance === 0) {
               const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-              text.setAttribute('x', '1920px');
+              text.setAttribute('x', '1900px');
               text.setAttribute('y', (20 + (mapHeight * i / steps)) + 'px');
-              text.setAttribute('font-size', '18px');
+              text.setAttribute('font-size', '28px');
               text.setAttribute('font-family', 'times-new-roman');
               text.setAttribute('fill', '#000000');
               text.textContent = Math.ceil(maxPercentage * (1 - i / steps)) + '%';
@@ -269,9 +296,9 @@ export default angular
 
           }
           const bottomText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          bottomText.setAttribute('x', '1920px');
+          bottomText.setAttribute('x', '1900px');
           bottomText.setAttribute('y', '800px');
-          bottomText.setAttribute('font-size', '18px');
+          bottomText.setAttribute('font-size', '28px');
           bottomText.setAttribute('font-family', 'times-new-roman');
           bottomText.setAttribute('fill', '#000000');
           bottomText.textContent = '0%';
