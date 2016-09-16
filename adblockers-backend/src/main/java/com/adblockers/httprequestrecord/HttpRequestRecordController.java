@@ -1,10 +1,10 @@
 package com.adblockers.httprequestrecord;
 
 import com.adblockers.browserprofile.BrowserProfile;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +16,16 @@ import java.util.List;
 public class HttpRequestRecordController {
 
     private HttpRequestRecordRepository httpRequestRecordRepository;
+
+    @RequestMapping(value = "/all", method = RequestMethod.DELETE)
+    public void clearAllDataCollections() {
+        this.httpRequestRecordRepository.remove(null);
+    }
+
+    @RequestMapping(value = "/bydate/{date}", method = RequestMethod.DELETE)
+    public void clearDataCollectionsByDate(Date date) {
+
+    }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void saveForBrowserProfile(@RequestBody HttpRequestRecordDTO httpRequestDTO) {

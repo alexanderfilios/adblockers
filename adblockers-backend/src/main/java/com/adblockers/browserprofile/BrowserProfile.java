@@ -1,10 +1,12 @@
 package com.adblockers.browserprofile;
 
-import jdk.nashorn.internal.runtime.regexp.RegExp;
-import org.apache.tomcat.util.codec.binary.StringUtils;
+import com.adblockers.utils.Utilities;
+import org.apache.commons.collections.ListUtils;
 
 import java.util.Arrays;
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 /**
  * Created by alexandrosfilios on 15/09/16.
@@ -73,6 +75,19 @@ public class BrowserProfile {
         this.adblocker = adblocker;
         this.protectionLevel = protectionLevel;
         this.userAgent = userAgent;
+    }
+
+    public static List<BrowserProfile> getAllBrowserProfiles() {
+        // Start with 1-sized lists ([Adblocker], [Adblocker], ...)
+        return Arrays.asList(BrowserProfile.Adblocker.values()).stream().map(t -> Arrays.asList(t.toString()))
+                    // 2-sized lists ([Adblocker, ProtectionLevel], ...)
+                    .flatMap(Utilities.crossWith(() -> Arrays.asList(BrowserProfile.ProtectionLevel.values()).stream().map(t -> Arrays.asList(t.toString())), (t1, t2) -> (List<String>) ListUtils.union(t1, t2)))
+                    // 3-sized lists ([Adblocker, ProtectionLevel, UserAgent], ...)
+                    .flatMap(Utilities.crossWith(() -> Arrays.asList(BrowserProfile.UserAgent.values()).stream().map(t -> Arrays.asList(t.toString())), (t1, t2) -> (List<String>) ListUtils.union(t1, t2)))
+                    // Map each list to a BrowserProfile
+                    .map(t -> new BrowserProfile(Adblocker.valueOf(t.get(0)), ProtectionLevel.valueOf(t.get(1)), UserAgent.valueOf(t.get(2))))
+                    // Collect them to a list
+                    .collect(Collectors.toList());
     }
 
     public String toTableName() {

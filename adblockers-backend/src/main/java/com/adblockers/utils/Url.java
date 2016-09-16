@@ -1,7 +1,5 @@
 package com.adblockers.utils;
 
-import org.apache.tomcat.util.codec.binary.StringUtils;
-
 import java.net.MalformedURLException;
 
 /**

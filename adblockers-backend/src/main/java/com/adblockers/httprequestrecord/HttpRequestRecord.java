@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public class HttpRequestRecord {
 
-    @Transient private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
+    @Transient public static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
 
     @Field("source") private String sourceUrl;
     @Transient private Url sourceUrlObject;
