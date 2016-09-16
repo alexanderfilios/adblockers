@@ -89,7 +89,11 @@
         status: data[12],
         cacheable: data[13],
         fromPrivateMode: data[14],
-        heuristics: data[15]
+        browserUri: data[15],
+        isAjax: data[16],
+        isBrowserSameAsTarget: data[17],
+        isAboutBlank: data[18],
+        hasReferrer: data[19]
       };
     };
     self.storeNewConnections = function(url) {
@@ -102,7 +106,7 @@
           // Append the first party URL (the one given by lightbeam is based on heuristics)
           .map((data) => jQuery.extend(data, {
             firstParty: parseUri(url).host,
-            crawlDate: moment().format(Utilities.constants.DATE_FORMAT)
+            browserProfileName: self._dbConnection._profile
           }));
 
         // Store them into DB

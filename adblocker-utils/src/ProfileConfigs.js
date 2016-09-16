@@ -5,11 +5,11 @@
 import jQuery from 'jquery';
 
 const defaultConfigs = {
-  host: '127.0.0.1',
+  host: 'localhost',
   //host: '192.33.93.94',
-  port: 3000,
+  port: 8080,
   database: 'myapp_test1',
-  firstPartiesTable: 'first_parties',
+  firstPartiesTable: 'firstparty',
   dataTable: 'data'
 };
 

@@ -1,11 +1,11 @@
 package com.adblockers.firstparty;
 
+import com.adblockers.utils.Url;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Created by alexandrosfilios on 15/09/16.
@@ -13,10 +13,8 @@ import java.net.URL;
 @Document(collection = "firstPartyUrl")
 public class FirstParty {
     private String url;
+    @Transient private Url urlObject;
     private Integer rank;
-
-    @Transient
-    private URL urlObject;
 
     public FirstParty() {}
 
@@ -26,13 +24,13 @@ public class FirstParty {
         setUrl(url);
     }
 
-    public URL getUrl() {
+    public Url getUrl() {
         return urlObject;
     }
 
     public void setUrl(String url) {
         try {
-            this.urlObject = new URL(url);
+            this.urlObject = Url.create(url);
             this.url = url;
         } catch (MalformedURLException e) {
             e.printStackTrace();

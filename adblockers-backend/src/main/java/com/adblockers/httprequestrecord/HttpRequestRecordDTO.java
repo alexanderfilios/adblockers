@@ -1,9 +1,12 @@
 package com.adblockers.httprequestrecord;
 
+import com.adblockers.browserprofile.BrowserProfile;
+
 /**
  * Created by alexandrosfilios on 15/09/16.
  */
 public class HttpRequestRecordDTO {
+
     private String source;
     private String target;
     private Long timestamp;
@@ -19,12 +22,19 @@ public class HttpRequestRecordDTO {
     private String status;
     private Boolean cacheable;
     private Boolean fromPrivateMode;
-
-    public HttpRequestRecord toHttpRequestRecord() {
-        return new HttpRequestRecord(source, target);
-    }
+    private String browserUri;
+    private Boolean isAjax;
+    private Boolean isBrowserSameAsTarget;
+    private Boolean isAboutBlank;
+    private Boolean hasReferrer;
+    private String firstParty;
+    private String browserProfileName;
 
     public HttpRequestRecordDTO() {}
+
+    public String getBrowserProfileName() { return browserProfileName; }
+
+    public void setBrowserProfileName(String browserProfileName) { this.browserProfileName = browserProfileName; }
 
     public String getSource() {
         return source;
@@ -144,5 +154,62 @@ public class HttpRequestRecordDTO {
 
     public void setFromPrivateMode(Boolean fromPrivateMode) {
         this.fromPrivateMode = fromPrivateMode;
+    }
+
+    public Boolean getHasReferrer() {
+        return hasReferrer;
+    }
+
+    public void setHasReferrer(Boolean hasReferrer) {
+        this.hasReferrer = hasReferrer;
+    }
+
+    public String getBrowserUri() {
+        return browserUri;
+    }
+
+    public void setBrowserUri(String browserUri) {
+        this.browserUri = browserUri;
+    }
+
+    public Boolean getAjax() {
+        return isAjax;
+    }
+
+    public void setAjax(Boolean ajax) {
+        isAjax = ajax;
+    }
+
+    public Boolean getBrowserSameAsTarget() {
+        return isBrowserSameAsTarget;
+    }
+
+    public void setBrowserSameAsTarget(Boolean browserSameAsTarget) {
+        isBrowserSameAsTarget = browserSameAsTarget;
+    }
+
+    public Boolean getAboutBlank() {
+        return isAboutBlank;
+    }
+
+    public void setAboutBlank(Boolean aboutBlank) {
+        isAboutBlank = aboutBlank;
+    }
+
+    public String getFirstParty() {
+        return firstParty;
+    }
+
+    public void setFirstParty(String firstParty) {
+        this.firstParty = firstParty;
+    }
+
+    // Custom methods
+    public HttpRequestRecord toHttpRequestRecord() {
+        return new HttpRequestRecord(source, target, contentType);
+    }
+
+    public BrowserProfile toBrowserProfile() {
+        return BrowserProfile.from(this.browserProfileName);
     }
 }

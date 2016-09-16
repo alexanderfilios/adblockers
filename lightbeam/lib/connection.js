@@ -237,14 +237,14 @@ Connection.prototype.restoreFromSubject = function (event) {
   // We visualize private connections but never store them.
   this.isPrivate = isPrivate;
   this._sourceTab = tab; // Never logged, only for associating data with current tab
-  // console.error((sourceVisited ? 'site: ' : 'tracker: ') + sourceDomain + ' -> ' + targetDomain + ' (' + browserUri.spec + ')');
-  this.heuristics = {
-    browserUri: browserUri && browserUri.host,
-    isAjax: !!isAjax,
-    isBrowserSameAsTarget: browserDomain === targetDomain,
-    isAboutBlank: browserSpec === 'about:blank',
-    hasReferrer: !!channel.referrer
-  };
+  
+  // Additional data: Storing the data relevant to the heuristics for possible posterior analysis
+  this.browserUri = browserUri && browserUri.host;
+  this.isAjax = !!isAjax;
+  this.isBrowserSameAsTarget = browserDomain === targetDomain;
+  this.isAboutBlank = browserSpec === 'about:blank';
+  this.hasReferrer = !!channel.referrer;
+  
 };
 
 // Connection - level methods (not on instances)
@@ -277,7 +277,13 @@ Connection.METHOD = 11;
 Connection.STATUS = 12;
 Connection.CACHEABLE = 13;
 Connection.FROM_PRIVATE_MODE = 14;
-Connection.HEURISTICS = 15;
+
+// Additional data
+Connection.BROWSER_URI = 15;
+Connection.IS_AJAX = 16;
+Connection.IS_BROWSER_SAME_AS_TARGET = 17;
+Connection.IS_ABOUT_BLANK = 18;
+Connection.HAS_REFERRER = 19;
 
 Connection.prototype.toLog = function () {
   if (!this.valid) {
@@ -299,7 +305,13 @@ Connection.prototype.toLog = function () {
     this.status,
     this.cacheable,
     this._sourceTab.isPrivate,
-    this.heuristics
+    
+    // Additional data
+    this.browserUri,
+    this.isAjax,
+    this.isBrowserSameAsTarget,
+    this.isAboutBlank,
+    this.hasReferrer
   ];
   if (this.isPrivate) {
     theLog.push(this.isPrivate);

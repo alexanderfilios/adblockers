@@ -15,7 +15,8 @@ const DbConnection = function(profile = 'default', config = {}) {
   self._logger = null;
   self._logTable = 'log';
   self._firstPartyTable = self._config.firstPartiesTable;
-  self._dataTable = self._config.dataTable;
+  self._dataTable = 'httprequestrecord';
+  self._profile = self._config.dataTable;
   self._statsTable = 'statistics';
   self._database = self._config.database;
   self._host = self._config.host;
@@ -33,7 +34,7 @@ const DbConnection = function(profile = 'default', config = {}) {
       return new Promise((resolve) => resolve(cachedData.data));
     }
 
-    let url = 'http://' + host + ':' + port + '/' + database + '/' + collection;
+    let url = 'http://' + host + ':' + port + '/' + collection;
     if (typeof filter === 'string') {
       // Filter is an ID
       url += '/' + filter;
@@ -61,7 +62,7 @@ const DbConnection = function(profile = 'default', config = {}) {
     return new Promise(function(resolve, reject) {
       jQuery.ajax({
         type: 'DELETE',
-        url: 'http://' + host + ':' + port + '/' + database + '/' + collection + (id ? ('/' + id) : ''),
+        url: 'http://' + host + ':' + port + '/' + collection + (id ? ('/' + id) : ''),
         dataType: 'json',
         success: (result) => resolve(result),
         error: (xhr, status, error) => reject(xhr, status, error)
@@ -72,7 +73,7 @@ const DbConnection = function(profile = 'default', config = {}) {
     return new Promise(function(resolve, reject) {
       jQuery.ajax({
         type: 'POST',
-        url: 'http://' + host + ':' + port + '/' + database + '/' + collection,
+        url: 'http://' + host + ':' + port + '/' + collection,
         contentType: 'application/json',
         data: JSON.stringify(data),
         dataType: 'json',
