@@ -34,14 +34,21 @@ public class Url {
         return otherUrl != null && this.equals(otherUrl);
     }
 
-    public String getDomain() {
-        String[] components = url
-                // Remove protocol
+    /**
+     * Finds the host, e.g. http://www.google.com/some/path -> www.google.com
+     * @return The host
+     */
+    public String getHost() {
+        return getUrl()
+                // Remove the protocol
                 .replaceFirst("^[a-zA-Z]*\\://", "")
                 // Remove all paths
-                .replaceFirst("/.*", "")
-                // Split domains
-                .split("\\.");
+                .replaceFirst("/.*", "");
+    }
+
+    public String getDomain() {
+        // Split domains
+        String[] components = getHost().split("\\.");
 
         if (components.length < 2
                 || (components[components.length - 2].equalsIgnoreCase("co") && components.length < 3)) {
@@ -53,5 +60,10 @@ public class Url {
         } else {
             return String.join(".", Arrays.copyOfRange(components, components.length - 2, components.length));
         }
+    }
+
+    @Override
+    public String toString() {
+        return getUrl();
     }
 }

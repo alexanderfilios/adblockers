@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * Created by alexandrosfilios on 16/09/16.
+ * This class hosts data collected from WHOIS
  */
 public class LegalEntity {
 
@@ -26,10 +27,10 @@ public class LegalEntity {
             .build();
 
     // This is the domain we visited initially
-    private String domain;
+    private Url url;
 
     // Data from the WHOIS information
-    private Url url;
+    private String domain;
     private String organization;
     private String email;
     private String city;
@@ -60,10 +61,6 @@ public class LegalEntity {
 
     public void setOrganization(String organization) {
         this.organization = organization;
-    }
-
-    public static Map<String, List<String>> getPropNames() {
-        return PROP_NAMES;
     }
 
     public String getEmail() {

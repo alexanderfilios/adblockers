@@ -10,13 +10,13 @@ public class AdblockersBackendApplication {
 
 	public static final String RESOURCES_PATH = new StringBuilder()
 			.append(System.getProperty("user.dir"))
-			.append(File.pathSeparator)
+			.append(File.separator)
 			.append("src")
-			.append(File.pathSeparator)
+			.append(File.separator)
 			.append("main")
-			.append(File.pathSeparator)
+			.append(File.separator)
 			.append("resources")
-			.append(File.pathSeparator)
+			.append(File.separator)
 			.toString();
 	public static void main(String[] args) {
 		SpringApplication.run(AdblockersBackendApplication.class, args);

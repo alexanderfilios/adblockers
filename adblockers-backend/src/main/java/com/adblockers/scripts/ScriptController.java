@@ -2,17 +2,15 @@ package com.adblockers.scripts;
 
 import com.adblockers.firstparty.FirstParty;
 import com.adblockers.firstparty.FirstPartyRepository;
+import com.adblockers.httprequestrecord.HttpRequestRecordRepository;
 import com.adblockers.utils.LegalEntity;
+import com.adblockers.utils.ServerLocation;
 import com.adblockers.utils.Url;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -23,41 +21,38 @@ import java.util.stream.Collectors;
 @RequestMapping("scripts/")
 public class ScriptController {
 
+    private WhoisService whoisService;
+    private GeoIpService geoIpService;
     private FirstPartyRepository firstPartyRepository;
-    private WhoisCollector whoisCollector;
+    private HttpRequestRecordRepository httpRequestRecordRepository;
+
+    @RequestMapping("geoip/firstparty")
+    public List<ServerLocation> getGeoIpInformationForAllFirstParties() {
+        List<Url> urls = this.firstPartyRepository.findAll().stream()
+                .map(FirstParty::getUrl)
+                .collect(Collectors.toList());
+        return geoIpService.getServerLocationsByUrl(urls);
+    }
+
+    @RequestMapping("geoip/thirdparty")
+    public List<ServerLocation> getGeoIpInformationForAllThirdParties() {
+        List<Url> urls = this.httpRequestRecordRepository.getAllThirdParties();
+        return geoIpService.getServerLocationsByUrl(urls);
+    }
 
     @RequestMapping("whois/firstparty")
-    public Map<Url, LegalEntity> getWhoisInformationForAllFirstParties() {
+    public List<LegalEntity> getWhoisInformationForAllFirstParties() {
         List<Url> urls = this.firstPartyRepository.findAll()
                 .stream()
                 .map(FirstParty::getUrl)
                 .collect(Collectors.toList());
-        return this.whoisCollector.findByUrl(urls);
-    }
-
-    @RequestMapping("whois/firstparty/{url}")
-    public String getWhoisInformationForFirstParty(String url) throws MalformedURLException {
-        return this.whoisCollector.findByUrl(Url.create(url)).toString();
+        return this.whoisService.findLegalEntitiesByUrl(urls);
     }
 
     @RequestMapping("whois/thirdparty")
-    public void getWhoisInformationForThirdParties() {
-//        List<Url> domains = this.firstPartyRepository.findAll()
-//                .stream()
-//                .limit(3)
-//                .map(FirstParty::getUrl)
-//                .collect(Collectors.toList());
-        try {
-            List<Url> domains = Arrays.asList(new Url[]{
-
-                    Url.create("yahoo.com"),
-                    Url.create("mkyong.com"),
-                    Url.create("google.de"),
-                    Url.create("facebook.com")});
-            this.whoisCollector.findByUrl(domains);
-//            return this.whoisCollector.findByUrl(domains);
-        } catch (MalformedURLException e) {}
-//        return null;
+    public List<LegalEntity> getWhoisInformationForThirdParties() {
+        List<Url> urls = this.httpRequestRecordRepository.getAllThirdParties();
+        return this.whoisService.findLegalEntitiesByUrl(urls);
     }
 
     @Autowired
@@ -65,7 +60,17 @@ public class ScriptController {
         this.firstPartyRepository = firstPartyRepository;
     }
     @Autowired
-    public void setWhoisCollector(WhoisCollector whoisCollector) {
-        this.whoisCollector = whoisCollector;
+    public void setWhoisService(WhoisService whoisService) {
+        this.whoisService = whoisService;
+    }
+
+    @Autowired
+    public void setGeoIpService(GeoIpService geoIpService) {
+        this.geoIpService = geoIpService;
+    }
+
+    @Autowired
+    public void setHttpRequestRecordRepository(HttpRequestRecordRepository httpRequestRecordRepository) {
+        this.httpRequestRecordRepository = httpRequestRecordRepository;
     }
 }

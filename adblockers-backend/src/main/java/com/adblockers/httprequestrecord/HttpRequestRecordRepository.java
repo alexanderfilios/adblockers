@@ -1,6 +1,7 @@
 package com.adblockers.httprequestrecord;
 
 import com.adblockers.browserprofile.BrowserProfile;
+import com.adblockers.utils.Url;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +36,11 @@ public class HttpRequestRecordRepository {
 
     public List<?> getAllForBrowserProfile(BrowserProfile browserProfile) {
         return this.mongoTemplate.find(null, HttpRequestRecord.class, browserProfile.toTableName());
+    }
+
+    //TODO
+    public List<Url> getAllThirdParties() {
+        return new ArrayList<>();
     }
 
 

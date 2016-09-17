@@ -18,6 +18,12 @@ import java.util.stream.Stream;
 @RequestMapping("firstparty")
 public class FirstPartyController {
 
+    // We will crawl 500 top-ranked and 500 randomly-selected first parties
+    private static final Integer TOP_FIRST_PARTIES = 10;
+    private static final Integer RANDOM_FIRST_PARTIES = 10;
+    // There are 1 million first parties in the list
+    private static final Integer TOTAL_FIRST_PARTIES = 1000000;
+
     private FirstPartyRepository firstPartyRepository;
 
     /**
@@ -26,8 +32,8 @@ public class FirstPartyController {
      */
     private Collection<Integer> getRanksToCrawl() {
         return Stream.concat(
-                        ContiguousSet.create(Range.closed(1, 10), DiscreteDomain.integers()).stream(),
-                        new Random().ints(10, 501, 1000000).boxed())
+                        ContiguousSet.create(Range.closed(1, TOP_FIRST_PARTIES), DiscreteDomain.integers()).stream(),
+                        new Random().ints(RANDOM_FIRST_PARTIES, TOP_FIRST_PARTIES + 1, TOTAL_FIRST_PARTIES).boxed())
                 .collect(Collectors.toList());
     }
 

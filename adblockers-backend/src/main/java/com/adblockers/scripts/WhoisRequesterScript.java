@@ -24,7 +24,7 @@ public class WhoisRequesterScript implements WhoisRequester {
             commandBuilder.append(" -h ")
                     .append(databaseHost)
                     .append(" -p ")
-                    .append(WhoisCollector.WHOIS_PORT);
+                    .append(WhoisService.WHOIS_PORT);
         }
         commandBuilder.append(" ")
                 .append(domain);
