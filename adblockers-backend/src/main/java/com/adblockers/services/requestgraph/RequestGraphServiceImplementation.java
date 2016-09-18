@@ -1,18 +1,12 @@
 package com.adblockers.services.requestgraph;
 
-import com.adblockers.entities.BrowserProfile;
-import com.adblockers.entities.HttpRequestRecord;
-import com.adblockers.entities.LegalEntity;
-import com.adblockers.entities.Url;
+import com.adblockers.entities.*;
 import com.adblockers.repos.LegalEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +40,19 @@ public class RequestGraphServiceImplementation implements RequestGraphService {
                 .map(record -> record.getDate())
                 .orElse(null);
         return new RequestGraph(edges, crawlDate, browserProfile);
+    }
+
+    public List<Metric> createEntityRequestGraphAndGetMetrics(List<HttpRequestRecord> httpRequestRecords, BrowserProfile browserProfile) {
+        RequestGraph<Url, LegalEntity> entityRequestGraph = createEntityRequestGraph(httpRequestRecords, browserProfile);
+        return Arrays.asList(Metric.MetricType.values()).stream()
+                .map(metricType -> entityRequestGraph.getMetric(metricType))
+                .collect(Collectors.toList());
+    }
+    public List<Metric> createDomainRequestGraphAndGetMetrics(List<HttpRequestRecord> httpRequestRecords, BrowserProfile browserProfile) {
+        RequestGraph<Url, Url> domainRequestGraph = createDomainRequestGraph(httpRequestRecords, browserProfile);
+        return Arrays.asList(Metric.MetricType.values()).stream()
+                .map(metricType -> domainRequestGraph.getMetric(metricType))
+                .collect(Collectors.toList());
     }
 
     @Autowired

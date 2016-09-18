@@ -35,8 +35,15 @@ public class HttpRequestRecordRepository {
         return this.mongoTemplate.count(null, browserProfile.toTableName());
     }
 
-    public List<?> getAllForBrowserProfile(BrowserProfile browserProfile) {
+    public List<HttpRequestRecord> getAllForBrowserProfile(BrowserProfile browserProfile) {
         return this.mongoTemplate.find(null, HttpRequestRecord.class, browserProfile.toTableName());
+    }
+    public List<HttpRequestRecord> getAllForBrowserProfileAndDate(BrowserProfile browserProfile, Date date) {
+        String crawlDate = HttpRequestRecord.DATE_FORMAT.format(date);
+        return this.mongoTemplate.find(
+                Query.query(Criteria.where("crawlDate").is(crawlDate)),
+                HttpRequestRecord.class,
+                browserProfile.toTableName());
     }
 
     //TODO

@@ -1,9 +1,6 @@
 package com.adblockers.services.requestgraph;
 
-import com.adblockers.entities.BrowserProfile;
-import com.adblockers.entities.HttpRequestRecord;
-import com.adblockers.entities.LegalEntity;
-import com.adblockers.entities.Url;
+import com.adblockers.entities.*;
 
 import java.util.List;
 
@@ -13,4 +10,6 @@ import java.util.List;
 public interface RequestGraphService {
     RequestGraph<Url, LegalEntity> createEntityRequestGraph(List<HttpRequestRecord> httpRequestRecords, BrowserProfile browserProfile);
     RequestGraph<Url, Url> createDomainRequestGraph(List<HttpRequestRecord> httpRequestRecords, BrowserProfile browserProfile);
+    List<Metric> createEntityRequestGraphAndGetMetrics(List<HttpRequestRecord> httpRequestRecords, BrowserProfile browserProfile);
+    List<Metric> createDomainRequestGraphAndGetMetrics(List<HttpRequestRecord> httpRequestRecords, BrowserProfile browserProfile);
 }
