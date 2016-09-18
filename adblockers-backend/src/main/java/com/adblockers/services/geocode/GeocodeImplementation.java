@@ -51,7 +51,9 @@ public class GeocodeImplementation implements GeocodeService {
         legalEntityLocation.setLongitude(location.getLongitude());
         legalEntityLocation.setCity(location.getCity());
         legalEntityLocation.setCountry(location.getCountry());
+        legalEntityLocation.setPostalCode(location.getPostalCode());
         legalEntityLocation.setOrganization(legalEntity.getOrganization());
+
         return legalEntityLocation;
     }
 
@@ -159,6 +161,7 @@ public class GeocodeImplementation implements GeocodeService {
         location.setPostalCode(administrativeData.get("postalCode"));
         location.setCity(administrativeData.get("city"));
         location.setCountry(administrativeData.get("country"));
+
         return location;
     }
 

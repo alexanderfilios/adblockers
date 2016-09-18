@@ -31,7 +31,7 @@ public class GeoIpCity implements GeoIpService {
         }
     }
 
-    public ServerLocation getServerLocationByUrl(Url url) {
+    public ServerLocation findServerLocationByUrl(Url url) {
         try {
             InetAddress ipAddress = InetAddress.getByName(url.getHost());
             CityResponse cityResponse = databaseReader.city(ipAddress);

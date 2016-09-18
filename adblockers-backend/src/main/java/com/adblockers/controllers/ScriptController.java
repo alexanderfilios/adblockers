@@ -42,13 +42,13 @@ public class ScriptController {
         List<Url> urls = this.firstPartyRepository.findAll().stream()
                 .map(FirstParty::getUrl)
                 .collect(Collectors.toList());
-        return geoIpCity.getServerLocationsByUrl(urls);
+        return geoIpCity.findServerLocationsByUrl(urls);
     }
 
     @RequestMapping("geoip/thirdparties")
     public List<ServerLocation> getGeoIpInformationForAllThirdParties() {
         List<Url> urls = this.httpRequestRecordRepository.getAllThirdParties();
-        return geoIpCity.getServerLocationsByUrl(urls);
+        return geoIpCity.findServerLocationsByUrl(urls);
     }
 
     @RequestMapping("whois/firstparties")
@@ -57,13 +57,13 @@ public class ScriptController {
                 .stream()
                 .map(FirstParty::getUrl)
                 .collect(Collectors.toList());
-        return this.whoisService.findLegalEntityByUrl(urls);
+        return this.whoisService.findLegalEntitiesByUrl(urls);
     }
 
     @RequestMapping("whois/thirdparties")
     public List<LegalEntity> getWhoisInformationForThirdParties() {
         List<Url> urls = this.httpRequestRecordRepository.getAllThirdParties();
-        return this.whoisService.findLegalEntityByUrl(urls);
+        return this.whoisService.findLegalEntitiesByUrl(urls);
     }
 
     @Autowired

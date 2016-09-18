@@ -57,7 +57,8 @@ public class Location {
         return new StringBuilder()
                 .append("city: ").append(getCity() != null ? getCity() : "-").append(", ")
                 .append("postal code: ").append(getPostalCode() != null ? getPostalCode() : "-").append(", ")
-                .append("country: ").append(getCountry() != null ? getCountry() : "-")
+                .append("country: ").append(getCountry() != null ? getCountry() : "-").append(", ")
+                .append("coordinates: (").append(getLatitude()).append(", " ).append(getLongitude()).append(")")
                 .toString();
     }
 }

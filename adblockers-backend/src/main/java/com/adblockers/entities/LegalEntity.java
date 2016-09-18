@@ -96,8 +96,6 @@ public class LegalEntity {
     }
 
     public static LegalEntity fromPropertiesMap(String domain, Map<String, String> props) {
-        System.out.println(props);
-
         LegalEntity legalEntity = new LegalEntity();
         legalEntity.setDomain(domain);
         try {
@@ -109,7 +107,6 @@ public class LegalEntity {
         legalEntity.setCity(getPropertyOrNull(props, "city"));
         legalEntity.setCountry(getPropertyOrNull(props, "country"));
 
-        System.out.println(legalEntity);
         return legalEntity;
     }
 

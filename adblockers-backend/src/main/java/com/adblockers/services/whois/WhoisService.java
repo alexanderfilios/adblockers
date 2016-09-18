@@ -18,7 +18,7 @@ public interface WhoisService {
      * @param urls
      * @return
      */
-    default List<LegalEntity> findLegalEntityByUrl(List<Url> urls) {
+    default List<LegalEntity> findLegalEntitiesByUrl(List<Url> urls) {
         return urls.stream()
                 .map(url -> findLegalEntityByUrl(url))
                 .collect(Collectors.toList());

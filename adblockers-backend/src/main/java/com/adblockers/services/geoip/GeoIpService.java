@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
  * Created by alexandrosfilios on 18/09/16.
  */
 public interface GeoIpService {
-    ServerLocation getServerLocationByUrl(Url url);
+    ServerLocation findServerLocationByUrl(Url url);
 
-    default List<ServerLocation> getServerLocationsByUrl(List<Url> urls) {
+    default List<ServerLocation> findServerLocationsByUrl(List<Url> urls) {
         return urls.stream()
-                .map(url -> getServerLocationByUrl(url))
+                .map(url -> findServerLocationByUrl(url))
                 .collect(Collectors.toList());
     }
 }
