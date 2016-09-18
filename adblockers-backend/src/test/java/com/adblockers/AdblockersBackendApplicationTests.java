@@ -1,24 +1,27 @@
 package com.adblockers;
 
-import com.adblockers.entities.LegalEntity;
-import com.adblockers.entities.LegalEntityLocation;
-import com.adblockers.entities.ServerLocation;
-import com.adblockers.entities.Url;
+import com.adblockers.entities.*;
 import com.adblockers.services.geocode.GeocodeService;
 import com.adblockers.services.geoip.GeoIpService;
+import com.adblockers.services.requestgraph.RequestGraph;
 import com.adblockers.services.whois.WhoisService;
+import com.google.common.collect.ImmutableSet;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -125,6 +128,35 @@ public class AdblockersBackendApplicationTests {
                         hasProperty("city", is("San Mateo County")),
                         hasProperty("country", is("United States"))
                 ));
+    }
+
+    @Test
+    public void createGraphTest() {
+        Set<Pair<String, Integer>> testEdges = ImmutableSet.<Pair<String, Integer>>builder()
+                .add(Pair.of("A", Integer.valueOf(1)))
+                .add(Pair.of("A", Integer.valueOf(2)))
+                .add(Pair.of("B", Integer.valueOf(1)))
+                .add(Pair.of("C", Integer.valueOf(1)))
+                .add(Pair.of("C", Integer.valueOf(3)))
+                .add(Pair.of("C", Integer.valueOf(3)))
+                .add(Pair.of("D", Integer.valueOf(1)))
+                .add(Pair.of("D", Integer.valueOf(2)))
+                .add(Pair.of("D", Integer.valueOf(3)))
+                .build();
+
+        RequestGraph<String, String> requestGraph = new RequestGraph(
+                testEdges, Mockito.mock(Date.class), Mockito.mock(BrowserProfile.class));
+
+        assertThat(
+                requestGraph.getMeanFirstPartyNodeDegree(), is(2.0));
+        assertThat(
+                requestGraph.getMeanThirdPartyNodeDegree(), is(2.6666666666666665));
+        assertThat(
+                requestGraph.getMeanFirstPartyNodeDegreeAveragingTop(2), is(2.5));
+        assertThat(
+                requestGraph.getMeanThirdPartyNodeDegreeAveragingTop(1), is(4.0));
+        assertThat(
+                requestGraph.getDensity(), is(0.38095238095238093));
     }
 
 

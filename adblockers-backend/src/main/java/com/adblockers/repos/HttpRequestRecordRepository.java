@@ -60,7 +60,7 @@ public class HttpRequestRecordRepository {
             this.mongoTemplate.dropCollection(collectionName);
             LOGGER.info("Dropped collection " + collectionName);
         } else {
-            String crawlDate = HttpRequestRecord.dateFormat.format(date);
+            String crawlDate = HttpRequestRecord.DATE_FORMAT.format(date);
             this.mongoTemplate.remove(
                     Query.query(Criteria.where("crawlDate").is(crawlDate)),
                     collectionName);

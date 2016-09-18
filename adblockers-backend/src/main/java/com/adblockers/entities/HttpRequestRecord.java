@@ -1,6 +1,5 @@
 package com.adblockers.entities;
 
-import com.adblockers.entities.Url;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -15,7 +14,7 @@ import java.util.Date;
  */
 public class HttpRequestRecord {
 
-    @Transient public static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
+    @Transient public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-YYYY");
 
     @Field("source") private String sourceUrl;
     @Transient private Url sourceUrlObject;
@@ -59,12 +58,12 @@ public class HttpRequestRecord {
 
     public void setDate(String date) {
         try {
-            this.dateObject = dateFormat.parse(date);
+            this.dateObject = DATE_FORMAT.parse(date);
             this.date = date;
         } catch (ParseException e) {}
     }
     public void setDate(Date date) {
-        this.date = dateFormat.format(date);
+        this.date = DATE_FORMAT.format(date);
         this.dateObject = date;
     }
     public Date getDate() {
