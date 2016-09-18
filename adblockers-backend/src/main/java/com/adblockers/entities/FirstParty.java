@@ -15,6 +15,8 @@ public class FirstParty {
     private String url;
     @Transient private Url urlObject;
     private Integer rank;
+    private String redirectionUrl;
+    @Transient private Url redirectionUrlObject;
 
     public FirstParty() {}
 
@@ -37,11 +39,36 @@ public class FirstParty {
         }
     }
 
+    public Url getRedirectionUrl() {
+        return redirectionUrlObject;
+    }
+
+    public void setRedirectionUrl(String redirectionUrl) {
+        try {
+            this.redirectionUrlObject = Url.create(redirectionUrl);
+            this.redirectionUrl = redirectionUrl;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Integer getRank() {
         return rank;
     }
 
     public void setRank(Integer rank) {
         this.rank = rank;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("URL: ")
+                .append(getUrl().getUrl())
+                .append(", rank: ")
+                .append(getRank())
+                .append(", redirects to: ")
+                .append(getRedirectionUrl().getUrl())
+                .toString();
     }
 }

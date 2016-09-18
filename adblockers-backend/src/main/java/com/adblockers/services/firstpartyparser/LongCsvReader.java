@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.adblockers.AdblockersBackendApplication;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.function.Predicate;
 /**
  * Created by alexandrosfilios on 15/09/16.
  */
-@Component
+@Service
 public class LongCsvReader<T> implements LongCsvReaderService<T> {
     private final Logger LOGGER = Logger.getLogger(LongCsvReader.class);
 
