@@ -27,24 +27,19 @@ public class FirstPartyController {
      * It will parse the 1.000.000 websites from a file and extract them into the MongoDB.
      * @param fileName The csv file that contains the rank
      */
-    @RequestMapping(value = {"/extract/{fileName}"}, method = RequestMethod.GET)
-    public void extractFirstParties(@RequestParam String fileName) {
+    @RequestMapping(value = {"/extract/{fileName}"}, method = RequestMethod.PUT)
+    public void extractFirstParties(@PathVariable String fileName) {
         this.firstPartyRepository.deleteAll();
         Collection<FirstParty> firstParties = this.firstPartyExtractorService.extractFirstPartiesFromFile(fileName);
         this.firstPartyRepository.save(firstParties);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.DELETE)
+    @RequestMapping(value = {"/"}, method = RequestMethod.DELETE)
     public void deleteFirstParties() {
         this.firstPartyRepository.deleteAll();
     }
 
-    @RequestMapping(value = "/count", method = RequestMethod.GET)
-    public Long countFirstParties() {
-        return this.firstPartyRepository.count();
-    }
-
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = {""}, method = RequestMethod.GET)
     public Collection<?> getFirstParties() {
         return this.firstPartyRepository.findAll()
                 .stream()

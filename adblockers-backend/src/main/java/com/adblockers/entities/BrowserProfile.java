@@ -16,8 +16,7 @@ public class BrowserProfile {
     public enum Adblocker {
         NOADBLOCKER,
         ADBLOCKPLUS,
-        GHOSTERY,
-        UNDEFINED
+        GHOSTERY
     }
     public enum ProtectionLevel {
         DEFAULT,
@@ -32,49 +31,30 @@ public class BrowserProfile {
     private ProtectionLevel protectionLevel;
     private UserAgent userAgent;
 
-    public static BrowserProfile from(String adblocker, Boolean defaultProtection, Boolean mobileUserAgent) {
-        return new BrowserProfile(
-                Adblocker.valueOf(adblocker),
-                defaultProtection ? ProtectionLevel.DEFAULT : ProtectionLevel.MAX,
-                mobileUserAgent ? UserAgent.MOBILE : UserAgent.DESKTOP);
-    }
     public static BrowserProfile from(Adblocker adblocker, ProtectionLevel protectionLevel, UserAgent userAgent) {
-        return new BrowserProfile(adblocker, protectionLevel, userAgent);
+        BrowserProfile browserProfile = new BrowserProfile();
+        browserProfile.adblocker = adblocker;
+        browserProfile.protectionLevel = protectionLevel;
+        browserProfile.userAgent = userAgent;
+        return  browserProfile;
     }
 
-    public static BrowserProfile from(String browserProfileName) {
-        String[] params = browserProfileName.replaceFirst("/^(?:data_)/", "").split("_");
+    /**
+     * Inverse method to toCollectionName()
+     * @param collectionName The collection name, e.g. data_noadblocker_max_mobile or noadblocker_max_mobile
+     * @return The {@link BrowserProfile}
+     */
+    public static BrowserProfile from(String collectionName) {
+        String[] params = collectionName.replaceFirst("^(data_)", "").split("_");
         if (params.length < 2) {
-            return new BrowserProfile(
-                    Adblocker.UNDEFINED,
-                    ProtectionLevel.DEFAULT,
-                    UserAgent.DESKTOP
-            );
+            throw new IllegalArgumentException("Invalid name");
         }
 
-        Adblocker adblocker = Arrays.asList(Adblocker.values())
-                .stream()
-                .filter(a -> a.toString().toLowerCase().equals(params[0].toLowerCase()))
-                .findFirst()
-                .orElse(Adblocker.UNDEFINED);
-        ProtectionLevel protectionLevel = params[1].equals("MaxProtection") || params[1].equals("MaxProtection")
-                ? ProtectionLevel.MAX
-                : ProtectionLevel.DEFAULT;
-        UserAgent userAgent = params[params.length - 1].equals("MUA")
-                ? UserAgent.MOBILE
-                : UserAgent.DESKTOP;
+        Adblocker adblocker = Adblocker.valueOf(params[0].toUpperCase());
+        ProtectionLevel protectionLevel = ProtectionLevel.valueOf(params[1].toUpperCase());
+        UserAgent userAgent = UserAgent.valueOf(params[2].toUpperCase());
 
-        return new BrowserProfile(
-                adblocker,
-                protectionLevel,
-                userAgent
-        );
-    }
-
-    private BrowserProfile(Adblocker adblocker, ProtectionLevel protectionLevel, UserAgent userAgent) {
-        this.adblocker = adblocker;
-        this.protectionLevel = protectionLevel;
-        this.userAgent = userAgent;
+        return BrowserProfile.from(adblocker, protectionLevel, userAgent);
     }
 
     public static List<BrowserProfile> getAllBrowserProfiles() {
@@ -85,18 +65,30 @@ public class BrowserProfile {
                     // 3-sized lists ([Adblocker, ProtectionLevel, UserAgent], ...)
                     .flatMap(Utilities.crossWith(() -> Arrays.asList(BrowserProfile.UserAgent.values()).stream().map(t -> Arrays.asList(t.toString())), (t1, t2) -> (List<String>) ListUtils.union(t1, t2)))
                     // Map each list to a BrowserProfile
-                    .map(t -> new BrowserProfile(Adblocker.valueOf(t.get(0)), ProtectionLevel.valueOf(t.get(1)), UserAgent.valueOf(t.get(2))))
+                    .map(t -> BrowserProfile.from(Adblocker.valueOf(t.get(0)), ProtectionLevel.valueOf(t.get(1)), UserAgent.valueOf(t.get(2))))
                     // Collect them to a list
                     .collect(Collectors.toList());
     }
 
-    public String toTableName() {
+    public String toCollectionName() {
         return new StringBuilder()
                 .append("data_")
                 .append(adblocker.toString().toLowerCase())
                 .append("_")
                 .append(protectionLevel.toString().toLowerCase())
-                .append(UserAgent.DESKTOP.equals(userAgent) ? "" : "_mua")
+                .append("_")
+                .append(userAgent.toString().toLowerCase())
+                .toString();
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append(adblocker)
+                .append(", ")
+                .append(protectionLevel)
+                .append(", ")
+                .append(userAgent)
                 .toString();
     }
 

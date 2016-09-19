@@ -2,8 +2,8 @@ package com.adblockers.services.firstpartyparser;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.adblockers.AdblockersBackendApplication;
+import com.adblockers.utils.ConverterInterface;
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
@@ -27,7 +27,7 @@ public class LongCsvReader<T> implements LongCsvReaderService<T> {
     private ConverterInterface<String[], T> lineParser;
 
     public Collection<T> read(String fileName) {
-        String filePath = AdblockersBackendApplication.RESOURCES_PATH + fileName;
+        String filePath = AdblockersBackendApplication.RESOURCES_PATH + fileName + ".csv";
         List<T> result = new LinkedList<T>();
         Date start = new Date();
         try (CSVReader csvReader = new CSVReader(new FileReader(filePath))) {

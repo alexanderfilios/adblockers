@@ -6,6 +6,7 @@ import com.adblockers.services.geoip.GeoIpService;
 import com.adblockers.services.requestgraph.RequestGraph;
 import com.adblockers.services.whois.WhoisService;
 import com.google.common.collect.ImmutableSet;
+import com.mongodb.connection.Server;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -35,14 +36,14 @@ public class AdblockersBackendApplicationTests {
     private GeoIpService geoIpService;
     private GeocodeService geocodeService;
 
-    private List<Url> testUrls;
+    private Set<Url> testUrls;
 
     public AdblockersBackendApplicationTests() {
         try {
-            this.testUrls = Arrays.asList(new Url[]{
-                    Url.create("www.google.com"),
-                    Url.create("www.facebook.com")
-            });
+            this.testUrls = ImmutableSet.<Url>builder()
+                    .add(Url.create("www.google.com"))
+                    .add(Url.create("www.facebook.com"))
+                    .build();
         } catch(MalformedURLException e) {
             this.testUrls = null;
         }
@@ -50,10 +51,11 @@ public class AdblockersBackendApplicationTests {
 
     @Test
     public void findLegalEntityByUrlTest() {
-        List<LegalEntity> testResults = this.whoisService
-                .findLegalEntitiesByUrl(this.testUrls);
+        LegalEntity[] testResults = this.whoisService
+                .findLegalEntitiesByUrl(this.testUrls)
+                .toArray(new LegalEntity[testUrls.size()]);
 
-        assertThat("google.com returns correct results", testResults.get(0),
+        assertThat("google.com returns correct results", testResults[0],
                 allOf(
                         hasProperty("domain", is("google.com")),
                         hasProperty("url", hasProperty("url", is("google.com"))),
@@ -63,7 +65,7 @@ public class AdblockersBackendApplicationTests {
                         hasProperty("city", is("Mountain View")),
                         hasProperty("country", is("US"))
                 ));
-        assertThat("facebook.com returns correct results", testResults.get(1),
+        assertThat("facebook.com returns correct results", testResults[1],
                 allOf(
                         hasProperty("domain", is("facebook.com")),
                         hasProperty("url", hasProperty("url", is("facebook.com"))),
@@ -77,10 +79,11 @@ public class AdblockersBackendApplicationTests {
 
     @Test
     public void findServerLocationByUrlTest() {
-        List<ServerLocation> testResults = this.geoIpService
-                .findServerLocationsByUrl(this.testUrls);
+        ServerLocation[] testResults = this.geoIpService
+                .findServerLocationsByUrl(this.testUrls)
+                .toArray(new ServerLocation[testUrls.size()]);
 
-        assertThat("google.com returns correct results", testResults.get(0),
+        assertThat("google.com returns correct results", testResults[0],
                 allOf(
                         hasProperty("domain", is("google.com")),
                         hasProperty("latitude", is(Double.valueOf(37.419200000000004))),
@@ -89,7 +92,7 @@ public class AdblockersBackendApplicationTests {
                         hasProperty("city", is("Mountain View")),
                         hasProperty("country", is("United States"))
                 ));
-        assertThat("facebook.com returns correct results", testResults.get(1),
+        assertThat("facebook.com returns correct results", testResults[1],
                 allOf(
                         hasProperty("domain", is("facebook.com")),
                         hasProperty("latitude", is(Double.valueOf(53.3478))),
@@ -103,29 +106,30 @@ public class AdblockersBackendApplicationTests {
 
     @Test
     public void findLocationByLegalEntityTest() {
-        List<LegalEntity> testLegalEntities = this.testUrls
+        Set<LegalEntity> testLegalEntities = this.testUrls
                 .stream()
                 .map(testUrl -> this.whoisService.findLegalEntityByUrl(testUrl))
-                .collect(Collectors.toList());
-        List<LegalEntityLocation> testResults = this.geocodeService
-                .findLocationsByLegalEntity(testLegalEntities);
+                .collect(Collectors.toSet());
+        LegalEntityLocation[] testResults = this.geocodeService
+                .findLocationsByLegalEntity(testLegalEntities)
+                .toArray(new LegalEntityLocation[testUrls.size()]);
 
-        assertThat("google.com returns correct results", testResults.get(0),
-                allOf(
-                        hasProperty("organization", is("Google Inc.")),
-                        hasProperty("latitude", is(Double.valueOf(37.4224484))),
-                        hasProperty("longitude", is(Double.valueOf(-122.0843249))),
-                        hasProperty("postalCode", is("94043")),
-                        hasProperty("city", is("Santa Clara County")),
-                        hasProperty("country", is("United States"))
-                ));
-        assertThat("facebook.com returns correct results", testResults.get(1),
+        assertThat("facebook.com returns correct results", testResults[0],
                 allOf(
                         hasProperty("organization", is("Facebook, Inc.")),
                         hasProperty("latitude", is(Double.valueOf(37.4851021))),
                         hasProperty("longitude", is(Double.valueOf(-122.1474466))),
                         hasProperty("postalCode", is("94025")),
                         hasProperty("city", is("San Mateo County")),
+                        hasProperty("country", is("United States"))
+                ));
+        assertThat("google.com returns correct results", testResults[1],
+                allOf(
+                        hasProperty("organization", is("Google Inc.")),
+                        hasProperty("latitude", is(Double.valueOf(37.4224484))),
+                        hasProperty("longitude", is(Double.valueOf(-122.0843249))),
+                        hasProperty("postalCode", is("94043")),
+                        hasProperty("city", is("Santa Clara County")),
                         hasProperty("country", is("United States"))
                 ));
     }

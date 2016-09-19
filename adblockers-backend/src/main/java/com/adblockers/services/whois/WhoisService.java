@@ -3,7 +3,9 @@ package com.adblockers.services.whois;
 import com.adblockers.entities.LegalEntity;
 import com.adblockers.entities.Url;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -18,9 +20,9 @@ public interface WhoisService {
      * @param urls
      * @return
      */
-    default List<LegalEntity> findLegalEntitiesByUrl(List<Url> urls) {
+    default Set<LegalEntity> findLegalEntitiesByUrl(@NotNull Set<Url> urls) {
         return urls.stream()
                 .map(url -> findLegalEntityByUrl(url))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

@@ -1,5 +1,7 @@
 package com.adblockers.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.net.MalformedURLException;
 import java.util.Arrays;
 
@@ -35,7 +37,9 @@ public class Url {
      * Finds the host, e.g. http://www.google.com/some/path -> www.google.com
      * @return The host
      */
+    @JsonIgnore
     public String getHost() {
+
         return getUrl()
                 // Remove the protocol
                 .replaceFirst("^[a-zA-Z]*\\://", "")
@@ -43,6 +47,7 @@ public class Url {
                 .replaceFirst("/.*", "");
     }
 
+    @JsonIgnore
     public String getDomain() {
         // Split domains
         String[] components = getHost().split("\\.");
@@ -57,6 +62,17 @@ public class Url {
         } else {
             return String.join(".", Arrays.copyOfRange(components, components.length - 2, components.length));
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Url
+                && ((Url) other).getUrl().equals(this.getUrl());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getUrl().hashCode();
     }
 
     @Override

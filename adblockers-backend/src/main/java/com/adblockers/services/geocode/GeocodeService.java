@@ -3,16 +3,19 @@ package com.adblockers.services.geocode;
 import com.adblockers.entities.LegalEntity;
 import com.adblockers.entities.LegalEntityLocation;
 
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Created by alexandrosfilios on 17/09/16.
  */
 public interface GeocodeService {
-    LegalEntityLocation findLocationByLegalEntity(LegalEntity legalEntity);
+    LegalEntityLocation findLocationByLegalEntity(@NotNull LegalEntity legalEntity);
 
-    default List<LegalEntityLocation> findLocationsByLegalEntity(List<LegalEntity> legalEntities) {
+    default Collection<LegalEntityLocation> findLocationsByLegalEntity(@NotNull Collection<LegalEntity> legalEntities) {
         return legalEntities.stream()
                 .map(legalEntity -> findLocationByLegalEntity(legalEntity))
                 .collect(Collectors.toList());

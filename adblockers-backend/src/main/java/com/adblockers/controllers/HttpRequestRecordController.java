@@ -1,6 +1,5 @@
 package com.adblockers.controllers;
 
-import com.adblockers.entities.BrowserProfile;
 import com.adblockers.transfer.HttpRequestRecordDTO;
 import com.adblockers.repos.HttpRequestRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +24,17 @@ public class HttpRequestRecordController {
     }
 
     @RequestMapping(value = "/bydate/{date}", method = RequestMethod.DELETE)
-    public void clearDataCollectionsByDate(Date date) {
-
+    public void clearDataCollectionsByDate(@PathVariable Date crawlDate) {
+        this.httpRequestRecordRepository.remove(crawlDate);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void saveForBrowserProfile(@RequestBody HttpRequestRecordDTO httpRequestDTO) {
+    public void saveForBrowserProfile(
+            @RequestBody HttpRequestRecordDTO httpRequestDTO) {
 
         this.httpRequestRecordRepository.save(
                 httpRequestDTO.toBrowserProfile(),
                 httpRequestDTO.toHttpRequestRecord());
-    }
-
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public List<?> getAllForBrowserProfile(
-            String adblocker,
-            Boolean defaultProtection,
-            Boolean mobileUserAgent
-    ) {
-        return this.httpRequestRecordRepository.getAllForBrowserProfile(BrowserProfile.from("GHOSTERY", true, true));
     }
 
     @Autowired

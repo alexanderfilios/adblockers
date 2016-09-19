@@ -1,5 +1,7 @@
 package com.adblockers.services.firstpartyparser;
 
+import com.adblockers.utils.ConverterInterface;
+
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Predicate;

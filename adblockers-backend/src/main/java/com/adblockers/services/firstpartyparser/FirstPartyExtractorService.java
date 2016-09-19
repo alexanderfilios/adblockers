@@ -8,13 +8,10 @@ import com.google.common.collect.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,13 +54,11 @@ public class FirstPartyExtractorService {
         // Extract the first parties (just rank and URL) from the CSV file
         return longCsvReaderService.read(fileName)
                 .stream()
-                .limit(1)
                 // Enhance with redirectionUrl
                 .map(firstParty -> {
                     firstParty.setRedirectionUrl(findRedirectionUrlByUrl(firstParty.getUrl()).getUrl());
                     return firstParty;
                 })
-                .peek(firstParty -> System.out.println(firstParty))
                 .collect(Collectors.toList());
     }
 

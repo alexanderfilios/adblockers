@@ -1,15 +1,17 @@
 package com.adblockers.controllers;
 
 import com.adblockers.entities.*;
-import com.adblockers.repos.FirstPartyRepository;
-import com.adblockers.repos.HttpRequestRecordRepository;
+import com.adblockers.repos.*;
 import com.adblockers.services.geoip.GeoIpCity;
 import com.adblockers.services.geocode.GeocodeService;
 import com.adblockers.services.whois.WhoisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.OperationsException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -23,53 +25,77 @@ public class ScriptController {
     private WhoisService whoisService;
     private GeoIpCity geoIpCity;
     private GeocodeService geocodeService;
-    private FirstPartyRepository firstPartyRepository;
     private HttpRequestRecordRepository httpRequestRecordRepository;
+    private LegalEntityLocationRepository legalEntityLocationRepository;
+    private LegalEntityRepository legalEntityRepository;
+    private ServerLocationRepository serverLocationRepository;
 
-    @RequestMapping("geocode/firstparties")
-    public List<LegalEntityLocation> getGeocodeInformationForAllFirstParties() {
-        List<LegalEntity> legalEntities = this.getWhoisInformationForAllFirstParties();
-        return this.geocodeService.findLocationsByLegalEntity(legalEntities);
-    }
-    @RequestMapping("geocode/thirdparties")
-    public List<LegalEntityLocation> getGeocodeInformationForAllThirdParties() {
-        List<LegalEntity> legalEntities = this.getWhoisInformationForThirdParties();
-        return this.geocodeService.findLocationsByLegalEntity(legalEntities);
-    }
+    /**
+     * Geocode service methods
+     */
 
-    @RequestMapping("geoip/firstparties")
-    public List<ServerLocation> getGeoIpInformationForAllFirstParties() {
-        List<Url> urls = this.firstPartyRepository.findAll().stream()
-                .map(FirstParty::getUrl)
-                .collect(Collectors.toList());
-        return geoIpCity.findServerLocationsByUrl(urls);
+    @RequestMapping(value = {"geocode/all"}, method = RequestMethod.GET)
+    public List<LegalEntityLocation> getGeocodeInformationForAllParties() {
+        return this.legalEntityLocationRepository.findAll();
     }
 
-    @RequestMapping("geoip/thirdparties")
-    public List<ServerLocation> getGeoIpInformationForAllThirdParties() {
-        List<Url> urls = this.httpRequestRecordRepository.getAllThirdParties();
-        return geoIpCity.findServerLocationsByUrl(urls);
+    @RequestMapping(value = {"geocode/all"}, method = RequestMethod.DELETE)
+    public void deleteGeocodeInformationForAllParties() {
+        this.legalEntityLocationRepository.deleteAll();
     }
 
-    @RequestMapping("whois/firstparties")
-    public List<LegalEntity> getWhoisInformationForAllFirstParties() {
-        List<Url> urls = this.firstPartyRepository.findAll()
-                .stream()
-                .map(FirstParty::getUrl)
-                .collect(Collectors.toList());
-        return this.whoisService.findLegalEntitiesByUrl(urls);
+    @RequestMapping(value = {"geocode/all"}, method = RequestMethod.PUT)
+    public void storeGeocodeInformationForAllParties() throws OperationsException {
+        List<LegalEntity> legalEntities = this.getWhoisInformationForAllParties();
+        if (legalEntities.isEmpty()) {
+            throw new OperationsException("No legal entities found. Try invoking the whois service first.");
+        }
+        Collection<LegalEntityLocation> legalEntityLocations = this.geocodeService.findLocationsByLegalEntity(legalEntities);
+        this.legalEntityLocationRepository.save(legalEntityLocations);
     }
 
-    @RequestMapping("whois/thirdparties")
-    public List<LegalEntity> getWhoisInformationForThirdParties() {
-        List<Url> urls = this.httpRequestRecordRepository.getAllThirdParties();
-        return this.whoisService.findLegalEntitiesByUrl(urls);
+    /**
+     * GeoIP service methods
+     */
+
+    @RequestMapping(value = {"geoip/all"}, method = RequestMethod.GET)
+    public List<ServerLocation> getGeoIpInformationForAllParties() {
+        return this.serverLocationRepository.findAll();
     }
 
-    @Autowired
-    public void setFirstPartyRepository(FirstPartyRepository firstPartyRepository) {
-        this.firstPartyRepository = firstPartyRepository;
+    @RequestMapping(value = {"geoip/all"}, method = RequestMethod.DELETE)
+    public void deleteGeoIpInformationForAllParties() {
+        this.serverLocationRepository.deleteAll();
     }
+
+    @RequestMapping(value = {"geoip/thirdparties"}, method = RequestMethod.PUT)
+    public void storeGeoIpInformationForAllThirdParties() {
+        Set<Url> urls = this.httpRequestRecordRepository.getAllThirdPartyHosts();
+        Set<ServerLocation> serverLocations = geoIpCity.findServerLocationsByUrl(urls);
+        this.serverLocationRepository.save(serverLocations);
+    }
+
+    /**
+     * WHOIS service methods
+     */
+
+    @RequestMapping(value = {"whois/all"}, method = RequestMethod.GET)
+    public List<LegalEntity> getWhoisInformationForAllParties() {
+        return this.legalEntityRepository.findAll();
+    }
+
+    @RequestMapping(value = {"whois/all"}, method = RequestMethod.DELETE)
+    public void deleteWhoisInformationForAllParties() {
+        this.legalEntityRepository.deleteAll();
+    }
+
+    @RequestMapping(value = {"whois/thirdparties"}, method = RequestMethod.PUT)
+    public void storeWhoisInformationForThirdParties() {
+        Set<Url> urls = this.httpRequestRecordRepository.getAllThirdPartyDomains();
+        Set<LegalEntity> legalEntities = this.whoisService.findLegalEntitiesByUrl(urls);
+        this.legalEntityRepository.save(legalEntities);
+    }
+
     @Autowired
     public void setWhoisService(WhoisService whoisService) {
         this.whoisService = whoisService;
@@ -83,6 +109,21 @@ public class ScriptController {
     @Autowired
     public void setHttpRequestRecordRepository(HttpRequestRecordRepository httpRequestRecordRepository) {
         this.httpRequestRecordRepository = httpRequestRecordRepository;
+    }
+
+    @Autowired
+    public void setLegalEntityLocationRepository(LegalEntityLocationRepository legalEntityLocationRepository) {
+        this.legalEntityLocationRepository = legalEntityLocationRepository;
+    }
+
+    @Autowired
+    public void setLegalEntityRepository(LegalEntityRepository legalEntityRepository) {
+        this.legalEntityRepository = legalEntityRepository;
+    }
+
+    @Autowired
+    public void setServerLocationRepository(ServerLocationRepository serverLocationRepository) {
+        this.serverLocationRepository = serverLocationRepository;
     }
 
     @Autowired
