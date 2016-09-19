@@ -4,6 +4,7 @@ import com.adblockers.entities.LegalEntity;
 import com.adblockers.entities.LegalEntityLocation;
 import com.adblockers.entities.Location;
 import com.google.common.collect.ImmutableMap;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,8 @@ public class GeocodeImplementation implements GeocodeService {
     private static final String ENCODING_FORMAT = "UTF-8";
     private LocationParser locationParser;
 
+    private Logger LOGGER = Logger.getLogger(GeocodeService.class);
+
     public GeocodeImplementation() {}
 
     public LegalEntityLocation findLocationByLegalEntity(LegalEntity legalEntity) {
@@ -42,6 +45,7 @@ public class GeocodeImplementation implements GeocodeService {
         // Input this address to the geocode api to get a location
         Location location = findLocationByAddress(address);
         if (location == null) {
+            LOGGER.warn("Did not find LegalEntityLocation for " + legalEntity.getDomain());
             return null;
         }
 
@@ -52,7 +56,9 @@ public class GeocodeImplementation implements GeocodeService {
         legalEntityLocation.setCity(location.getCity());
         legalEntityLocation.setCountry(location.getCountry());
         legalEntityLocation.setPostalCode(location.getPostalCode());
+
         legalEntityLocation.setOrganization(legalEntity.getOrganization());
+        legalEntityLocation.setDomain(legalEntity.getDomain());
 
         return legalEntityLocation;
     }
@@ -107,12 +113,14 @@ public class GeocodeImplementation implements GeocodeService {
                 .put("lng", "/GeocodeResponse/result/geometry/location/lng")
                 .build();
         Map<String, String> results = locationParser.parseParams(inputSource, params);
-        Pair<Double, Double> latLng = Pair.of(
-                Double.parseDouble(results.getOrDefault("lat", null)),
-                Double.parseDouble(results.getOrDefault("lng", null))
-        );
-        return (latLng.getFirst() == null || latLng.getSecond() == null)
-                ? null : latLng;
+        try {
+            return Pair.of(
+                    Double.parseDouble(results.getOrDefault("lat", null)),
+                    Double.parseDouble(results.getOrDefault("lng", null))
+            );
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public Map<String, String> parseAdministrativeData(InputSource inputSource) {

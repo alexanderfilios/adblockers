@@ -100,7 +100,7 @@ public class LegalEntity {
         legalEntity.setDomain(domain);
         try {
             legalEntity.setUrl(Url.create(getPropertyOrNull(props, "url")));
-        } catch (MalformedURLException e) {}
+        } catch (MalformedURLException | NullPointerException e) {}
         legalEntity.setOrganization(getPropertyOrNull(props, "organization"));
         legalEntity.setEmail(getPropertyOrNull(props, "email"));
         legalEntity.setAddress(getPropertyOrNull(props, "address"));

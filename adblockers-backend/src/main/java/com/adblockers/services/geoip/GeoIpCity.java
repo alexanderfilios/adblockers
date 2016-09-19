@@ -6,6 +6,7 @@ import com.adblockers.entities.Url;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -20,6 +21,7 @@ public class GeoIpCity implements GeoIpService {
 
     private static final String GEOIP_DATABASE = "GeoLite2-City.mmdb";
     private DatabaseReader databaseReader;
+    private Logger LOGGER = Logger.getLogger(GeoIpService.class);
 
 
     public GeoIpCity() {
@@ -44,9 +46,11 @@ public class GeoIpCity implements GeoIpService {
             serverLocation.setLongitude(cityResponse.getLocation().getLongitude());
             serverLocation.setDomain(url.getDomain());
             return serverLocation;
-        } catch (IOException | GeoIp2Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (IOException e) {
+            LOGGER.warn("Did not find host " + url.getHost());
+        } catch (GeoIp2Exception e) {
+            LOGGER.warn("GeoIp exception thrown");
         }
+        return null;
     }
 }

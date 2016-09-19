@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Created by alexandrosfilios on 18/09/16.
  */
 public interface WhoisService {
-    LegalEntity findLegalEntityByUrl(Url url);
+    LegalEntity findLegalEntityByUrl(@NotNull Url url);
 
     /**
      * Allows for a possibly more effective way of getting multiple urls altogether
@@ -23,6 +23,7 @@ public interface WhoisService {
     default Set<LegalEntity> findLegalEntitiesByUrl(@NotNull Set<Url> urls) {
         return urls.stream()
                 .map(url -> findLegalEntityByUrl(url))
+                .filter(legalEntity -> legalEntity != null)
                 .collect(Collectors.toSet());
     }
 }

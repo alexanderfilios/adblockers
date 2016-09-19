@@ -17,6 +17,7 @@ public interface GeoIpService {
     default Set<ServerLocation> findServerLocationsByUrl(@NotNull Set<Url> urls) {
         return urls.stream()
                 .map(url -> findServerLocationByUrl(url))
+                .filter(serverLocation -> serverLocation != null)
                 .collect(Collectors.toSet());
     }
 }

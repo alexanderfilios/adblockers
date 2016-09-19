@@ -6,6 +6,7 @@ package com.adblockers.entities;
 public class LegalEntityLocation extends Location {
 
     private String organization;
+    private String domain;
 
     public LegalEntityLocation() {
         super();
@@ -17,6 +18,14 @@ public class LegalEntityLocation extends Location {
 
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     @Override

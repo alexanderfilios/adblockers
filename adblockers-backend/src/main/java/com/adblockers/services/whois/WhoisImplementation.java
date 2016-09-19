@@ -49,7 +49,7 @@ public class WhoisImplementation implements WhoisService {
                 whoisResponse = this.whoisRequester.getResponse(whoisServer, url.getDomain());
             }
 
-            return extractLegalEntity(url.getDomain(),
+            return extractLegalEntity(url.getUrl(),
                     WhoisImplementation.singleOutResponse(whoisResponse, url.getDomain()));
         } catch (IOException e) {
             e.printStackTrace();

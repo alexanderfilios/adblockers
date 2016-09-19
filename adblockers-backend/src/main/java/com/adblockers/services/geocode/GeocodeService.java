@@ -18,6 +18,7 @@ public interface GeocodeService {
     default Collection<LegalEntityLocation> findLocationsByLegalEntity(@NotNull Collection<LegalEntity> legalEntities) {
         return legalEntities.stream()
                 .map(legalEntity -> findLocationByLegalEntity(legalEntity))
+                .filter(legalEntityLocation -> legalEntityLocation != null)
                 .collect(Collectors.toList());
     }
 }

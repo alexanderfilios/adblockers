@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.OperationsException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +32,22 @@ public class ScriptController {
     private LegalEntityLocationRepository legalEntityLocationRepository;
     private LegalEntityRepository legalEntityRepository;
     private ServerLocationRepository serverLocationRepository;
+
+    @RequestMapping(value = {"runall"}, method = RequestMethod.PUT)
+    public void runAllScriptsForStore() {
+        this.storeWhoisInformationForThirdParties();
+        try {
+            this.storeGeocodeInformationForAllParties();
+        } catch (OperationsException e) {}
+        this.storeGeoIpInformationForAllThirdParties();
+    }
+
+    @RequestMapping(value = {"runall"}, method = RequestMethod.DELETE)
+    public void runAllScriptsForDelete() {
+        this.deleteGeoIpInformationForAllParties();
+        this.deleteGeocodeInformationForAllParties();
+        this.deleteWhoisInformationForAllParties();
+    }
 
     /**
      * Geocode service methods
@@ -71,8 +90,10 @@ public class ScriptController {
     @RequestMapping(value = {"geoip/thirdparties"}, method = RequestMethod.PUT)
     public void storeGeoIpInformationForAllThirdParties() {
         Set<Url> urls = this.httpRequestRecordRepository.getAllThirdPartyHosts();
-        Set<ServerLocation> serverLocations = geoIpCity.findServerLocationsByUrl(urls);
-        this.serverLocationRepository.save(serverLocations);
+        Set<ServerLocation> newServerLocations = geoIpCity.findServerLocationsByUrl(urls);
+
+        this.serverLocationRepository.deleteAll();
+        this.serverLocationRepository.save(newServerLocations);
     }
 
     /**
