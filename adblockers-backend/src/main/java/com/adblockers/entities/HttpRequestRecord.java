@@ -81,4 +81,13 @@ public class HttpRequestRecord {
     public boolean isThirdPartyRequest() {
         return sourceUrlObject != null && sourceUrlObject.hasSameDomainAs(targetUrlObject);
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append(getSourceUrl())
+                .append(" -> ")
+                .append(getTargetUrl())
+                .toString();
+    }
 }

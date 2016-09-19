@@ -207,7 +207,7 @@ public class HttpRequestRecordDTO {
 
     // Custom methods
     public HttpRequestRecord toHttpRequestRecord() {
-        return new HttpRequestRecord(source, target, contentType);
+        return new HttpRequestRecord(browserUri, target, contentType);
     }
 
     public BrowserProfile toBrowserProfile() {

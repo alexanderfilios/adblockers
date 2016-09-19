@@ -63,6 +63,17 @@ public class MetricController {
         this.metricRepository.save(newMetrics);
     }
 
+    @RequestMapping(value = {"domaingraph/{browserProfile}"}, method = RequestMethod.GET)
+    public List<Metric> getDomainGraphMetricsForBrowserProfile(
+            @PathVariable BrowserProfile browserProfile
+    ) {
+        return this.metricRepository
+                .findAll(Example.of(new Metric(null, null, null, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, browserProfile)))
+                .stream()
+                .sorted((m1, m2) -> m1.getDate().compareTo(m2.getDate()))
+                .collect(Collectors.toList());
+    }
+
     @RequestMapping(value = {"domaingraph/{browserProfile}/{metricType}"}, method = RequestMethod.GET)
     public List<Metric> getDomainGraphMetricForBrowserProfile(
             @PathVariable Metric.MetricType metricType,
@@ -88,7 +99,8 @@ public class MetricController {
     ) {
         List<HttpRequestRecord> httpRequestRecords = this.httpRequestRecordRepository
                 .getAllForBrowserProfileAndDate(browserProfile, crawlDate);
-        System.out.println(httpRequestRecords);
+
+        httpRequestRecords.forEach(httpRequestRecord -> System.out.println(httpRequestRecord));
 
         List<Metric> newMetrics = this.requestGraphService
                 .createDomainRequestGraphAndGetMetrics(httpRequestRecords, browserProfile);

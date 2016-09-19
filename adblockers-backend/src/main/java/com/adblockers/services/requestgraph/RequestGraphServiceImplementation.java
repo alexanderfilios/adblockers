@@ -35,14 +35,13 @@ public class RequestGraphServiceImplementation implements RequestGraphService {
 
     public RequestGraph<Url, Url> createDomainRequestGraph(@NotEmpty List<HttpRequestRecord> httpRequestRecords, @NotNull BrowserProfile browserProfile) {
         Set<Pair<Url, Url>> edges = httpRequestRecords.stream()
-                .map(request -> Pair.of(request.getSourceUrl(), request.getSourceUrl()))
+                .map(request -> Pair.of(request.getSourceUrl(), request.getTargetUrl()))
                 .collect(Collectors.toSet());
         Date crawlDate = httpRequestRecords.stream()
                 .peek(record -> record.getDate())
                 .findAny()
                 .map(record -> record.getDate())
                 .orElse(null);
-        System.out.println("we found: " + crawlDate);
         return new RequestGraph(edges, crawlDate, browserProfile);
     }
 
