@@ -20,8 +20,9 @@ import java.net.InetAddress;
 public class GeoIpCity implements GeoIpService {
 
     private static final String GEOIP_DATABASE = "GeoLite2-City.mmdb";
+    private static final Logger LOGGER = Logger.getLogger(GeoIpService.class);
+
     private DatabaseReader databaseReader;
-    private Logger LOGGER = Logger.getLogger(GeoIpService.class);
 
 
     public GeoIpCity() {
@@ -38,12 +39,15 @@ public class GeoIpCity implements GeoIpService {
             InetAddress ipAddress = InetAddress.getByName(url.getHost());
             CityResponse cityResponse = databaseReader.city(ipAddress);
 
+            LOGGER.info("ServerLocation found for " + url.getDomain());
+
             ServerLocation serverLocation = new ServerLocation();
             serverLocation.setPostalCode(cityResponse.getPostal().getCode());
             serverLocation.setCity(cityResponse.getCity().getName());
             serverLocation.setCountry(cityResponse.getCountry().getName());
             serverLocation.setLatitude(cityResponse.getLocation().getLatitude());
             serverLocation.setLongitude(cityResponse.getLocation().getLongitude());
+
             serverLocation.setDomain(url.getDomain());
             return serverLocation;
         } catch (IOException e) {

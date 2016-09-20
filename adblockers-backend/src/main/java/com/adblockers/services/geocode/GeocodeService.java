@@ -13,10 +13,13 @@ import java.util.stream.Collectors;
  * Created by alexandrosfilios on 17/09/16.
  */
 public interface GeocodeService {
+    Collection<LegalEntity> findLegalEntitiesWithoutGeocodeInformation();
+
     LegalEntityLocation findLocationByLegalEntity(@NotNull LegalEntity legalEntity);
 
     default Collection<LegalEntityLocation> findLocationsByLegalEntity(@NotNull Collection<LegalEntity> legalEntities) {
         return legalEntities.stream()
+                .filter(legalEntity -> legalEntity.getUrl() != null)
                 .map(legalEntity -> findLocationByLegalEntity(legalEntity))
                 .filter(legalEntityLocation -> legalEntityLocation != null)
                 .collect(Collectors.toList());

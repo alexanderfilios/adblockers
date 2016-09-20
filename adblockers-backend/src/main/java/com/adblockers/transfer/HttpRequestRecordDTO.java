@@ -2,6 +2,9 @@ package com.adblockers.transfer;
 
 import com.adblockers.entities.BrowserProfile;
 import com.adblockers.entities.HttpRequestRecord;
+import com.adblockers.entities.Url;
+
+import java.net.MalformedURLException;
 
 /**
  * Created by alexandrosfilios on 15/09/16.
@@ -207,7 +210,13 @@ public class HttpRequestRecordDTO {
 
     // Custom methods
     public HttpRequestRecord toHttpRequestRecord() {
-        return new HttpRequestRecord(browserUri, target, contentType);
+        try {
+            String sourceDomain = Url.create(browserUri).getDomain();
+            String targetDomain = Url.create(target).getDomain();
+            return new HttpRequestRecord(sourceDomain, targetDomain, contentType);
+        } catch (MalformedURLException e) {
+            return null;
+        }
     }
 
     public BrowserProfile toBrowserProfile() {

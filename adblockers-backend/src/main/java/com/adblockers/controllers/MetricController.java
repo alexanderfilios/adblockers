@@ -100,8 +100,6 @@ public class MetricController {
         List<HttpRequestRecord> httpRequestRecords = this.httpRequestRecordRepository
                 .getAllForBrowserProfileAndDate(browserProfile, crawlDate);
 
-        httpRequestRecords.forEach(httpRequestRecord -> System.out.println(httpRequestRecord));
-
         List<Metric> newMetrics = this.requestGraphService
                 .createDomainRequestGraphAndGetMetrics(httpRequestRecords, browserProfile);
         List<Metric> oldMetrics = this.metricRepository

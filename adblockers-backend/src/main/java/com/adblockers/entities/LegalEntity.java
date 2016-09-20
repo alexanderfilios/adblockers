@@ -1,11 +1,19 @@
 package com.adblockers.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.Transient;
+import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by alexandrosfilios on 16/09/16.
@@ -18,19 +26,24 @@ public class LegalEntity {
      * Property keys are lower case
      */
     public static final Map<String, List<String>> PROP_NAMES = ImmutableMap.<String, List<String>>builder()
-            .put("url", ImmutableList.of("domain", "domain name"))
-            .put("organization", ImmutableList.of("organization", "organisation", "tech organization", "admin organization", "tech organisation", "admin organisation", "org"))
+            .put("entityDomain", ImmutableList.of("entityDomain", "entityDomain name", "domain name", "domain"))
+            .put("organization", ImmutableList.of("organization", "organisation", "tech organization", "admin organization", "tech organisation", "admin organisation", "org", "registrant organisation", "registrant organization"))
             .put("email", ImmutableList.of("email", "admin email", "tech email", "registrant email"))
             .put("city", ImmutableList.of("city", "admin city", "tech city", "registrant city"))
             .put("address", ImmutableList.of("address", "street", "admin address", "admin street", "tech address", "tech street"))
             .put("country", ImmutableList.of("country", "countrycode", "admin country", "tech country", "registrant country"))
             .build();
 
+    @Id
+    private String id;
+
     // This is the domain we visited initially
-    private Url url;
+    private String domain;
+    @Transient private Url url;
 
     // Data from the WHOIS information
-    private String domain;
+    private String entityDomain;
+    @Transient private Url entityUrl;
     private String organization;
     private String email;
     private String city;
@@ -39,20 +52,58 @@ public class LegalEntity {
 
     public LegalEntity() {}
 
-    public String getDomain() {
-        return domain;
+    @PersistenceConstructor
+    public LegalEntity(String id, String domain, String entityDomain, String organization, String email, String city, String address, String country) {
+        setId(id);
+        if (!StringUtils.isEmpty(domain)) {
+            setDomain(domain);
+        }
+        if (!StringUtils.isEmpty(entityDomain)) {
+            setEntityDomain(entityDomain);
+        }
+        setOrganization(organization);
+        setEmail(email);
+        setCity(city);
+        setAddress(address);
+        setCountry(country);
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public String getEntityDomain() { return entityDomain; }
+
+    public Url getEntityUrl() {
+        return entityUrl;
     }
+
+    public void setEntityDomain(String entityDomain) {
+        try {
+            this.entityUrl = Url.create(entityDomain);
+            this.entityDomain = entityDomain;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDomain() { return domain; }
 
     public Url getUrl() {
         return url;
     }
 
-    public void setUrl(Url url) {
-        this.url = url;
+    public void setDomain(String domain) {
+        try {
+            this.url = Url.create(domain);
+            this.domain = domain;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getOrganization() {
@@ -95,11 +146,32 @@ public class LegalEntity {
         this.country = country;
     }
 
+    @JsonIgnore
+    public String getDisplayCountry() {
+        return !StringUtils.isEmpty(getCountry())
+                ? new Locale("", getCountry()).getDisplayCountry()
+                : null;
+    }
+
+    @JsonIgnore
+    public String getFullAddress(Integer skip) {
+        return Arrays.asList(new String[]{
+                getAddress(),
+                getCity(),
+                getDisplayCountry()
+        }).stream()
+                .skip(skip)
+                .filter(addressElement -> addressElement != null)
+                .map(addressElement -> addressElement.replaceFirst("(^[\\s,]+)", ""))
+                .map(addressElement -> addressElement.replaceFirst("([\\s,]+$)", ""))
+                .collect(Collectors.joining(", "));
+    }
+
     public static LegalEntity fromPropertiesMap(String domain, Map<String, String> props) {
         LegalEntity legalEntity = new LegalEntity();
         legalEntity.setDomain(domain);
         try {
-            legalEntity.setUrl(Url.create(getPropertyOrNull(props, "url")));
+            legalEntity.setEntityDomain(Url.create(getPropertyOrNull(props, "entityDomain")).getDomain());
         } catch (MalformedURLException | NullPointerException e) {}
         legalEntity.setOrganization(getPropertyOrNull(props, "organization"));
         legalEntity.setEmail(getPropertyOrNull(props, "email"));
@@ -132,8 +204,8 @@ public class LegalEntity {
 
     public String toString() {
         return ImmutableMap.<String, String>builder()
-                .put("domain", this.getDomain() != null ? this.getDomain() : "")
-                .put("url", this.getUrl() != null && this.getUrl().getUrl() != null ? this.getUrl().getUrl() : "")
+                .put("entityDomain", this.getEntityUrl() != null && this.getEntityUrl().getDomain() != null ? this.getEntityUrl().getDomain() : "")
+                .put("domain", this.getUrl() != null && this.getUrl().getDomain() != null ? this.getUrl().getDomain() : "")
                 .put("organization", this.getOrganization() != null ? this.getOrganization() : "")
                 .put("email", this.getEmail() != null ? this.getEmail() : "")
                 .put("address", this.getAddress() != null ? this.getAddress() : "")

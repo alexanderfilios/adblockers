@@ -6,10 +6,6 @@ import com.adblockers.services.geoip.GeoIpService;
 import com.adblockers.services.requestgraph.RequestGraph;
 import com.adblockers.services.whois.WhoisService;
 import com.google.common.collect.ImmutableSet;
-import com.mongodb.connection.Server;
-import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -19,9 +15,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,8 +35,8 @@ public class AdblockersBackendApplicationTests {
     public AdblockersBackendApplicationTests() {
         try {
             this.testUrls = ImmutableSet.<Url>builder()
-                    .add(Url.create("www.google.com"))
                     .add(Url.create("www.facebook.com"))
+                    .add(Url.create("www.google.com"))
                     .build();
         } catch(MalformedURLException e) {
             this.testUrls = null;
@@ -53,26 +47,28 @@ public class AdblockersBackendApplicationTests {
     public void findLegalEntityByUrlTest() {
         LegalEntity[] testResults = this.whoisService
                 .findLegalEntitiesByUrl(this.testUrls)
-                .toArray(new LegalEntity[testUrls.size()]);
+                .stream()
+                .sorted((r1, r2) -> r1.getUrl().getDomain().compareTo(r2.getUrl().getDomain()))
+                .toArray(size -> new LegalEntity[size]);
 
-        assertThat("google.com returns correct results", testResults[0],
+        assertThat("facebook.com returns correct results", testResults[0],
                 allOf(
-                        hasProperty("domain", is("google.com")),
-                        hasProperty("url", hasProperty("url", is("google.com"))),
-                        hasProperty("organization", is("Google Inc.")),
-                        hasProperty("email", is("dns-admin@google.com")),
-                        hasProperty("address", is("1600 Amphitheatre Parkway")),
-                        hasProperty("city", is("Mountain View")),
-                        hasProperty("country", is("US"))
-                ));
-        assertThat("facebook.com returns correct results", testResults[1],
-                allOf(
-                        hasProperty("domain", is("facebook.com")),
-                        hasProperty("url", hasProperty("url", is("facebook.com"))),
+                        hasProperty("domain", hasProperty("domain", is("facebook.com"))),
+                        hasProperty("entityDomain", hasProperty("domain", is("facebook.com"))),
                         hasProperty("organization", is("Facebook, Inc.")),
                         hasProperty("email", is("domain@fb.com")),
                         hasProperty("address", is("1601 Willow Road,")),
                         hasProperty("city", is("Menlo Park")),
+                        hasProperty("country", is("US"))
+                ));
+        assertThat("google.com returns correct results", testResults[1],
+                allOf(
+                        hasProperty("domain", hasProperty("domain", is("google.com"))),
+                        hasProperty("entityDomain", hasProperty("domain", is("google.com"))),
+                        hasProperty("organization", is("Google Inc.")),
+                        hasProperty("email", is("dns-admin@google.com")),
+                        hasProperty("address", is("1600 Amphitheatre Parkway")),
+                        hasProperty("city", is("Mountain View")),
                         hasProperty("country", is("US"))
                 ));
     }
@@ -81,27 +77,28 @@ public class AdblockersBackendApplicationTests {
     public void findServerLocationByUrlTest() {
         ServerLocation[] testResults = this.geoIpService
                 .findServerLocationsByUrl(this.testUrls)
-                .toArray(new ServerLocation[testUrls.size()]);
+                .stream()
+                .sorted((r1, r2) -> r1.getDomain().getDomain().compareTo(r2.getDomain().getDomain()))
+                .toArray(size -> new ServerLocation[size]);
 
-        assertThat("google.com returns correct results", testResults[0],
+        assertThat("facebook.com returns correct results", testResults[0],
                 allOf(
-                        hasProperty("domain", is("google.com")),
-                        hasProperty("latitude", is(Double.valueOf(37.419200000000004))),
-                        hasProperty("longitude", is(Double.valueOf(-122.0574))),
-                        hasProperty("postalCode", is("94043")),
-                        hasProperty("city", is("Mountain View")),
-                        hasProperty("country", is("United States"))
-                ));
-        assertThat("facebook.com returns correct results", testResults[1],
-                allOf(
-                        hasProperty("domain", is("facebook.com")),
+                        hasProperty("domain", hasProperty("domain", is("facebook.com"))),
                         hasProperty("latitude", is(Double.valueOf(53.3478))),
                         hasProperty("longitude", is(Double.valueOf(-6.2597))),
                         hasProperty("postalCode", is(nullValue())),
                         hasProperty("city", is(nullValue())),
                         hasProperty("country", is("Ireland"))
                 ));
-
+        assertThat("google.com returns correct results", testResults[1],
+                allOf(
+                        hasProperty("domain", hasProperty("domain", is("google.com"))),
+                        hasProperty("latitude", is(Double.valueOf(37.419200000000004))),
+                        hasProperty("longitude", is(Double.valueOf(-122.0574))),
+                        hasProperty("postalCode", is("94043")),
+                        hasProperty("city", is("Mountain View")),
+                        hasProperty("country", is("United States"))
+                ));
     }
 
     @Test
@@ -110,12 +107,16 @@ public class AdblockersBackendApplicationTests {
                 .stream()
                 .map(testUrl -> this.whoisService.findLegalEntityByUrl(testUrl))
                 .collect(Collectors.toSet());
+
         LegalEntityLocation[] testResults = this.geocodeService
                 .findLocationsByLegalEntity(testLegalEntities)
-                .toArray(new LegalEntityLocation[testUrls.size()]);
+                .stream()
+                .sorted((r1, r2) -> r1.getDomain().getDomain().compareTo(r2.getDomain().getDomain()))
+                .toArray(size -> new LegalEntityLocation[size]);
 
         assertThat("facebook.com returns correct results", testResults[0],
                 allOf(
+                        hasProperty("domain", hasProperty("domain", is("facebook.com"))),
                         hasProperty("organization", is("Facebook, Inc.")),
                         hasProperty("latitude", is(Double.valueOf(37.4851021))),
                         hasProperty("longitude", is(Double.valueOf(-122.1474466))),
@@ -125,6 +126,7 @@ public class AdblockersBackendApplicationTests {
                 ));
         assertThat("google.com returns correct results", testResults[1],
                 allOf(
+                        hasProperty("domain", hasProperty("domain", is("google.com"))),
                         hasProperty("organization", is("Google Inc.")),
                         hasProperty("latitude", is(Double.valueOf(37.4224484))),
                         hasProperty("longitude", is(Double.valueOf(-122.0843249))),

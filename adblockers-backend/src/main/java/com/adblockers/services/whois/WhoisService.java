@@ -2,6 +2,7 @@ package com.adblockers.services.whois;
 
 import com.adblockers.entities.LegalEntity;
 import com.adblockers.entities.Url;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;

@@ -1,9 +1,7 @@
 package com.adblockers.services.requestgraph;
 
-import com.adblockers.entities.BrowserProfile;
-import com.adblockers.entities.LegalEntity;
-import com.adblockers.entities.Metric;
-import com.adblockers.entities.Url;
+import com.adblockers.entities.*;
+import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -17,6 +15,9 @@ import java.util.stream.Collectors;
  * Created by alexandrosfilios on 18/09/16.
  */
 public class RequestGraph<S, T> {
+
+    private static final Logger LOGGER = Logger.getLogger(RequestGraph.class);
+
     private UndirectedGraph<RequestGraphNode, DefaultEdge> requestGraph;
     private Date crawlDate;
     private BrowserProfile browserProfile;
@@ -33,6 +34,11 @@ public class RequestGraph<S, T> {
         this.browserProfile = browserProfile;
         this.setRequestGraphType(edges);
         this.requestGraph = this.createGraph(edges);
+
+        LOGGER.info("Domain request graph created. "
+                + "Type: " + getRequestGraphType() + ", "
+                + "Crawl Date: " + HttpRequestRecord.DATE_FORMAT.format(getCrawlDate()) + ", "
+                + "Browser Profile: " + getBrowserProfile());
     }
 
     private <S, T> UndirectedGraph<RequestGraphNode, DefaultEdge> createGraph(Set<Pair<S, T>> edges) {

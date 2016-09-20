@@ -8,8 +8,6 @@ import org.springframework.core.convert.converter.Converter;
  */
 public class StringToMetricTypeConverter implements Converter<String, Metric.MetricType> {
     public Metric.MetricType convert(String source) {
-        System.out.println(source + " should be converted");
-
         return Metric.MetricType.valueOf(source);
     }
 }

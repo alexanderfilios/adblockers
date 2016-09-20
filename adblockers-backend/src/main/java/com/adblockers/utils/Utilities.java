@@ -1,11 +1,11 @@
 package com.adblockers.utils;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -20,9 +20,20 @@ public final class Utilities {
         return t1 -> otherSupplier.get().map(t2 -> combiner.apply(t1, t2));
     }
 
-    public static <T> List<T> subList(List<T> list, Predicate<T> startCondition, Predicate<T> endCondition) {
+    public static <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<K, V> map2) {
+        return Stream.concat(map1.entrySet().stream(), map2.entrySet().stream())
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey(),
+                        entry -> entry.getValue(),
+                        (v1, v2) -> v1 != null ? v1 : v2
+                        ));
+    }
+
+    public static <T> List<List<T>> subLists(List<T> list, Predicate<T> startCondition, Predicate<T> endCondition) {
         boolean started = false;
+        List<List<T>> trimmedLists = new LinkedList<>();
         List<T> trimmedList = new LinkedList<T>();
+
         for (T current : list) {
             // Start storing
             if (!started && startCondition.test(current)) {
@@ -34,10 +45,14 @@ public final class Utilities {
             }
             // Exit the loop
             if (started && endCondition.test(current)) {
-                return trimmedList;
+                trimmedLists.add(trimmedList);
+                trimmedList = new LinkedList<T>();
+                started = false;
             }
         }
-        // If the endCondition never evaluated to true
-        return trimmedList;
+        if (started) {
+            trimmedLists.add(trimmedList);
+        }
+        return trimmedLists;
     }
 }

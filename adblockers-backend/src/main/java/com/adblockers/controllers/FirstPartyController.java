@@ -3,7 +3,6 @@ package com.adblockers.controllers;
 import com.adblockers.entities.FirstParty;
 import com.adblockers.repos.FirstPartyRepository;
 import com.adblockers.services.firstpartyparser.FirstPartyExtractorService;
-import com.adblockers.services.firstpartyparser.LongCsvReaderService;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +44,7 @@ public class FirstPartyController {
                 .stream()
                 .map(firstParty -> ImmutableMap.<String, Object>builder()
                         .put("rank", firstParty.getRank())
-                        .put("url", firstParty.getUrl().getUrl())
+                        .put("url", firstParty.getDomain().getStuffedUrl())
                         .build())
                 .collect(Collectors.toList());
     }

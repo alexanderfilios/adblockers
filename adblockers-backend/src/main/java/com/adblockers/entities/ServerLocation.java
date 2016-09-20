@@ -1,5 +1,9 @@
 package com.adblockers.entities;
 
+import org.springframework.data.annotation.Transient;
+
+import java.net.MalformedURLException;
+
 /**
  * Created by alexandrosfilios on 17/09/16.
  * This class hosts data collected from GeoIP
@@ -7,15 +11,21 @@ package com.adblockers.entities;
 public class ServerLocation extends Location {
 
     private String domain;
+    @Transient private Url url;
 
     public ServerLocation() {}
 
-    public String getDomain() {
-        return domain;
+    public Url getDomain() {
+        return url;
     }
 
     public void setDomain(String domain) {
-        this.domain = domain;
+        try {
+            this.url = Url.create(domain);
+            this.domain = domain;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

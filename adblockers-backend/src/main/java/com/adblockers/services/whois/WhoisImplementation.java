@@ -3,10 +3,12 @@ package com.adblockers.services.whois;
 import com.adblockers.entities.LegalEntity;
 import com.adblockers.entities.Url;
 import com.adblockers.utils.Utilities;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class WhoisImplementation implements WhoisService {
 
     public static final Integer WHOIS_PORT = 43;
+    public static final Logger LOGGER = Logger.getLogger(WhoisService.class);
 
     private WhoisRequester whoisRequester;
 
@@ -31,28 +34,31 @@ public class WhoisImplementation implements WhoisService {
             if (hasMultipleResponses(whoisResponse)) {
                 whoisResponse = this.whoisRequester.getResponse("=" + url.getDomain());
             }
-
-            // We isolate the response
-            whoisResponse = WhoisImplementation.singleOutResponse(whoisResponse, url.getDomain());
+            // We isolate the responses. Each response is a list of lines
+            Map<String, String> propsMap = extractPropsMapFromResponses(
+                    singleOutResponses(whoisResponse, url.getDomain()));
 
             // We will now read the details and find which WHOIS database has the data for this domain
-            Map<String, String> propsMap = extractPropsMap(whoisResponse);
-            String whoisServer = propsMap.keySet().stream()
-                    .filter(key -> key.toLowerCase().contains("whois server"))
-                    .map(key -> propsMap.get(key))
+            String whoisServer = propsMap.entrySet().stream()
+                    .filter(entry -> entry.getKey().toLowerCase().contains("whois server"))
+                    .map(entry -> entry.getValue())
                     .findFirst()
                     .orElse(null);
 
-            // If the server is found, repeat the look on the correct database host
+            // If the server is found, repeat the look on the correct database host and merge the props
             // Otherwise, keep the result we already had
             if (whoisServer != null) {
                 whoisResponse = this.whoisRequester.getResponse(whoisServer, url.getDomain());
+                Map<String, String> secondPropsMap = extractPropsMapFromResponses(
+                        singleOutResponses(whoisResponse, url.getDomain()));
+                propsMap = Utilities.mergeMaps(propsMap, secondPropsMap);
             }
 
-            return extractLegalEntity(url.getUrl(),
-                    WhoisImplementation.singleOutResponse(whoisResponse, url.getDomain()));
+            LegalEntity legalEntity = LegalEntity.fromPropertiesMap(url.getDomain(), propsMap);
+            LOGGER.info("WHOIS data found for " + url.getDomain() + ": " + legalEntity.toString());
+            return legalEntity;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("No WHOIS data found for " + url.getDomain());
         }
         return null;
     }
@@ -66,12 +72,11 @@ public class WhoisImplementation implements WhoisService {
                 && line.toLowerCase().endsWith(url.toLowerCase());
     }
     private static boolean isLastResponseLine(String line) {
-//        return line.contains(">>> Last update of whois database");
         return line.trim().length() == 0;
     }
-    private static List<String> singleOutResponse(List<String> whoisResponse, String domain) {
-        return Utilities.subList(
-                whoisResponse,
+
+    private static List<List<String>> singleOutResponses(List<String> whoisResponse, String domain) {
+        return Utilities.subLists(whoisResponse,
                 line -> WhoisImplementation.isFirstResponseLine(line, domain),
                 line -> WhoisImplementation.isLastResponseLine(line));
     }
@@ -82,7 +87,7 @@ public class WhoisImplementation implements WhoisService {
      * @param whoisResponse The WHOIS response
      * @return The properties
      */
-    private static Map<String, String> extractPropsMap(List<String> whoisResponse) {
+    private static Map<String, String> extractPropsMapFromResponse(List<String> whoisResponse) {
         return whoisResponse.stream()
                 // "Domain: google.de"
                 .map(line -> line.split(":"))
@@ -94,9 +99,13 @@ public class WhoisImplementation implements WhoisService {
                         lineArray -> lineArray[1].trim(),
                         (option1, option2) -> option1));
     }
-    private static LegalEntity extractLegalEntity(String domain, List<String> whoisResponse) {
-        Map<String, String> whoisPropsMap = extractPropsMap(whoisResponse);
-        return LegalEntity.fromPropertiesMap(domain, whoisPropsMap);
+    private static Map<String, String> extractPropsMapFromResponses(List<List<String>> whoisResponses) {
+        // Each response is a list of lines
+        return whoisResponses.stream()
+                // We convert each response to a mapping of the properties it contains
+                .map(whoisResponse -> extractPropsMapFromResponse(whoisResponse))
+                // We merge the mappings
+                .reduce(new HashMap<>(), (map1, map2) -> Utilities.mergeMaps(map1, map2));
     }
 
     @Autowired

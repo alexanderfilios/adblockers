@@ -16,44 +16,44 @@ public class HttpRequestRecord {
 
     @Transient public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
 
-    @Field("source") private String sourceUrl;
-    @Transient private Url sourceUrlObject;
-    @Field("target") private String targetUrl;
-    @Transient private Url targetUrlObject;
+    @Field("source") private String sourceDomain;
+    @Transient private Url sourceUrl;
+    @Field("target") private String targetDomain;
+    @Transient private Url targetUrl;
     @Field("crawlDate") private String date;
     @Transient private Date dateObject;
     private String contentType;
 
     @PersistenceConstructor
-    public HttpRequestRecord(String sourceUrl, String targetUrl, String contentType) {
-        setSourceUrl(sourceUrl);
-        setTargetUrl(targetUrl);
+    public HttpRequestRecord(String sourceDomain, String targetDomain, String contentType) {
+        setSourceDomain(sourceDomain);
+        setTargetDomain(targetDomain);
         setDate(new Date());
         setContentType(contentType);
     }
 
-    public void setSourceUrl(String sourceUrl) {
+    public void setSourceDomain(String sourceDomain) {
         try {
-            this.sourceUrlObject = Url.create(sourceUrl);
-            this.sourceUrl = sourceUrl;
+            this.sourceUrl = Url.create(sourceDomain);
+            this.sourceDomain = sourceDomain;
         } catch (MalformedURLException e) {
             // Leave the fields null
         }
     }
-    public Url getSourceUrl() {
-        return this.sourceUrlObject;
+    public Url getSourceDomain() {
+        return this.sourceUrl;
     }
 
-    public void setTargetUrl(String targetUrl) {
+    public void setTargetDomain(String targetDomain) {
         try {
-            this.targetUrlObject = Url.create(targetUrl);
-            this.targetUrl = targetUrl;
+            this.targetUrl = Url.create(targetDomain);
+            this.targetDomain = targetDomain;
         } catch (MalformedURLException e) {
             // Leave the fields null
         }
     }
-    public Url getTargetUrl() {
-        return this.targetUrlObject;
+    public Url getTargetDomain() {
+        return this.targetUrl;
     }
 
     public void setDate(String date) {
@@ -79,15 +79,15 @@ public class HttpRequestRecord {
     }
 
     public boolean isThirdPartyRequest() {
-        return sourceUrlObject != null && sourceUrlObject.hasSameDomainAs(targetUrlObject);
+        return sourceUrl != null && sourceUrl.hasSameDomainAs(targetUrl);
     }
 
     @Override
     public String toString() {
         return new StringBuilder()
-                .append(getSourceUrl())
+                .append(getSourceDomain())
                 .append(" -> ")
-                .append(getTargetUrl())
+                .append(getTargetDomain())
                 .toString();
     }
 }

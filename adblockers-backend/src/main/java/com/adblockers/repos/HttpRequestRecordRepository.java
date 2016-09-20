@@ -6,7 +6,6 @@ import com.adblockers.entities.Url;
 import com.sun.istack.internal.Nullable;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
@@ -152,7 +151,7 @@ public class HttpRequestRecordRepository {
                 .find(query, HttpRequestRecord.class, browserProfile.toCollectionName())
                 .stream()
                 .filter(HttpRequestRecord::isThirdPartyRequest)
-                .map(HttpRequestRecord::getTargetUrl)
+                .map(HttpRequestRecord::getTargetDomain)
                 .map(converter)
                 .collect(Collectors.toSet());
     }

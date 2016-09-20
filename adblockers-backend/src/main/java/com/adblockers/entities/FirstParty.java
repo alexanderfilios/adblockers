@@ -1,9 +1,9 @@
 package com.adblockers.entities;
 
-import com.adblockers.entities.Url;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.net.MalformedURLException;
 
@@ -12,41 +12,41 @@ import java.net.MalformedURLException;
  */
 @Document(collection = "firstPartyUrl")
 public class FirstParty {
-    private String url;
-    @Transient private Url urlObject;
+    @Field("url") private String domain;
+    @Transient private Url url;
     private Integer rank;
-    private String redirectionUrl;
-    @Transient private Url redirectionUrlObject;
+    @Field("redirectionUrl") private String redirectionDomain;
+    @Transient private Url redirectionUrl;
 
     public FirstParty() {}
 
     @PersistenceConstructor
-    public FirstParty(Integer rank, String url) {
+    public FirstParty(Integer rank, String domain) {
         setRank(rank);
-        setUrl(url);
+        setDomain(domain);
     }
 
-    public Url getUrl() {
-        return urlObject;
+    public Url getDomain() {
+        return url;
     }
 
-    public void setUrl(String url) {
+    public void setDomain(String domain) {
         try {
-            this.urlObject = Url.create(url);
-            this.url = url;
+            this.url = Url.create(domain);
+            this.domain = domain;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
 
-    public Url getRedirectionUrl() {
-        return redirectionUrlObject;
+    public Url getRedirectionDomain() {
+        return redirectionUrl;
     }
 
-    public void setRedirectionUrl(String redirectionUrl) {
+    public void setRedirectionDomain(String redirectionDomain) {
         try {
-            this.redirectionUrlObject = Url.create(redirectionUrl);
-            this.redirectionUrl = redirectionUrl;
+            this.redirectionUrl = Url.create(redirectionDomain);
+            this.redirectionDomain = redirectionDomain;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -64,11 +64,11 @@ public class FirstParty {
     public String toString() {
         return new StringBuilder()
                 .append("URL: ")
-                .append(getUrl().getUrl())
+                .append(getDomain().getUrl())
                 .append(", rank: ")
                 .append(getRank())
                 .append(", redirects to: ")
-                .append(getRedirectionUrl().getUrl())
+                .append(getRedirectionDomain().getUrl())
                 .toString();
     }
 }

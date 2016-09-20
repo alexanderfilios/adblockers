@@ -12,8 +12,6 @@ import java.util.Date;
 public class StringToDateConverter implements Converter<String, Date> {
     public Date convert(String source) {
         try {
-            System.out.println(source);
-            System.out.println(HttpRequestRecord.DATE_FORMAT.format(new Date()));
             return HttpRequestRecord.DATE_FORMAT.parse(source);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Date format: DD-MM-yyyy");

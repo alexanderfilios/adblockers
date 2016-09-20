@@ -1,9 +1,11 @@
 package com.adblockers.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.ImmutableList;
 
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +15,11 @@ import java.util.regex.Pattern;
 public class Url {
 
     private static final Pattern PATTERN = Pattern.compile("^((http[s]?|ftp):\\/)?\\/?([^:\\/\\s]+)((\\/\\w+)*\\/?)([\\w\\-\\.]*[^#?\\s]*)(.*)?(#[\\w\\-]+)?$");
+    private static final List<String> COMMON_CCSLDS = ImmutableList.<String>builder()
+            .add("co")
+            .add("com")
+            .add("ac")
+            .build();
 
     private String url;
     @JsonIgnore private String protocol;
@@ -34,26 +41,43 @@ public class Url {
         this.url = urlMatcher.group(0);
         this.protocol = urlMatcher.group(2);
         this.host = urlMatcher.group(3);
-        this.domain = extractDomainFromHost(host);
+        this.domain = extractDomain();
         this.path = urlMatcher.group(4);
         this.file = urlMatcher.group(5) + urlMatcher.group(6);
         this.query = urlMatcher.group(7);
     }
 
-    private String extractDomainFromHost(String host) {
-        String[] components = host.split("\\.");
+    private String extractDomain() {
+        String[] components = getHost().split("\\.");
 
-        if (components[components.length - 2].equalsIgnoreCase("co")) {
+        if (hasCCSLD()) {
             return String.join(".", Arrays.copyOfRange(components, components.length - 3, components.length));
-        } else {
+        } else if (components.length > 1) {
             return String.join(".", Arrays.copyOfRange(components, components.length - 2, components.length));
+        } else {
+            return null;
         }
     }
 
+    /**
+     * Catch cases of countries with domains like co.uk, com.au, ac.uk
+     * @return
+     */
+    private boolean hasCCSLD() {
+        String[] components = getHost().split("\\.");
+        return components.length > 2
+                && COMMON_CCSLDS.contains(components[components.length - 2].toLowerCase());
+    }
+
     public String getStuffedHost() {
-        return host.equals(domain)
-                ? "www." + domain
-                : host;
+        return getHost().equals(getDomain())
+                ? "www." + getDomain()
+                : getHost();
+    }
+    public String getStuffedUrl() {
+        return getProtocol() == null
+                ? "http://" + getStuffedHost()
+                : getUrl();
     }
 
     public String getUrl() {

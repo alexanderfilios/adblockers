@@ -3,6 +3,9 @@ package com.adblockers.services.geocode;
 import com.adblockers.entities.LegalEntity;
 import com.adblockers.entities.LegalEntityLocation;
 import com.adblockers.entities.Location;
+import com.adblockers.entities.Url;
+import com.adblockers.repos.LegalEntityLocationRepository;
+import com.adblockers.repos.LegalEntityRepository;
 import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +13,13 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.xml.sax.InputSource;
+import sun.util.locale.LocaleUtils;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -25,29 +30,53 @@ public class GeocodeImplementation implements GeocodeService {
 
     private static final String BASE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/";
     private static final String ENCODING_FORMAT = "UTF-8";
-    private LocationParser locationParser;
+    private static final Logger LOGGER = Logger.getLogger(GeocodeService.class);
 
-    private Logger LOGGER = Logger.getLogger(GeocodeService.class);
+    private LocationParser locationParser;
+    private LegalEntityRepository legalEntityRepository;
+    private LegalEntityLocationRepository legalEntityLocationRepository;
 
     public GeocodeImplementation() {}
 
+    public Collection<LegalEntity> findLegalEntitiesWithoutGeocodeInformation() {
+        // Find which legal entities (recognized by their domain) have geocode information
+        // {google.com: true, unknowndomain.com: false}
+        Map<Url, Boolean> hasLatLng = this.legalEntityLocationRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        legalEntityLocation -> legalEntityLocation.getDomain(),
+                        legalEntityLocation -> legalEntityLocation.getLatitude() != null
+                                && legalEntityLocation.getLongitude() != null,
+                        (hasLatLng1, hasLatLng2) -> hasLatLng1 && hasLatLng2
+                        ));
+
+        // Filter out all legal entities for the domains of which we found latlng data
+        return this.legalEntityRepository.findAll().stream()
+                .filter(legalEntity -> !hasLatLng.getOrDefault(legalEntity.getUrl(), false))
+                .collect(Collectors.toList());
+    }
+
     public LegalEntityLocation findLocationByLegalEntity(LegalEntity legalEntity) {
         // Combine all data we have to extract an address for the legal entity
-        String address = Arrays.asList(new String[]{
-                legalEntity.getAddress(),
-                legalEntity.getCity(),
-                legalEntity.getCountry()
-        }).stream()
-                .filter(addressElement -> addressElement != null)
-                .collect(Collectors.joining(", "));
+
 
 
         // Input this address to the geocode api to get a location
-        Location location = findLocationByAddress(address);
+        // Start with street, city, country
+        Location location = findLocationByAddress(legalEntity.getFullAddress(0));
+        // If not found, try with city, country
         if (location == null) {
-            LOGGER.warn("Did not find LegalEntityLocation for " + legalEntity.getDomain());
+            location = findLocationByAddress(legalEntity.getFullAddress(1));
+        }
+        // Finally with country
+        if (location == null) {
+            location = findLocationByAddress(legalEntity.getFullAddress(2));
+        }
+        if (location == null) {
+            LOGGER.warn("Did not find LegalEntityLocation for " + legalEntity.getUrl().getDomain());
             return null;
         }
+
+        LOGGER.info("LegalEntityLocation found for " + legalEntity.getUrl().getDomain());
 
         // Enhance the data with the legal entity information
         LegalEntityLocation legalEntityLocation = new LegalEntityLocation();
@@ -58,7 +87,7 @@ public class GeocodeImplementation implements GeocodeService {
         legalEntityLocation.setPostalCode(location.getPostalCode());
 
         legalEntityLocation.setOrganization(legalEntity.getOrganization());
-        legalEntityLocation.setDomain(legalEntity.getDomain());
+        legalEntityLocation.setDomain(legalEntity.getUrl().getDomain());
 
         return legalEntityLocation;
     }
@@ -80,9 +109,8 @@ public class GeocodeImplementation implements GeocodeService {
             return this.parseLatLng(new InputSource(bufferedReader));
             // If no data returned, the search has failed and we cannot lookup the location anymore
         } catch (IOException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**
@@ -102,9 +130,8 @@ public class GeocodeImplementation implements GeocodeService {
                 ) {
             return this.parseAdministrativeData(new InputSource(bufferedReader));
         } catch (IOException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public Pair<Double, Double> parseLatLng(InputSource inputSource) {
@@ -155,11 +182,15 @@ public class GeocodeImplementation implements GeocodeService {
         // Geocode lookup
         Pair<Double, Double> latLng = findLatLngByAddress(address);
         if (latLng == null) {
+            LOGGER.warn("No lat-lng data found for " + address);
             return null;
         }
 
         // Reverse geocode lookup
         Map<String, String> administrativeData = findAdministrativeDataByLatLng(latLng.getFirst(), latLng.getSecond());
+        if (administrativeData == null) {
+            LOGGER.warn("Lat-lng data found, but administrative data parsing failed for " + address);
+        }
 
         // Both requests were successful
         Location location = new Location();
@@ -209,5 +240,15 @@ public class GeocodeImplementation implements GeocodeService {
     @Autowired
     public void setLocationParser(LocationParser locationParser) {
         this.locationParser = locationParser;
+    }
+
+    @Autowired
+    public void setLegalEntityRepository(LegalEntityRepository legalEntityRepository) {
+        this.legalEntityRepository = legalEntityRepository;
+    }
+
+    @Autowired
+    public void setLegalEntityLocationRepository(LegalEntityLocationRepository legalEntityLocationRepository) {
+        this.legalEntityLocationRepository = legalEntityLocationRepository;
     }
 }

@@ -2,7 +2,6 @@ package com.adblockers.services.firstpartyparser;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.adblockers.AdblockersBackendApplication;
-import com.adblockers.utils.ConverterInterface;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -17,17 +17,19 @@ import java.util.function.Predicate;
  */
 @Service
 public class LongCsvReader<T> implements LongCsvReaderService<T> {
-    private final Logger LOGGER = Logger.getLogger(LongCsvReader.class);
+    private static final Logger LOGGER = Logger.getLogger(LongCsvReader.class);
 
-    private ConverterInterface<T, T> objectFormatter;
+    private Function<T, T> objectFormatter;
     private Predicate<T> filter;
     private Long min;
     private Long max;
     private Consumer<T> action;
-    private ConverterInterface<String[], T> lineParser;
+    private Function<String[], T> lineParser;
 
     public Collection<T> read(String fileName) {
         String filePath = AdblockersBackendApplication.RESOURCES_PATH + fileName + ".csv";
+        LOGGER.info("Parsing file " + filePath);
+
         List<T> result = new LinkedList<T>();
         Date start = new Date();
         try (CSVReader csvReader = new CSVReader(new FileReader(filePath))) {
@@ -41,8 +43,8 @@ public class LongCsvReader<T> implements LongCsvReaderService<T> {
                 if (min != null && lineCounter < min) {
                     continue;
                 }
-                T o = lineParser.convert(nextLine);
-                o = objectFormatter.convert(o);
+                T o = lineParser.apply(nextLine);
+                o = objectFormatter.apply(o);
                 if (filter.test(o)) {
                     action.accept(o);
                     result.add(o);
@@ -50,7 +52,7 @@ public class LongCsvReader<T> implements LongCsvReaderService<T> {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("CSV file parsing failed", e);
         }
         LOGGER.info("Read " + result.size() + " elements. Time elapsed: " + (new Date().getTime() - start.getTime()) + "msec");
         return result;
@@ -63,7 +65,7 @@ public class LongCsvReader<T> implements LongCsvReaderService<T> {
         this.lineParser = input -> null;
     }
 
-    public void setObjectFormatter(ConverterInterface<T, T> objectFormatter) {
+    public void setObjectFormatter(Function<T, T> objectFormatter) {
         this.objectFormatter = objectFormatter;
     }
     public void setFilter(Predicate<T> filter) {
@@ -72,7 +74,7 @@ public class LongCsvReader<T> implements LongCsvReaderService<T> {
     public void setAction(Consumer<T> action) {
         this.action = action;
     }
-    public void setLineParser(ConverterInterface<String[], T> lineParser) {
+    public void setLineParser(Function<String[], T> lineParser) {
         this.lineParser = lineParser;
     }
 }

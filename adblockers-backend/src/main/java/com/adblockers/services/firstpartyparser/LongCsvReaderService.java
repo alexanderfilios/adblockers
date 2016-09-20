@@ -1,9 +1,8 @@
 package com.adblockers.services.firstpartyparser;
 
-import com.adblockers.utils.ConverterInterface;
-
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -11,10 +10,10 @@ import java.util.function.Predicate;
  * Reads a CSV-formatted file and extracts the first parties to be crawled
  */
 public interface LongCsvReaderService<T> {
-    void setObjectFormatter(ConverterInterface<T, T> objectFormatter);
+    void setObjectFormatter(Function<T, T> objectFormatter);
     void setFilter(Predicate<T> filter);
     void setAction(Consumer<T> action);
-    void setLineParser(ConverterInterface<String[], T> lineParser);
+    void setLineParser(Function<String[], T> lineParser);
 
     Collection<T> read(String csvFileName);
 }

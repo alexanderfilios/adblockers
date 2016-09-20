@@ -49,14 +49,14 @@ public class FirstPartyExtractorService {
 
         // Configure reader settings
         longCsvReaderService.setFilter(firstParty -> ranksToCrawl.contains(firstParty.getRank()));
-        longCsvReaderService.setLineParser(line -> new FirstParty(Integer.parseInt(line[0]), "http://www." + line[1]));
+        longCsvReaderService.setLineParser(line -> new FirstParty(Integer.parseInt(line[0]), line[1]));
 
         // Extract the first parties (just rank and URL) from the CSV file
         return longCsvReaderService.read(fileName)
                 .stream()
                 // Enhance with redirectionUrl
                 .map(firstParty -> {
-                    firstParty.setRedirectionUrl(findRedirectionUrlByUrl(firstParty.getUrl()).getUrl());
+                    firstParty.setRedirectionDomain(findRedirectionUrlByUrl(firstParty.getDomain()).getUrl());
                     return firstParty;
                 })
                 .collect(Collectors.toList());
