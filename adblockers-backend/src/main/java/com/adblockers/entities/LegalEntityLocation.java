@@ -25,7 +25,9 @@ public class LegalEntityLocation extends Location {
         this.organization = organization;
     }
 
-    public Url getDomain() {
+    public String getDomain() { return domain; }
+
+    public Url getUrl() {
         return url;
     }
 

@@ -53,23 +53,23 @@ public class AdblockersBackendApplicationTests {
 
         assertThat("facebook.com returns correct results", testResults[0],
                 allOf(
-                        hasProperty("domain", hasProperty("domain", is("facebook.com"))),
-                        hasProperty("entityDomain", hasProperty("domain", is("facebook.com"))),
-                        hasProperty("organization", is("Facebook, Inc.")),
-                        hasProperty("email", is("domain@fb.com")),
-                        hasProperty("address", is("1601 Willow Road,")),
-                        hasProperty("city", is("Menlo Park")),
-                        hasProperty("country", is("US"))
+                        hasProperty("url", hasProperty("domain", equalToIgnoringCase("facebook.com"))),
+                        hasProperty("entityUrl", hasProperty("domain", equalToIgnoringCase("facebook.com"))),
+                        hasProperty("organization", equalToIgnoringCase("Facebook, Inc.")),
+                        hasProperty("email", equalToIgnoringCase("domain@fb.com")),
+                        hasProperty("address", equalToIgnoringCase("1601 Willow Road,")),
+                        hasProperty("city", equalToIgnoringCase("Menlo Park")),
+                        hasProperty("country", equalToIgnoringCase("US"))
                 ));
         assertThat("google.com returns correct results", testResults[1],
                 allOf(
-                        hasProperty("domain", hasProperty("domain", is("google.com"))),
-                        hasProperty("entityDomain", hasProperty("domain", is("google.com"))),
-                        hasProperty("organization", is("Google Inc.")),
-                        hasProperty("email", is("dns-admin@google.com")),
-                        hasProperty("address", is("1600 Amphitheatre Parkway")),
-                        hasProperty("city", is("Mountain View")),
-                        hasProperty("country", is("US"))
+                        hasProperty("url", hasProperty("domain", equalToIgnoringCase("google.com"))),
+                        hasProperty("entityUrl", hasProperty("domain", equalToIgnoringCase("google.com"))),
+                        hasProperty("organization", equalToIgnoringCase("Google Inc.")),
+                        hasProperty("email", equalToIgnoringCase("dns-admin@google.com")),
+                        hasProperty("address", equalToIgnoringCase("1600 Amphitheatre Parkway")),
+                        hasProperty("city", equalToIgnoringCase("Mountain View")),
+                        hasProperty("country", equalToIgnoringCase("US"))
                 ));
     }
 
@@ -78,26 +78,26 @@ public class AdblockersBackendApplicationTests {
         ServerLocation[] testResults = this.geoIpService
                 .findServerLocationsByUrl(this.testUrls)
                 .stream()
-                .sorted((r1, r2) -> r1.getDomain().getDomain().compareTo(r2.getDomain().getDomain()))
+                .sorted((r1, r2) -> r1.getUrl().getDomain().compareTo(r2.getUrl().getDomain()))
                 .toArray(size -> new ServerLocation[size]);
 
         assertThat("facebook.com returns correct results", testResults[0],
                 allOf(
-                        hasProperty("domain", hasProperty("domain", is("facebook.com"))),
+                        hasProperty("url", hasProperty("domain", equalToIgnoringCase("facebook.com"))),
                         hasProperty("latitude", is(Double.valueOf(53.3478))),
                         hasProperty("longitude", is(Double.valueOf(-6.2597))),
                         hasProperty("postalCode", is(nullValue())),
                         hasProperty("city", is(nullValue())),
-                        hasProperty("country", is("Ireland"))
+                        hasProperty("country", equalToIgnoringCase("Ireland"))
                 ));
         assertThat("google.com returns correct results", testResults[1],
                 allOf(
-                        hasProperty("domain", hasProperty("domain", is("google.com"))),
+                        hasProperty("url", hasProperty("domain", equalToIgnoringCase("google.com"))),
                         hasProperty("latitude", is(Double.valueOf(37.419200000000004))),
                         hasProperty("longitude", is(Double.valueOf(-122.0574))),
-                        hasProperty("postalCode", is("94043")),
-                        hasProperty("city", is("Mountain View")),
-                        hasProperty("country", is("United States"))
+                        hasProperty("postalCode", equalToIgnoringCase("94043")),
+                        hasProperty("city", equalToIgnoringCase("Mountain View")),
+                        hasProperty("country", equalToIgnoringCase("United States"))
                 ));
     }
 
@@ -111,28 +111,28 @@ public class AdblockersBackendApplicationTests {
         LegalEntityLocation[] testResults = this.geocodeService
                 .findLocationsByLegalEntity(testLegalEntities)
                 .stream()
-                .sorted((r1, r2) -> r1.getDomain().getDomain().compareTo(r2.getDomain().getDomain()))
+                .sorted((r1, r2) -> r1.getUrl().getDomain().compareTo(r2.getUrl().getDomain()))
                 .toArray(size -> new LegalEntityLocation[size]);
 
         assertThat("facebook.com returns correct results", testResults[0],
                 allOf(
-                        hasProperty("domain", hasProperty("domain", is("facebook.com"))),
-                        hasProperty("organization", is("Facebook, Inc.")),
+                        hasProperty("url", hasProperty("domain", equalToIgnoringCase("facebook.com"))),
+                        hasProperty("organization", equalToIgnoringCase("Facebook, Inc.")),
                         hasProperty("latitude", is(Double.valueOf(37.4851021))),
                         hasProperty("longitude", is(Double.valueOf(-122.1474466))),
-                        hasProperty("postalCode", is("94025")),
-                        hasProperty("city", is("San Mateo County")),
-                        hasProperty("country", is("United States"))
+                        hasProperty("postalCode", equalToIgnoringCase("94025")),
+                        hasProperty("city", equalToIgnoringCase("San Mateo County")),
+                        hasProperty("country", equalToIgnoringCase("United States"))
                 ));
         assertThat("google.com returns correct results", testResults[1],
                 allOf(
-                        hasProperty("domain", hasProperty("domain", is("google.com"))),
-                        hasProperty("organization", is("Google Inc.")),
+                        hasProperty("url", hasProperty("domain", equalToIgnoringCase("google.com"))),
+                        hasProperty("organization", equalToIgnoringCase("Google Inc.")),
                         hasProperty("latitude", is(Double.valueOf(37.4224484))),
                         hasProperty("longitude", is(Double.valueOf(-122.0843249))),
-                        hasProperty("postalCode", is("94043")),
-                        hasProperty("city", is("Santa Clara County")),
-                        hasProperty("country", is("United States"))
+                        hasProperty("postalCode", equalToIgnoringCase("94043")),
+                        hasProperty("city", equalToIgnoringCase("Santa Clara County")),
+                        hasProperty("country", equalToIgnoringCase("United States"))
                 ));
     }
 

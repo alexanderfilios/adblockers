@@ -13,13 +13,11 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.xml.sax.InputSource;
-import sun.util.locale.LocaleUtils;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +41,7 @@ public class GeocodeImplementation implements GeocodeService {
         // {google.com: true, unknowndomain.com: false}
         Map<Url, Boolean> hasLatLng = this.legalEntityLocationRepository.findAll().stream()
                 .collect(Collectors.toMap(
-                        legalEntityLocation -> legalEntityLocation.getDomain(),
+                        legalEntityLocation -> legalEntityLocation.getUrl(),
                         legalEntityLocation -> legalEntityLocation.getLatitude() != null
                                 && legalEntityLocation.getLongitude() != null,
                         (hasLatLng1, hasLatLng2) -> hasLatLng1 && hasLatLng2

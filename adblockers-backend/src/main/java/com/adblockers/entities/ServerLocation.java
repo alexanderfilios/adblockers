@@ -15,7 +15,9 @@ public class ServerLocation extends Location {
 
     public ServerLocation() {}
 
-    public Url getDomain() {
+    public String getDomain() { return domain; }
+
+    public Url getUrl() {
         return url;
     }
 
@@ -32,7 +34,7 @@ public class ServerLocation extends Location {
     public String toString() {
         return new StringBuilder()
                 .append("Server (")
-                .append(getDomain())
+                .append(getUrl())
                 .append(") location: ")
                 .append(super.toString())
                 .toString();
