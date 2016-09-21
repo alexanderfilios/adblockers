@@ -1,6 +1,7 @@
 package com.adblockers.services.whois;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,17 +22,17 @@ public class WhoisRequesterSocket implements WhoisRequester {
     private static final String WHOIS_DEFAULT_HOST = "whois.internic.net";
     private static final Integer WHOIS_DEFAULT_PORT = 43;
 
-    public List<String> getResponse(String domain) throws IOException {
-        return getResponse(WHOIS_DEFAULT_HOST, domain);
-    }
-
-    public List<String> getResponse(String databaseHost, String domain) throws IOException {
+    public List<String> getResponse(String databaseHost, String domain, Boolean exact) throws IOException {
+        if (StringUtils.isEmpty(databaseHost)) {
+            databaseHost = WHOIS_DEFAULT_HOST;
+        }
         LOGGER.info("Requesting info from " + databaseHost + ":" + WHOIS_DEFAULT_PORT + " for domain " + domain);
         try (Socket socket = new Socket(databaseHost, WHOIS_DEFAULT_PORT)) {
             InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
-            printWriter.println("whois " + domain);
+            String query = new StringBuilder().append("whois ").append(exact ? "=" : "").append(domain).toString();
+            printWriter.println(query);
             List<String> whoisResponse = new LinkedList<>();
             for (String line = bufferedReader.readLine();
                  line != null;

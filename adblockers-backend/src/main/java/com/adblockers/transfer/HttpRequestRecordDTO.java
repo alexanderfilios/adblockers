@@ -213,7 +213,7 @@ public class HttpRequestRecordDTO {
         try {
             String sourceDomain = Url.create(browserUri).getDomain();
             String targetDomain = Url.create(target).getDomain();
-            return new HttpRequestRecord(sourceDomain, targetDomain, contentType);
+            return new HttpRequestRecord(sourceDomain, targetDomain, timestamp, contentType);
         } catch (MalformedURLException e) {
             return null;
         }

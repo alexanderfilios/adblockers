@@ -7,14 +7,13 @@ import com.adblockers.repos.HttpRequestRecordRepository;
 import com.adblockers.repos.MetricRepository;
 import com.adblockers.services.requestgraph.RequestGraph;
 import com.adblockers.services.requestgraph.RequestGraphService;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -28,18 +27,6 @@ public class MetricController {
     private HttpRequestRecordRepository httpRequestRecordRepository;
     private MetricRepository metricRepository;
     private RequestGraphService requestGraphService;
-
-    @RequestMapping(value = {"entitygraph/{browserProfile}/{metricType}"}, method = RequestMethod.GET)
-    public List<Metric> getEntityGraphMetricForBrowserProfile(
-            @PathVariable Metric.MetricType metricType,
-            @PathVariable BrowserProfile browserProfile
-    ) {
-        return this.metricRepository
-                .findAll(Example.of(new Metric(null, null, metricType, RequestGraph.RequestGraphType.ENTITY_REQUEST_GRAPH, browserProfile)))
-                .stream()
-                .sorted((m1, m2) -> m1.getDate().compareTo(m2.getDate()))
-                .collect(Collectors.toList());
-    }
 
     @RequestMapping(value = {"entitygraph/{crawlDate}"}, method = RequestMethod.PUT)
     public void storeEntityGraphMetricsForDate(@PathVariable Date crawlDate) {
@@ -57,37 +44,47 @@ public class MetricController {
         List<Metric> newMetrics = this.requestGraphService
                 .createEntityRequestGraphAndGetMetrics(httpRequestRecords, browserProfile);
         List<Metric> oldMetrics = this.metricRepository
-                .findAll(Example.of(new Metric(crawlDate, null, null, RequestGraph.RequestGraphType.ENTITY_REQUEST_GRAPH, browserProfile)));
+                .findAll(Example.of(Metric.from(crawlDate, null, null, RequestGraph.RequestGraphType.ENTITY_REQUEST_GRAPH, browserProfile)));
 
         this.metricRepository.delete(oldMetrics);
         this.metricRepository.save(newMetrics);
     }
 
-    @RequestMapping(value = {"domaingraph/{browserProfile}"}, method = RequestMethod.GET)
-    public List<Metric> getDomainGraphMetricsForBrowserProfile(
-            @PathVariable BrowserProfile browserProfile
+    @RequestMapping(value = {"domaingraph/{metricType}"}, method = RequestMethod.GET)
+    public Map<Metric.MetricType, Map<BrowserProfile, List<Map<String, String>>>> getDomainGraphMetricForBrowserProfile(
+            @PathVariable Metric.MetricType metricType
     ) {
-        return this.metricRepository
-                .findAll(Example.of(new Metric(null, null, null, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, browserProfile)))
-                .stream()
-                .sorted((m1, m2) -> m1.getDate().compareTo(m2.getDate()))
-                .collect(Collectors.toList());
+        return getMetricsMatchingExample(
+                Example.of(new Metric(null, null, metricType, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, null)));
     }
 
-    @RequestMapping(value = {"domaingraph/{browserProfile}/{metricType}"}, method = RequestMethod.GET)
-    public List<Metric> getDomainGraphMetricForBrowserProfile(
-            @PathVariable Metric.MetricType metricType,
-            @PathVariable BrowserProfile browserProfile
+    @RequestMapping(value = {"entity/{metricType}"}, method = RequestMethod.GET)
+    public Map<Metric.MetricType, Map<BrowserProfile, List<Map<String, String>>>> getEntityGraphMetricForBrowserProfile(
+            @PathVariable Metric.MetricType metricType
+    ) {
+        return getMetricsMatchingExample(
+                Example.of(new Metric(null, null, metricType, RequestGraph.RequestGraphType.ENTITY_REQUEST_GRAPH, null)));
+    }
+
+    private Map<Metric.MetricType, Map<BrowserProfile, List<Map<String, String>>>> getMetricsMatchingExample(
+            Example<Metric> example
     ) {
         return this.metricRepository
-                .findAll(Example.of(new Metric(null, null, metricType, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, browserProfile)))
+                .findAll(example)
                 .stream()
-                .sorted((m1, m2) -> m1.getDate().compareTo(m2.getDate()))
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(Metric::getMetricType,
+                        Collectors.groupingBy(Metric::getBrowserProfile,
+                                Collector.of(LinkedList::new,
+                                        (list, metric) -> list.add(ImmutableMap.of(
+                                                "date", metric.getDate(),
+                                                "value", metric.getValue().toString())),
+                                        (list1, list2) -> {list1.addAll(list2); return list1;})
+                        )));
     }
 
     @RequestMapping(value = {"domaingraph/{crawlDate}"}, method = RequestMethod.PUT)
     public void storeDomainGraphMetricsForDate(@PathVariable Date crawlDate) {
+
         BrowserProfile.getAllBrowserProfiles()
                 .forEach(browserProfile -> storeDomainGraphMetricsForProfileAndDate(browserProfile, crawlDate));
     }
@@ -99,11 +96,14 @@ public class MetricController {
     ) {
         List<HttpRequestRecord> httpRequestRecords = this.httpRequestRecordRepository
                 .getAllForBrowserProfileAndDate(browserProfile, crawlDate);
+        if (httpRequestRecords.isEmpty()) {
+            return;
+        }
 
         List<Metric> newMetrics = this.requestGraphService
                 .createDomainRequestGraphAndGetMetrics(httpRequestRecords, browserProfile);
         List<Metric> oldMetrics = this.metricRepository
-                .findAll(Example.of(new Metric(crawlDate, null, null, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, browserProfile)));
+                .findAll(Example.of(Metric.from(crawlDate, null, null, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, browserProfile)));
 
         this.metricRepository.delete(oldMetrics);
         this.metricRepository.save(newMetrics);

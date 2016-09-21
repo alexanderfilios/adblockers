@@ -3,6 +3,7 @@ package com.adblockers.entities;
 import com.adblockers.utils.Utilities;
 import org.apache.commons.collections.ListUtils;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,6 +74,12 @@ public class BrowserProfile {
     public String toCollectionName() {
         return new StringBuilder()
                 .append("data_")
+                .append(toProfileName())
+                .toString();
+    }
+
+    public String toProfileName() {
+        return new StringBuilder()
                 .append(adblocker.toString().toLowerCase())
                 .append("_")
                 .append(protectionLevel.toString().toLowerCase())
@@ -81,15 +88,30 @@ public class BrowserProfile {
                 .toString();
     }
 
-    @Override
-    public String toString() {
-        return new StringBuilder()
-                .append(adblocker)
-                .append(", ")
-                .append(protectionLevel)
-                .append(", ")
-                .append(userAgent)
-                .toString();
+    public Adblocker getAdblocker() {
+        return adblocker;
     }
 
+    public ProtectionLevel getProtectionLevel() {
+        return protectionLevel;
+    }
+
+    public UserAgent getUserAgent() {
+        return userAgent;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other != null && other instanceof BrowserProfile && ((BrowserProfile) other).toProfileName().equals(this.toProfileName());
+    }
+
+    @Override
+    public int hashCode() {
+        return toProfileName().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return toProfileName();
+    }
 }

@@ -21,11 +21,9 @@ public class WhoisRequesterScript implements WhoisRequester {
 
     private ShellScriptService shellScriptService;
 
-    public List<String> getResponse(String domain) throws IOException {
-        return getResponse(null, domain);
-    }
 
-    public List<String> getResponse(String databaseHost, String domain) throws IOException {
+
+    public List<String> getResponse(String databaseHost, String domain, Boolean exact) throws IOException {
         StringBuilder commandBuilder = new StringBuilder()
                 .append("whois");
         if (databaseHost != null) {
@@ -35,6 +33,7 @@ public class WhoisRequesterScript implements WhoisRequester {
                     .append(WhoisImplementation.WHOIS_PORT);
         }
         commandBuilder.append(" ")
+                .append(exact ? "=" : "")
                 .append(domain);
         try {
             return this.shellScriptService.executeCommand(commandBuilder.toString(), TIMEOUT);

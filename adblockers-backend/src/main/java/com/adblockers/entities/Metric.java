@@ -1,6 +1,7 @@
 package com.adblockers.entities;
 
 import com.adblockers.services.requestgraph.RequestGraph;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 
 import java.text.ParseException;
@@ -30,12 +31,20 @@ public class Metric {
 
     public Metric() {}
 
-    public Metric(Date date, Double value, MetricType metricType, RequestGraph.RequestGraphType requestGraphType, BrowserProfile browserProfile) {
-        setDate(date);
+    @PersistenceConstructor
+    public Metric(String date, Double value, MetricType metricType, RequestGraph.RequestGraphType requestGraphType, BrowserProfile browserProfile) {
+        if (date != null) {
+            setDate(date);
+        }
         setValue(value);
         setMetricType(metricType);
         setRequestGraphType(requestGraphType);
         setBrowserProfile(browserProfile);
+    }
+
+    public static Metric from(Date date, Double value, MetricType metricType, RequestGraph.RequestGraphType requestGraphType, BrowserProfile browserProfile) {
+        return new Metric(date != null ? HttpRequestRecord.DATE_FORMAT.format(date) : null,
+                value, metricType, requestGraphType, browserProfile);
     }
 
     public void setDate(String date) {
@@ -48,7 +57,10 @@ public class Metric {
         this.date = HttpRequestRecord.DATE_FORMAT.format(date);
         this.dateObject = date;
     }
-    public Date getDate() {
+    public String getDate() {
+        return this.date;
+    }
+    public Date getDateObject() {
         return this.dateObject;
     }
 

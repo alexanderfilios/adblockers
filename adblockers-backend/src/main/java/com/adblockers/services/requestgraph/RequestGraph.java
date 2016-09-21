@@ -121,19 +121,19 @@ public class RequestGraph<S, T> {
     public Metric getMetric(Metric.MetricType metricType) {
         switch (metricType) {
             case FPD_DEGREE:
-                return new Metric(getCrawlDate(), getMeanFirstPartyNodeDegree(), Metric.MetricType.FPD_DEGREE, getRequestGraphType(), getBrowserProfile());
+                return Metric.from(getCrawlDate(), getMeanFirstPartyNodeDegree(), Metric.MetricType.FPD_DEGREE, getRequestGraphType(), getBrowserProfile());
             case FPD_DEGREE_TOP_10:
-                return new Metric(getCrawlDate(), getMeanFirstPartyNodeDegreeAveragingTop(10), Metric.MetricType.FPD_DEGREE_TOP_10, getRequestGraphType(), getBrowserProfile());
+                return Metric.from(getCrawlDate(), getMeanFirstPartyNodeDegreeAveragingTop(10), Metric.MetricType.FPD_DEGREE_TOP_10, getRequestGraphType(), getBrowserProfile());
             case FPD_DEGREE_TOP_1:
-                return new Metric(getCrawlDate(), getMeanFirstPartyNodeDegreeAveragingTop(1), Metric.MetricType.FPD_DEGREE_TOP_1, getRequestGraphType(), getBrowserProfile());
+                return Metric.from(getCrawlDate(), getMeanFirstPartyNodeDegreeAveragingTop(1), Metric.MetricType.FPD_DEGREE_TOP_1, getRequestGraphType(), getBrowserProfile());
             case TPD_DEGREE:
-                return new Metric(getCrawlDate(), getMeanThirdPartyNodeDegree(), Metric.MetricType.TPD_DEGREE, getRequestGraphType(), getBrowserProfile());
+                return Metric.from(getCrawlDate(), getMeanThirdPartyNodeDegree(), Metric.MetricType.TPD_DEGREE, getRequestGraphType(), getBrowserProfile());
             case TPD_DEGREE_TOP_10:
-                return new Metric(getCrawlDate(), getMeanThirdPartyNodeDegreeAveragingTop(10), Metric.MetricType.TPD_DEGREE_TOP_10, getRequestGraphType(), getBrowserProfile());
+                return Metric.from(getCrawlDate(), getMeanThirdPartyNodeDegreeAveragingTop(10), Metric.MetricType.TPD_DEGREE_TOP_10, getRequestGraphType(), getBrowserProfile());
             case TPD_DEGREE_TOP_1:
-                return new Metric(getCrawlDate(), getMeanThirdPartyNodeDegreeAveragingTop(1), Metric.MetricType.TPD_DEGREE_TOP_1, getRequestGraphType(), getBrowserProfile());
+                return Metric.from(getCrawlDate(), getMeanThirdPartyNodeDegreeAveragingTop(1), Metric.MetricType.TPD_DEGREE_TOP_1, getRequestGraphType(), getBrowserProfile());
             case DENSITY:
-                return new Metric(getCrawlDate(), getDensity(), Metric.MetricType.DENSITY, getRequestGraphType(), getBrowserProfile());
+                return Metric.from(getCrawlDate(), getDensity(), Metric.MetricType.DENSITY, getRequestGraphType(), getBrowserProfile());
             default:
                 return null;
         }

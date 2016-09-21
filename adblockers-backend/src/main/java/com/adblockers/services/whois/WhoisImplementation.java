@@ -25,20 +25,19 @@ public class WhoisImplementation implements WhoisService {
     private WhoisRequester whoisRequester;
 
     public LegalEntity findLegalEntityByUrl(Url url) {
-
         try {
             // When only one record matches, the result will come directly with all details
-            List<String> whoisResponse = this.whoisRequester.getResponse(url.getDomain());
+            WhoisResponse whoisResponse = whoisRequester.getWhoisResponse(url.getDomain(), false);
 
             // When multiple results are present, we need to add "=" to expand the details
-            if (hasMultipleResponses(whoisResponse)) {
-                whoisResponse = this.whoisRequester.getResponse("=" + url.getDomain());
+            if (whoisResponse.hasMultipleResponses()) {
+                whoisResponse = whoisRequester.getWhoisResponse(url.getDomain(), true);
             }
             // We isolate the responses. Each response is a list of lines
-            Map<String, String> propsMap = extractPropsMapFromResponses(
-                    singleOutResponses(whoisResponse, url.getDomain()));
+            Map<String, String> propsMap = whoisResponse.extractPropsMap();
 
-            // We will now read the details and find which WHOIS database has the data for this domain
+            // We will now read the details and find which WHOIS database host has the data for this domain
+            // Then we will repeat the same WHOIS query but to the responsible WHOIS database host
             String whoisServer = propsMap.entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().contains("whois server"))
                     .map(entry -> entry.getValue())
@@ -48,9 +47,9 @@ public class WhoisImplementation implements WhoisService {
             // If the server is found, repeat the look on the correct database host and merge the props
             // Otherwise, keep the result we already had
             if (whoisServer != null) {
-                whoisResponse = this.whoisRequester.getResponse(whoisServer, url.getDomain());
-                Map<String, String> secondPropsMap = extractPropsMapFromResponses(
-                        singleOutResponses(whoisResponse, url.getDomain()));
+                Map<String, String> secondPropsMap = whoisRequester
+                        .getWhoisResponse(whoisServer, url.getDomain(), false)
+                        .extractPropsMap();
                 propsMap = Utilities.mergeMaps(propsMap, secondPropsMap);
             }
 
@@ -61,51 +60,6 @@ public class WhoisImplementation implements WhoisService {
             LOGGER.warn("No WHOIS data found for " + url.getDomain());
         }
         return null;
-    }
-
-    private static boolean hasMultipleResponses(List<String> whoisResponse) {
-        return whoisResponse.stream()
-                .anyMatch(line -> line.contains("To single out one record"));
-    }
-    private static boolean isFirstResponseLine(String line, String url) {
-        return line.toLowerCase().trim().startsWith("domain")
-                && line.toLowerCase().endsWith(url.toLowerCase());
-    }
-    private static boolean isLastResponseLine(String line) {
-        return line.trim().length() == 0;
-    }
-
-    private static List<List<String>> singleOutResponses(List<String> whoisResponse, String domain) {
-        return Utilities.subLists(whoisResponse,
-                line -> WhoisImplementation.isFirstResponseLine(line, domain),
-                line -> WhoisImplementation.isLastResponseLine(line));
-    }
-
-    /**
-     * Reads the WHOIS response and creates a mapping of the properties.
-     * Keys are lower case for case-insensitive lookups
-     * @param whoisResponse The WHOIS response
-     * @return The properties
-     */
-    private static Map<String, String> extractPropsMapFromResponse(List<String> whoisResponse) {
-        return whoisResponse.stream()
-                // "Domain: google.de"
-                .map(line -> line.split(":"))
-                // {"Domain", " google.de"}
-                .filter(lineArray -> lineArray.length == 2)
-                // {"Domain": "google.de"}
-                .collect(Collectors.toMap(
-                        lineArray -> lineArray[0].trim(),
-                        lineArray -> lineArray[1].trim(),
-                        (option1, option2) -> option1));
-    }
-    private static Map<String, String> extractPropsMapFromResponses(List<List<String>> whoisResponses) {
-        // Each response is a list of lines
-        return whoisResponses.stream()
-                // We convert each response to a mapping of the properties it contains
-                .map(whoisResponse -> extractPropsMapFromResponse(whoisResponse))
-                // We merge the mappings
-                .reduce(new HashMap<>(), (map1, map2) -> Utilities.mergeMaps(map1, map2));
     }
 
     @Autowired

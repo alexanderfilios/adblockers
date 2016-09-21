@@ -27,7 +27,7 @@ public class RequestGraphServiceImplementation implements RequestGraphService {
                 .collect(Collectors.toSet());
         Date crawlDate = httpRequestRecords.stream()
                 .findAny()
-                .map(record -> record.getDate())
+                .map(record -> record.getCrawlDate())
                 .orElse(null);
 
         return new RequestGraph(edges, crawlDate, browserProfile);
@@ -38,9 +38,8 @@ public class RequestGraphServiceImplementation implements RequestGraphService {
                 .map(request -> Pair.of(request.getSourceDomain(), request.getTargetDomain()))
                 .collect(Collectors.toSet());
         Date crawlDate = httpRequestRecords.stream()
-                .peek(record -> record.getDate())
                 .findAny()
-                .map(record -> record.getDate())
+                .map(record -> record.getCrawlDate())
                 .orElse(null);
         return new RequestGraph(edges, crawlDate, browserProfile);
     }

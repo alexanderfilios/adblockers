@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.net.MalformedURLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,15 +21,27 @@ public class HttpRequestRecord {
     @Transient private Url sourceUrl;
     @Field("target") private String targetDomain;
     @Transient private Url targetUrl;
-    @Field("crawlDate") private String date;
+    private String crawlDate;
     @Transient private Date dateObject;
     private String contentType;
 
     @PersistenceConstructor
-    public HttpRequestRecord(String sourceDomain, String targetDomain, String contentType) {
+    public HttpRequestRecord(String sourceDomain, String targetDomain, String crawlDate, String contentType) {
         setSourceDomain(sourceDomain);
         setTargetDomain(targetDomain);
-        setDate(new Date());
+
+        if (crawlDate != null) {
+            setCrawlDate(crawlDate);
+        } else {
+            setCrawlDate(new Date());
+        }
+        setContentType(contentType);
+    }
+
+    public HttpRequestRecord(String sourceDomain, String targetDomain, Long timestamp, String contentType) {
+        setSourceDomain(sourceDomain);
+        setTargetDomain(targetDomain);
+        setCrawlDate(Date.from(new Timestamp(timestamp).toInstant()));
         setContentType(contentType);
     }
 
@@ -56,17 +69,17 @@ public class HttpRequestRecord {
         return this.targetUrl;
     }
 
-    public void setDate(String date) {
+    public void setCrawlDate(String crawlDate) {
         try {
-            this.dateObject = DATE_FORMAT.parse(date);
-            this.date = date;
+            this.dateObject = DATE_FORMAT.parse(crawlDate);
+            this.crawlDate = crawlDate;
         } catch (ParseException e) {}
     }
-    public void setDate(Date date) {
-        this.date = DATE_FORMAT.format(date);
+    public void setCrawlDate(Date date) {
+        this.crawlDate = DATE_FORMAT.format(date);
         this.dateObject = date;
     }
-    public Date getDate() {
+    public Date getCrawlDate() {
         return this.dateObject;
     }
 
