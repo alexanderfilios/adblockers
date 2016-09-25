@@ -6,6 +6,7 @@ import com.adblockers.services.geoip.GeoIpCity;
 import com.adblockers.services.geocode.GeocodeService;
 import com.adblockers.services.shellscript.ScriptExecutor;
 import com.adblockers.services.whois.WhoisService;
+import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -38,6 +37,8 @@ public class ScriptController {
     private LegalEntityLocationRepository legalEntityLocationRepository;
     private LegalEntityRepository legalEntityRepository;
     private ServerLocationRepository serverLocationRepository;
+    private static final Map<String, String> ISO_CODE_COUNTRY_MAP = Arrays.asList(Locale.getISOCountries()).stream()
+            .collect(Collectors.toMap(isoCountry -> new Locale("", isoCountry).getDisplayCountry(), isoCountry -> isoCountry));
 
     @RequestMapping(value = {"runall"}, method = RequestMethod.PUT)
     public void runAllScriptsForStore() {
@@ -59,10 +60,27 @@ public class ScriptController {
      * Geocode service methods
      */
 
-    @RequestMapping(value = {"geocode/all"}, method = RequestMethod.GET)
-    public List<LegalEntityLocation> getGeocodeInformationForAllParties() {
+    @RequestMapping(value = {"geocode/all/markers"}, method = RequestMethod.GET)
+    public List<LegalEntityLocation> getGeocodeInformationForAllPartiesPerMarker() {
         return this.legalEntityLocationRepository.findAll();
     }
+
+    @RequestMapping(value = {"geocode/all/regions"}, method = RequestMethod.GET)
+    public List<Map<String, String>> getGeocodeInformationForAllPartiesPerRegion() {
+        Integer totalLegalEntities = this.legalEntityLocationRepository.findAll().size();
+        return this.serverLocationRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        serverLocation -> ISO_CODE_COUNTRY_MAP.getOrDefault(serverLocation.getCountry(), ""),
+                        serverLocation -> 1,
+                        (totalLocations, currentLocation) -> totalLocations + currentLocation
+                )).entrySet().stream()
+                .map(countryOccurrence -> ImmutableMap.<String, String>builder()
+                        .put("country", countryOccurrence.getKey())
+                        .put("occurrences", Double.valueOf((double) countryOccurrence.getValue() / totalLegalEntities).toString())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 
     @RequestMapping(value = {"geocode/all"}, method = RequestMethod.DELETE)
     public void deleteGeocodeInformationForAllParties() {
@@ -93,9 +111,25 @@ public class ScriptController {
      * GeoIP service methods
      */
 
-    @RequestMapping(value = {"geoip/all"}, method = RequestMethod.GET)
-    public List<ServerLocation> getGeoIpInformationForAllParties() {
+    @RequestMapping(value = {"geoip/all/markers"}, method = RequestMethod.GET)
+    public List<ServerLocation> getGeoIpInformationForAllPartiesPerMarker() {
         return this.serverLocationRepository.findAll();
+    }
+
+    @RequestMapping(value = {"geoip/all/regions"}, method = RequestMethod.GET)
+    public List<Map<String, String>> getGeoIpInformationForAllPartiesPerRegion() {
+        Integer totalServers = this.serverLocationRepository.findAll().size();
+        return this.serverLocationRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        serverLocation -> ISO_CODE_COUNTRY_MAP.getOrDefault(serverLocation.getCountry(), ""),
+                        serverLocation -> 1,
+                        (totalLocations, currentLocation) -> totalLocations + currentLocation
+                )).entrySet().stream()
+                .map(countryOccurrence -> ImmutableMap.<String, String>builder()
+                        .put("country", countryOccurrence.getKey())
+                        .put("occurrences", Double.valueOf((double) countryOccurrence.getValue() / totalServers).toString())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = {"geoip/all"}, method = RequestMethod.DELETE)

@@ -51,34 +51,38 @@ public class MetricController {
     }
 
     @RequestMapping(value = {"domaingraph/{metricType}"}, method = RequestMethod.GET)
-    public Map<Metric.MetricType, Map<BrowserProfile, List<Map<String, String>>>> getDomainGraphMetricForBrowserProfile(
+    public Map<Metric.MetricType, Map<BrowserProfile, Map<String, Double>>> getDomainGraphMetricForBrowserProfile(
             @PathVariable Metric.MetricType metricType
     ) {
         return getMetricsMatchingExample(
                 Example.of(new Metric(null, null, metricType, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, null)));
     }
+    @RequestMapping(value = {"domaingraph"}, method = RequestMethod.GET)
+    public Map<Metric.MetricType, Map<BrowserProfile, Map<String, Double>>> getDomainGraphMetrics() {
+        return getMetricsMatchingExample(
+                Example.of(new Metric(null, null, null, RequestGraph.RequestGraphType.DOMAIN_REQUEST_GRAPH, null)));
+    }
 
-    @RequestMapping(value = {"entity/{metricType}"}, method = RequestMethod.GET)
-    public Map<Metric.MetricType, Map<BrowserProfile, List<Map<String, String>>>> getEntityGraphMetricForBrowserProfile(
+    @RequestMapping(value = {"entitygraph/{metricType}"}, method = RequestMethod.GET)
+    public Map<Metric.MetricType, Map<BrowserProfile, Map<String, Double>>> getEntityGraphMetricForBrowserProfile(
             @PathVariable Metric.MetricType metricType
     ) {
         return getMetricsMatchingExample(
                 Example.of(new Metric(null, null, metricType, RequestGraph.RequestGraphType.ENTITY_REQUEST_GRAPH, null)));
     }
+    @RequestMapping(value = {"entitygraph"}, method = RequestMethod.GET)
+    public Map<Metric.MetricType, Map<BrowserProfile, Map<String, Double>>> getEntityGraphMetrics() {
+        return getMetricsMatchingExample(
+                Example.of(new Metric(null, null, null, RequestGraph.RequestGraphType.ENTITY_REQUEST_GRAPH, null)));
+    }
 
-    private Map<Metric.MetricType, Map<BrowserProfile, List<Map<String, String>>>> getMetricsMatchingExample(
-            Example<Metric> example
-    ) {
+    private Map<Metric.MetricType, Map<BrowserProfile, Map<String, Double>>> getMetricsMatchingExample(Example<Metric> example) {
         return this.metricRepository
                 .findAll(example)
                 .stream()
                 .collect(Collectors.groupingBy(Metric::getMetricType,
                         Collectors.groupingBy(Metric::getBrowserProfile,
-                                Collector.of(LinkedList::new,
-                                        (list, metric) -> list.add(ImmutableMap.of(
-                                                "date", metric.getDate(),
-                                                "value", metric.getValue().toString())),
-                                        (list1, list2) -> {list1.addAll(list2); return list1;})
+                                Collectors.toMap(Metric::getDate, Metric::getValue)
                         )));
     }
 
