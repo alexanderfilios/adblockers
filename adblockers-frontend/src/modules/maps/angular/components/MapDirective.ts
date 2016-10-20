@@ -73,7 +73,7 @@ const createMap: Function = function(element: IAugmentedJQuery,
     const rainbow = new Rainbow()
         .setNumberRange(0, 1)
         .setSpectrum('white', 'yellow', 'red');
-
+    
     const markers = data.locations.length === 0
         ? []
         : data.locations.map(location => ({

@@ -82,7 +82,7 @@ public class MetricController {
                 .stream()
                 .collect(Collectors.groupingBy(Metric::getMetricType,
                         Collectors.groupingBy(Metric::getBrowserProfile,
-                                Collectors.toMap(Metric::getDate, Metric::getValue)
+                                Collectors.toMap(Metric::getDate, Metric::getValue, (v1, v2) -> v1)
                         )));
     }
 

@@ -13,13 +13,18 @@ import java.util.Date;
 public class Metric {
 
     public enum MetricType {
-        FPD_DEGREE,
-        FPD_DEGREE_TOP_10,
-        FPD_DEGREE_TOP_1,
-        TPD_DEGREE,
-        TPD_DEGREE_TOP_10,
-        TPD_DEGREE_TOP_1,
-        DENSITY
+        FPD_DEGREE_MEAN,
+        FPD_DEGREE_MEAN_TOP_500,
+        FPD_DEGREE_MEAN_LAST_500,
+        FPD_DEGREE_STDEV,
+        FPD_DEGREE_MEAN_TOP_10,
+        FPD_DEGREE_MEAN_TOP_1,
+        TPD_DEGREE_MEAN,
+        TPD_DEGREE_STDEV,
+        TPD_DEGREE_MEAN_TOP_10,
+        TPD_DEGREE_MEAN_TOP_1,
+        DENSITY,
+        UNDEFINED
     }
 
     @Transient private Date dateObject;
@@ -94,5 +99,14 @@ public class Metric {
 
     public void setBrowserProfile(BrowserProfile browserProfile) {
         this.browserProfile = browserProfile;
+    }
+
+    public String toString() {
+        return new StringBuilder()
+                .append(getBrowserProfile().toProfileName()).append(" ")
+                .append(getMetricType()).append(" ")
+                .append(getDate()).append(": ")
+                .append(getValue())
+                .toString();
     }
 }

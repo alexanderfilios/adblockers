@@ -69,14 +69,54 @@ export class TwitterApplicationController {
                         section: 'Domain graphs'
                     },
                     {
-                        title: 'Domain FPD node degree',
-                        text: 'FPD node degree',
+                        title: 'Domain FPD mean node degree',
+                        text: 'FPD mean node degree',
                         link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE'].name
                     },
                     {
-                        title: 'Domain TPD node degree',
-                        text: 'TPD node degree',
+                        title: 'Domain FPD stdev node degree',
+                        text: 'FPD stdev node degree',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE_STDEV'].name
+                    },
+                    {
+                        title: 'Domain FPD mean node degree (Top 500)',
+                        text: 'FPD mean node degree (Top 500)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE_TOP_500'].name
+                    },
+                    {
+                        title: 'Domain FPD mean node degree (Last 500)',
+                        text: 'FPD mean node degree (Last 500)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE_LAST_500'].name
+                    },
+                    {
+                        title: 'Domain FPD mean node degree (Top 10)',
+                        text: 'FPD mean node degree (Top 10)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE_TOP_10'].name
+                    },
+                    {
+                        title: 'Domain FPD mean node degree (Top 1)',
+                        text: 'FPD mean node degree (Top 1)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE_TOP_1'].name
+                    },
+                    {
+                        title: 'Domain TPD mean node degree',
+                        text: 'TPD mean node degree',
                         link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['TPD_DEGREE'].name
+                    },
+                    {
+                        title: 'Domain TPD stdev node degree',
+                        text: 'TPD stdev node degree',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['TPD_DEGREE_STDEV'].name
+                    },
+                    {
+                        title: 'Domain TPD mean node degree (Top 10)',
+                        text: 'TPD mean node degree (Top 10)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['TPD_DEGREE_TOP_10'].name
+                    },
+                    {
+                        title: 'Domain TPD mean node degree (Top 1)',
+                        text: 'TPD mean node degree (Top 1)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['DOMAIN_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['TPD_DEGREE_TOP_1'].name
                     },
                     {
                         title: 'Domain density',
@@ -95,14 +135,34 @@ export class TwitterApplicationController {
                         section: 'Entity graphs'
                     },
                     {
-                        title: 'Entity FPD node degree',
+                        title: 'Entity FPD mean node degree',
                         text: 'FPD node degree',
                         link: '#/linecharts/' + Constants.GRAPH_TYPES['ENTITY_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE'].name
                     },
                     {
-                        title: 'Entity TPD node degree',
+                        title: 'Entity FPD mean node degree (Top 10)',
+                        text: 'FPD node degree (Top 10)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['ENTITY_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE_TOP_10'].name
+                    },
+                    {
+                        title: 'Entity FPD mean node degree (Top 1)',
+                        text: 'FPD node degree (Top 1)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['ENTITY_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['FPD_DEGREE_TOP_1'].name
+                    },
+                    {
+                        title: 'Entity TPD mean node degree',
                         text: 'TPD node degree',
                         link: '#/linecharts/' + Constants.GRAPH_TYPES['ENTITY_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['TPD_DEGREE'].name
+                    },
+                    {
+                        title: 'Entity TPD mean node degree (Top 10)',
+                        text: 'TPD node degree (Top 10)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['ENTITY_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['TPD_DEGREE_TOP_10'].name
+                    },
+                    {
+                        title: 'Entity TPD mean node degree (Top 1)',
+                        text: 'TPD node degree (Top 1)',
+                        link: '#/linecharts/' + Constants.GRAPH_TYPES['ENTITY_GRAPH'].name + '/metric/' + Constants.METRIC_TYPES['TPD_DEGREE_TOP_1'].name
                     },
                     {
                         title: 'Entity density',
