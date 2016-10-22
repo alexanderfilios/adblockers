@@ -8,6 +8,7 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.net.InetAddress;
 /**
  * Created by alexandrosfilios on 16/09/16.
  */
-@Component
+@Service
 public class GeoIpCity implements GeoIpService {
 
     private static final String GEOIP_DATABASE = "GeoLite2-City.mmdb";
@@ -55,6 +56,6 @@ public class GeoIpCity implements GeoIpService {
         } catch (GeoIp2Exception e) {
             LOGGER.warn("GeoIp exception thrown");
         }
-        return null;
+        return ServerLocation.empty(url);
     }
 }

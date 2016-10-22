@@ -7,6 +7,7 @@ import com.adblockers.services.geocode.GeocodeService;
 import com.adblockers.services.shellscript.ScriptExecutor;
 import com.adblockers.services.whois.WhoisService;
 import com.google.common.collect.ImmutableMap;
+import javafx.util.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -81,6 +82,39 @@ public class ScriptController {
                         .put("occurrences", Double.valueOf((double) countryOccurrence.getValue() / totalLegalEntities).toString())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = {"geoip/stats"}, method = RequestMethod.GET)
+    public Map<String, Integer> getServerLocationStats() {
+        Pair<Integer, Integer> stats = this.serverLocationRepository.findAll().stream()
+                .reduce(new Pair<>(0, 0),
+                        (accumulator, serverLocation) -> new Pair<>(
+                                accumulator.getKey() + (serverLocation.isEmpty() ? 0 : 1),
+                                accumulator.getValue() + 1),
+                        (accumulator, current) -> new Pair<>(
+                                accumulator.getKey() + current.getKey(),
+                                accumulator.getValue() + current.getValue()));
+        return ImmutableMap.of(
+                "found", stats.getKey(),
+                "total", stats.getValue()
+        );
+    }
+
+    @RequestMapping(value = {"geocode/stats"}, method = RequestMethod.GET)
+    public Map<String, Integer> getLegalEntityLocationStats() {
+        Pair<Integer, Integer> stats = this.legalEntityLocationRepository.findAll().stream()
+                .reduce(new Pair<>(0, 0),
+                        (accumulator, legalEntityLocation) -> new Pair<>(
+                                accumulator.getKey() + (legalEntityLocation.isEmpty() ? 0 : 1),
+                                accumulator.getValue() + 1),
+                        (accumulator, current) -> new Pair<>(
+                                accumulator.getKey() + current.getKey(),
+                                accumulator.getValue() + current.getValue()
+                        ));
+        return ImmutableMap.of(
+                "found", stats.getKey(),
+                "total", stats.getValue()
+        );
     }
 
 

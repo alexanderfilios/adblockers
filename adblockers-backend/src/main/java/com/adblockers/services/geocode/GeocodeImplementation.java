@@ -56,8 +56,6 @@ public class GeocodeImplementation implements GeocodeService {
     public LegalEntityLocation findLocationByLegalEntity(LegalEntity legalEntity) {
         // Combine all data we have to extract an address for the legal entity
 
-
-
         // Input this address to the geocode api to get a location
         // Start with street, city, country
         Location location = findLocationByAddress(legalEntity.getFullAddress(0));
@@ -71,7 +69,7 @@ public class GeocodeImplementation implements GeocodeService {
         }
         if (location == null) {
             LOGGER.warn("Did not find LegalEntityLocation for " + legalEntity.getUrl().getDomain());
-            return null;
+            return LegalEntityLocation.empty(legalEntity.getUrl());
         }
 
         LOGGER.info("LegalEntityLocation found for " + legalEntity.getUrl().getDomain());

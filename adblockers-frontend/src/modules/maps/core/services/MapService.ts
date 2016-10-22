@@ -17,6 +17,25 @@ export class MapService {
         this.qService = qService;
     }
 
+    private fetchStats(service: string): IPromise<{[key: string]: number}> {
+        const self = this;
+        const deferred = self.qService.defer();
+        self.httpService({
+            method: 'GET',
+            url: Constants.BASE_URL + 'scripts/' + service + '/stats'
+        })
+            .then(result => deferred.resolve(result.data))
+            .catch(error => deferred.reject(error));
+        return deferred.promise;
+    }
+    
+    public fetchLegalEntityLocationStats(): IPromise<{[key: string]: number}> {
+        return this.fetchStats('geocode');
+    }
+    public fetchServerLocationStats(): IPromise<{[key: string]: number}> {
+        return this.fetchStats('geoip');
+    }
+
     private fetchLocations(service: string): IPromise<Array<{[key: string]: string}>> {
         const self = this;
         const deferred = self.qService.defer();
@@ -47,7 +66,7 @@ export class MapService {
             .catch(error => deferred.reject(error));
         return deferred.promise;
     }
-    
+
     public fetchLegalEntityLocationsPerRegion(): IPromise<Array<{[key: string]: string}>> {
         return this.fetchRegions('geocode');
     }

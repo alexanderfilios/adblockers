@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Created by alexandrosfilios on 18/09/16.
  */
-@Component
+@Service
 public class RequestGraphServiceImplementation implements RequestGraphService {
 
     private LegalEntityRepository legalEntityRepository;

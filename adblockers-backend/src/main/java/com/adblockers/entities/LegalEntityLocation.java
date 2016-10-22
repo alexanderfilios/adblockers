@@ -6,12 +6,21 @@ import java.net.MalformedURLException;
 
 /**
  * Created by alexandrosfilios on 17/09/16.
+ * This entity contains data from the {@link LegalEntity} objects
+ * joined with geolocation information, if the {@link LegalEntity} object
+ * contained any address (even incomplete).
  */
 public class LegalEntityLocation extends Location {
 
     private String organization;
     private String domain;
     @Transient private Url url;
+
+    public static LegalEntityLocation empty(Url url) {
+        LegalEntityLocation legalEntityLocation = new LegalEntityLocation();
+        legalEntityLocation.setDomain(url.getDomain());
+        return legalEntityLocation;
+    }
 
     public LegalEntityLocation() {
         super();
@@ -38,6 +47,11 @@ public class LegalEntityLocation extends Location {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isEmpty() {
+        return getCountry() == null && getCity() == null
+                && getLatitude() == null && getLongitude() == null;
     }
 
     @Override

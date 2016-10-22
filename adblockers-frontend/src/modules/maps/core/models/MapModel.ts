@@ -14,6 +14,7 @@ export class MapModel {
     public static $inject: Array<string> = ["MapService", "$q", "$log"];
     private locations: Array<Location>;
     private regions: Array<Region>;
+    private stats: {[key: string]: number};
     private mapService: MapService;
     private logger: ILogService;
     private qService: IQService;
@@ -24,6 +25,22 @@ export class MapModel {
         this.qService = qService;
     }
 
+    public fetchLegalEntityLocationStats(): void {
+        const self = this;
+        self.stats = null;
+        self.mapService.fetchLegalEntityLocationStats()
+            .then(stats => self.stats = stats)
+            .catch(error => self.logger.error(error));
+    }
+    
+    public fetchServerLocationStats(): void {
+        const self = this;
+        self.stats = null;
+        self.mapService.fetchServerLocationStats()
+            .then(stats => self.stats = stats)
+            .catch(error => self.logger.error(error));
+    }
+    
     public fetchLegalEntityLocations(): void {
         const self = this;
         self.locations = null;

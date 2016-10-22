@@ -6,6 +6,7 @@ import com.adblockers.utils.Utilities;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Created by alexandrosfilios on 17/09/16.
  */
-@Component
+@Service
 public class WhoisImplementation implements WhoisService {
 
     public static final Integer WHOIS_PORT = 43;
@@ -59,7 +60,7 @@ public class WhoisImplementation implements WhoisService {
         } catch (IOException e) {
             LOGGER.warn("No WHOIS data found for " + url.getDomain());
         }
-        return null;
+        return LegalEntity.empty(url);
     }
 
     @Autowired

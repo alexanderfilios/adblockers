@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * Created by alexandrosfilios on 20/10/16.
+ * Class used for conversion of legacy data
  */
 @Document(collection = "statistics")
 public class MetricAdapter {

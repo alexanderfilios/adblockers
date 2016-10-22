@@ -16,7 +16,11 @@ import {Constants} from "../../../application/core/Constants";
 
 export function MapComponent(): ng.IDirective {
     return {
-        template: `<map regions="mapModel.regions" locations="mapModel.locations" log-color-scale="true"></map>`,
+        template: `
+            <div>
+                <map regions="mapModel.regions" locations="mapModel.locations" log-color-scale="true"></map>
+                <span ng-if="mapModel.stats !== null">Found: {{mapModel.stats.found}}, Total: {{mapModel.stats.total}}, Ratio: {{(100 * mapModel.stats.found / mapModel.stats.total).toFixed(2)}}%</span>
+            </div>`,
     };
 }
 
@@ -37,15 +41,19 @@ export class MapController {
         switch (routeParamsService.mapTypeName) {
             case Constants.MAP_TYPES['LEGAL_ENTITIES_MARKERS'].name:
                 mapModel.fetchLegalEntityLocations();
+                mapModel.fetchLegalEntityLocationStats();
                 break;
             case Constants.MAP_TYPES['SERVERS_MARKERS'].name:
                 mapModel.fetchServerLocations();
+                mapModel.fetchServerLocationStats();
                 break;
             case Constants.MAP_TYPES['LEGAL_ENTITIES_REGIONS'].name:
                 mapModel.fetchLegalEntityRegions();
+                mapModel.fetchLegalEntityLocationStats();
                 break;
             case Constants.MAP_TYPES['SERVERS_REGIONS'].name:
                 mapModel.fetchServerRegions();
+                mapModel.fetchServerLocationStats();
                 break;
         }
     }

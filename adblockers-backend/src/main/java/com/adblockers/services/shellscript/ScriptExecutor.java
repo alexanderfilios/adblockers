@@ -3,6 +3,7 @@ package com.adblockers.services.shellscript;
 import com.google.common.collect.ImmutableList;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by alexandrosfilios on 16/09/16.
  */
-@Component
+@Service
 public class ScriptExecutor implements ShellScriptService {
     private static final Logger LOGGER = Logger.getLogger(ShellScriptService.class);
 

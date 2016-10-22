@@ -5,6 +5,7 @@ import com.adblockers.services.shellscript.ShellScriptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by alexandrosfilios on 16/09/16.
  */
-@Component
+@Service
 public class WhoisRequesterScript implements WhoisRequester {
 
     private static final Integer TIMEOUT = 3000;

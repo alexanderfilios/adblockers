@@ -52,6 +52,12 @@ public class LegalEntity {
 
     public LegalEntity() {}
 
+    public static LegalEntity empty(Url url) {
+        LegalEntity legalEntity = new LegalEntity();
+        legalEntity.setDomain(url.getDomain());
+        return legalEntity;
+    }
+
     @PersistenceConstructor
     public LegalEntity(String id, String domain, String entityDomain, String organization, String email, String city, String address, String country) {
         setId(id);

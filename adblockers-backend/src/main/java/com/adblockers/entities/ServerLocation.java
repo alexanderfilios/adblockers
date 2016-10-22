@@ -30,6 +30,10 @@ public class ServerLocation extends Location {
         }
     }
 
+    public boolean isEmpty() {
+        return getCountry() == null && getCity() == null;
+    }
+
     @Override
     public String toString() {
         return new StringBuilder()
@@ -38,5 +42,11 @@ public class ServerLocation extends Location {
                 .append(") location: ")
                 .append(super.toString())
                 .toString();
+    }
+
+    public static ServerLocation empty(Url url) {
+        ServerLocation serverLocation = new ServerLocation();
+        serverLocation.setDomain(url.getDomain());
+        return serverLocation;
     }
 }
