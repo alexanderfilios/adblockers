@@ -69,9 +69,10 @@ public class AdapterService {
                 // Calculate again the LegalEntityLocation
                 .map(whoisService::findLegalEntityByUrl)
                 .map(geocodeService::findLocationByLegalEntity)
+                // Do not save the ones that are found to be empty again
+                .filter(legalEntityLocation -> !(legalEntityLocation.isEmpty() && existingLegalEntityLocations.get(true).containsKey(legalEntityLocation.getUrl().getDomain())))
                 // Find the existing (empty) ServerLocation to update or otherwise insert the new one
-                .forEach(legalEntityLocation -> legalEntityLocationRepository.save(
-                        existingLegalEntityLocations.get(true).getOrDefault(legalEntityLocation.getDomain(), legalEntityLocation)));
+                .forEach(legalEntityLocation -> legalEntityLocationRepository.save(legalEntityLocation));
     }
 
     public Map<String, Integer> getLegalEntityLocationStats() {
@@ -108,6 +109,8 @@ public class AdapterService {
                 .peek(url -> LOGGER.info("Fetching Server Location for " + url.getDomain()))
                 // Calculate again the ServerLocation
                 .map(geoIpService::findServerLocationByUrl)
+                // Do not save the ones that are found to be empty again
+                .filter(serverLocation -> !(serverLocation.isEmpty() && existingServerLocations.get(true).containsKey(serverLocation.getUrl().getDomain())))
                 // Find the existing (empty) ServerLocation to update or otherwise insert the new one
                 .forEach(serverLocation -> serverLocationRepository.save(
                         existingServerLocations.get(true).getOrDefault(serverLocation.getDomain(), serverLocation)));

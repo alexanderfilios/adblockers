@@ -34,7 +34,7 @@ public class LocationController {
     }
 
     /**
-     * Geocode service methods
+     * Geocode service methods ({@link LegalEntityLocation}s)
      */
 
     @RequestMapping(value = {"geocode/all/markers"}, method = RequestMethod.GET)
@@ -63,20 +63,13 @@ public class LocationController {
         this.locationService.deleteGeocodeInformationForAllParties();
     }
 
-    /**
-     * Looks for the {@link LegalEntityLocation}s using the Geocode APIs
-     * There is an upper limit on the requests we can issue to the Geocode services
-     * Hence, we have to spare on requests and only perform them for the legal entities
-     * that do not have any geocode information stored yet
-     * @throws OperationsException When no legal entities are found
-     */
     @RequestMapping(value = {"geocode/all"}, method = RequestMethod.PUT)
     public void storeGeocodeInformationForAllParties() throws OperationsException {
         this.locationService.storeGeocodeInformationForAllParties();
     }
 
     /**
-     * GeoIP service methods
+     * GeoIP service methods ({@link ServerLocation}s)
      */
 
     @RequestMapping(value = {"geoip/all/markers"}, method = RequestMethod.GET)
@@ -94,10 +87,6 @@ public class LocationController {
         this.locationService.deleteGeoIpInformationForAllParties();
     }
 
-    /**
-     * Looks for the {@link ServerLocation}s using the GeoIP service
-     * Records are refreshed, i.e. deleted and looked-up and stored anew
-     */
     @RequestMapping(value = {"geoip/thirdparties"}, method = RequestMethod.PUT)
     public void storeGeoIpInformationForAllThirdParties() {
         this.locationService.storeGeoIpInformationForAllThirdParties();
@@ -117,12 +106,6 @@ public class LocationController {
         this.locationService.deleteWhoisInformationForAllParties();
     }
 
-    /**
-     * Looks for new {@link LegalEntity}s by looking up in the WHOIS registry
-     * Stores the new records and updates the existing ones
-     * Updates occur for every field that was previously null and now was found non null
-     * Even if the existing contact is already complete (has all fields filled), it will be looked up again
-     */
     @RequestMapping(value = {"whois/thirdparties"}, method = RequestMethod.PUT)
     public void storeWhoisInformationForThirdParties() {
         this.locationService.storeWhoisInformationForThirdParties();

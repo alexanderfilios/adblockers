@@ -3,6 +3,7 @@ package com.adblockers;
 import com.adblockers.converters.StringToBrowserProfile;
 import com.adblockers.converters.StringToDateConverter;
 import com.adblockers.converters.StringToMetricTypeConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableWebMvc
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
+
+    @Value("${frontend.domain}") private String frontendDomain;
+    @Value("${frontend.port}") private Integer frontendPort;
+
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new StringToBrowserProfile());
@@ -31,7 +36,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:2992");
+        config.addAllowedOrigin("http://" + frontendDomain + ":" + frontendPort);
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
