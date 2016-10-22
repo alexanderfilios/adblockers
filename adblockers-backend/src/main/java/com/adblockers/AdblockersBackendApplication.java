@@ -8,6 +8,7 @@ import java.io.File;
 @SpringBootApplication
 public class AdblockersBackendApplication {
 
+	// Supposing that the JAR file is run from the root of the adblockers-backend project
 	public static final String RESOURCES_PATH = new StringBuilder()
 			.append(System.getProperty("user.dir")).append(File.separator)
 			.append("src").append(File.separator)

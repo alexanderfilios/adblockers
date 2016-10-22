@@ -19,7 +19,6 @@ export function MapComponent(): ng.IDirective {
         template: `
             <div>
                 <map regions="mapModel.regions" locations="mapModel.locations" log-color-scale="true"></map>
-                <span ng-if="mapModel.stats !== null">Found: {{mapModel.stats.found}}, Total: {{mapModel.stats.total}}, Ratio: {{(100 * mapModel.stats.found / mapModel.stats.total).toFixed(2)}}%</span>
             </div>`,
     };
 }
