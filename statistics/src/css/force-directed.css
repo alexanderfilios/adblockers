@@ -1,8 +1,0 @@
-.force-directed-style .link {
-  stroke: #ccc;
-}
-
-.force-directed-style .node text {
-  pointer-events: none;
-  font: 10px sans-serif;
-}
