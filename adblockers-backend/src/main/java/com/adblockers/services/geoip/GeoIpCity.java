@@ -6,8 +6,8 @@ import com.adblockers.entities.Url;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -21,7 +21,7 @@ import java.net.InetAddress;
 public class GeoIpCity implements GeoIpService {
 
     private static final String GEOIP_DATABASE = "GeoLite2-City.mmdb";
-    private static final Logger LOGGER = Logger.getLogger(GeoIpService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeoIpService.class);
 
     private DatabaseReader databaseReader;
 

@@ -7,7 +7,8 @@ import com.adblockers.entities.Url;
 import com.adblockers.repos.LegalEntityLocationRepository;
 import com.adblockers.repos.LegalEntityRepository;
 import com.google.common.collect.ImmutableMap;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,9 @@ import org.xml.sax.InputSource;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +31,7 @@ public class GeocodeImplementation implements GeocodeService {
 
     private static final String BASE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/";
     private static final String ENCODING_FORMAT = "UTF-8";
-    private static final Logger LOGGER = Logger.getLogger(GeocodeService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeocodeService.class);
 
     private LocationParser locationParser;
     private LegalEntityRepository legalEntityRepository;

@@ -1,25 +1,28 @@
 package com.adblockers.controllers;
 
-import com.adblockers.entities.*;
-import com.adblockers.repos.*;
-import com.adblockers.services.geoip.GeoIpCity;
+import com.adblockers.entities.LegalEntity;
+import com.adblockers.entities.LegalEntityLocation;
+import com.adblockers.entities.ServerLocation;
+import com.adblockers.entities.Url;
+import com.adblockers.repos.HttpRequestRecordRepository;
+import com.adblockers.repos.LegalEntityLocationRepository;
+import com.adblockers.repos.LegalEntityRepository;
+import com.adblockers.repos.ServerLocationRepository;
 import com.adblockers.services.geocode.GeocodeService;
-import com.adblockers.services.shellscript.ScriptExecutor;
+import com.adblockers.services.geoip.GeoIpCity;
 import com.adblockers.services.whois.WhoisService;
 import com.google.common.collect.ImmutableMap;
 import javafx.util.Pair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.management.OperationsException;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +33,7 @@ import java.util.stream.Collectors;
 @RequestMapping("scripts/")
 public class ScriptController {
 
-    private static final Logger LOGGER = Logger.getLogger(ScriptController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptController.class);
 
     private WhoisService whoisService;
     private GeoIpCity geoIpCity;

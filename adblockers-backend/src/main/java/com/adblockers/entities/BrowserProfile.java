@@ -3,7 +3,6 @@ package com.adblockers.entities;
 import com.adblockers.utils.Utilities;
 import org.apache.commons.collections.ListUtils;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

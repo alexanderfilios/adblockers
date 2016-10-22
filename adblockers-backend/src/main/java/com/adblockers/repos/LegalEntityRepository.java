@@ -2,7 +2,6 @@ package com.adblockers.repos;
 
 import com.adblockers.entities.LegalEntity;
 import com.google.common.collect.ImmutableList;
-import org.apache.log4j.Logger;
 import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.util.StringUtils;

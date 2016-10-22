@@ -1,12 +1,11 @@
 package com.adblockers.controllers;
 
-import com.adblockers.transfer.HttpRequestRecordDTO;
 import com.adblockers.repos.HttpRequestRecordRepository;
+import com.adblockers.transfer.HttpRequestRecordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by alexandrosfilios on 15/09/16.

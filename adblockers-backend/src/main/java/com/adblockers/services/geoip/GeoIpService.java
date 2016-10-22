@@ -4,7 +4,6 @@ import com.adblockers.entities.ServerLocation;
 import com.adblockers.entities.Url;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

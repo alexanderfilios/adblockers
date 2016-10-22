@@ -2,7 +2,8 @@ package com.adblockers.entities;
 
 import com.adblockers.services.requestgraph.RequestGraph;
 import com.google.common.collect.ImmutableMap;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -25,7 +26,7 @@ public class MetricAdapter {
     private String instance;
     private String crawlDate;
 
-    @Transient private static Logger LOGGER = Logger.getLogger(MetricAdapter.class);
+    @Transient private static Logger LOGGER = LoggerFactory.getLogger(MetricAdapter.class);
 
     @Transient private static Map<String, Metric.MetricType> METRIC_TYPE_MAP = ImmutableMap.<String, Metric.MetricType>builder()
             .put("first-stdev", Metric.MetricType.FPD_DEGREE_STDEV)

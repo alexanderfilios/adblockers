@@ -1,12 +1,12 @@
 package com.adblockers.services.requestgraph;
 
 import com.adblockers.entities.*;
-import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
-
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class RequestGraph<S, T> {
 
-    private static final Logger LOGGER = Logger.getLogger(RequestGraph.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestGraph.class);
 
     private UndirectedGraph<RequestGraphNode, DefaultEdge> requestGraph;
     private Date crawlDate;

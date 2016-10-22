@@ -29,6 +29,7 @@
 /thesis/*.backup
 
 /adblockers-backend/.idea
+/adblockers-backend/logs
 /adblockers-backend/.mvn
 /adblockers-backend/target
 /adblockers-backend/*.iml
@@ -38,3 +39,5 @@
 /adblockers-frontend/dist
 /adblockers-frontend/node_modules
 /adblockers-frontend/typings
+
+**/.DS_Store

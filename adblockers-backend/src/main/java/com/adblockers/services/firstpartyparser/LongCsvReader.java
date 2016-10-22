@@ -2,12 +2,16 @@ package com.adblockers.services.firstpartyparser;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.adblockers.AdblockersBackendApplication;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,7 +21,7 @@ import java.util.function.Predicate;
  */
 @Service
 public class LongCsvReader<T> implements LongCsvReaderService<T> {
-    private static final Logger LOGGER = Logger.getLogger(LongCsvReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LongCsvReader.class);
 
     private Function<T, T> objectFormatter;
     private Predicate<T> filter;

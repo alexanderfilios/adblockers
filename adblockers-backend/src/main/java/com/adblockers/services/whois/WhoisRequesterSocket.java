@@ -1,6 +1,7 @@
 package com.adblockers.services.whois;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class WhoisRequesterSocket implements WhoisRequester {
 
-    private static final Logger LOGGER = Logger.getLogger(WhoisRequesterSocket.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WhoisRequesterSocket.class);
 
     private static final String WHOIS_DEFAULT_HOST = "whois.internic.net";
     private static final Integer WHOIS_DEFAULT_PORT = 43;

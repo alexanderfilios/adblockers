@@ -6,6 +6,7 @@ import com.adblockers.services.geoip.GeoIpService;
 import com.adblockers.services.requestgraph.RequestGraph;
 import com.adblockers.services.whois.WhoisService;
 import com.google.common.collect.ImmutableSet;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -44,6 +45,7 @@ public class AdblockersBackendApplicationTests {
     }
 
     @Test
+    @Ignore
     public void findLegalEntityByUrlTest() {
         LegalEntity[] testResults = this.whoisService
                 .findLegalEntitiesByUrl(this.testUrls)
@@ -74,6 +76,7 @@ public class AdblockersBackendApplicationTests {
     }
 
     @Test
+    @Ignore
     public void findServerLocationByUrlTest() {
         ServerLocation[] testResults = this.geoIpService
                 .findServerLocationsByUrl(this.testUrls)
@@ -102,6 +105,7 @@ public class AdblockersBackendApplicationTests {
     }
 
     @Test
+    @Ignore
     public void findLocationByLegalEntityTest() {
         Set<LegalEntity> testLegalEntities = this.testUrls
                 .stream()
@@ -137,6 +141,7 @@ public class AdblockersBackendApplicationTests {
     }
 
     @Test
+    @Ignore
     public void createGraphTest() {
         Set<Pair<String, Integer>> testEdges = ImmutableSet.<Pair<String, Integer>>builder()
                 .add(Pair.of("A", Integer.valueOf(1)))

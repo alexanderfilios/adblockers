@@ -3,18 +3,19 @@ package com.adblockers.repos;
 import com.adblockers.entities.BrowserProfile;
 import com.adblockers.entities.HttpRequestRecord;
 import com.adblockers.entities.Url;
-import com.sun.istack.internal.Nullable;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.stereotype.Repository;
-
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class HttpRequestRecordRepository {
 
     private MongoTemplate mongoTemplate;
-    private static final Logger LOGGER = Logger.getLogger(HttpRequestRecordRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestRecordRepository.class);
 
     /**
      * Stores a {@link HttpRequestRecord}
@@ -62,7 +63,7 @@ public class HttpRequestRecordRepository {
      * @param date The {@link Date}. If null, all existing dates are examined
      * @return A {@link Set} of the third-party {@link Url}s
      */
-    public Set<Url> getAllThirdPartyDomainsForDate(@Nullable Date date) {
+    public Set<Url> getAllThirdPartyDomainsForDate(Date date) {
         return BrowserProfile.getAllBrowserProfiles().stream()
                 .flatMap(browserProfile -> getAllThirdPartyDomainsForBrowserProfileAndDate(browserProfile, date).stream())
                 .collect(Collectors.toSet());
@@ -74,7 +75,7 @@ public class HttpRequestRecordRepository {
      * @param date The {@link Date}
      * @return A {@link Set} with the {@link Url}s containing the domains
      */
-    public Set<Url> getAllThirdPartyDomainsForBrowserProfileAndDate(@NotNull BrowserProfile browserProfile, @Nullable Date date) {
+    public Set<Url> getAllThirdPartyDomainsForBrowserProfileAndDate(@NotNull BrowserProfile browserProfile, Date date) {
         return getAllThirdPartiesForBrowserProfileAndDate(
                 browserProfile,
                 date,
@@ -101,7 +102,7 @@ public class HttpRequestRecordRepository {
      * @param date The {@link Date}. If null, all existing dates are examined
      * @return A {@link Set} of the third-party {@link Url}s
      */
-    public Set<Url> getAllThirdPartyHostsForDate(@Nullable Date date) {
+    public Set<Url> getAllThirdPartyHostsForDate(Date date) {
         return BrowserProfile.getAllBrowserProfiles().stream()
                 .flatMap(browserProfile -> getAllThirdPartyHostsForBrowserProfileAndDate(browserProfile, date).stream())
                 .collect(Collectors.toSet());
@@ -113,7 +114,7 @@ public class HttpRequestRecordRepository {
      * @param date The {@link Date}
      * @return A {@link Set} with the {@link Url}s containing the domains
      */
-    public Set<Url> getAllThirdPartyHostsForBrowserProfileAndDate(@NotNull BrowserProfile browserProfile, @Nullable Date date) {
+    public Set<Url> getAllThirdPartyHostsForBrowserProfileAndDate(@NotNull BrowserProfile browserProfile, Date date) {
         return getAllThirdPartiesForBrowserProfileAndDate(
                 browserProfile,
                 date,
@@ -137,7 +138,7 @@ public class HttpRequestRecordRepository {
      */
     public Set<Url> getAllThirdPartiesForBrowserProfileAndDate(
             @NotNull BrowserProfile browserProfile,
-            @Nullable Date date,
+            Date date,
             @NotNull Function<Url, Url> converter) {
 
         // Set date constraint
@@ -160,7 +161,7 @@ public class HttpRequestRecordRepository {
      * Clears all recrods for a specific {@link Date} and all {@link BrowserProfile}s
      * @param date The {@link Date}. If null, the whole collection is dropped
      */
-    public void remove(@Nullable Date date) {
+    public void remove(Date date) {
         BrowserProfile.getAllBrowserProfiles().stream()
                 .forEach(browserProfile -> this.remove(browserProfile, date));
     }
@@ -170,7 +171,7 @@ public class HttpRequestRecordRepository {
      * @param browserProfile The {@link BrowserProfile}
      * @param date The {@link Date}. If null, the whole collection is dropped
      */
-    public void remove(@NotNull BrowserProfile browserProfile, @Nullable Date date) {
+    public void remove(@NotNull BrowserProfile browserProfile, Date date) {
 
         String collectionName = browserProfile.toCollectionName();
         if (date == null) {

@@ -5,7 +5,6 @@ import com.adblockers.repos.LegalEntityRepository;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
