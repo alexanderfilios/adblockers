@@ -1,27 +1,10 @@
-fabfile_local.py
-data/deployment.json
-.DS_store
-*.js~
-*.html~
-*.css~
-._*
-exported_graphs
-*.swp
-npm-debug.log
-
+/npm-debug.log
 /.idea/
-
-/backup/
-/blacklists/
 
 /lightbeam/node_modules
 /lightbeam/*debuglog.txt
 /lightbeam/data/libs/
 /lightbeam/*.xpi
-
-/statistics/node_modules
-/statistics/npm-debug.log
-/statistics/public/_assets
 
 /adblocker-utils/node_modules
 /adblocker-utils/dist
@@ -37,4 +20,21 @@ npm-debug.log
 /paper/figures/*.m~
 /paper/*.backup
 
-/browser-tasks/node_modules/
+/thesis/*.bbl
+/thesis/thesis.pdf
+/thesis/*.blg
+/thesis/*.log
+/thesis/*.aux
+/thesis/*.dvi
+/thesis/*.backup
+
+/adblockers-backend/.idea
+/adblockers-backend/.mvn
+/adblockers-backend/target
+/adblockers-backend/*.iml
+/adblockers-backend/mvnw*
+
+/adblockers-frontend/.idea
+/adblockers-frontend/dist
+/adblockers-frontend/node_modules
+/adblockers-frontend/typings
