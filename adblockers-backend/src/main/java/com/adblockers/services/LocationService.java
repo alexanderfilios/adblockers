@@ -1,5 +1,6 @@
-package com.adblockers.controllers;
+package com.adblockers.services;
 
+import com.adblockers.controllers.LocationController;
 import com.adblockers.entities.LegalEntity;
 import com.adblockers.entities.LegalEntityLocation;
 import com.adblockers.entities.ServerLocation;
@@ -16,24 +17,21 @@ import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.management.OperationsException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by alexandrosfilios on 16/09/16.
+ * Created by alexandrosfilios on 22/10/16.
  */
-@CrossOrigin
-@RestController
-@RequestMapping("scripts/")
-public class ScriptController {
+@Service
+public class LocationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocationService.class);
 
     private WhoisService whoisService;
     private GeoIpCity geoIpCity;
@@ -46,7 +44,6 @@ public class ScriptController {
     private static final Map<String, String> ISO_CODE_COUNTRY_MAP = Arrays.asList(Locale.getISOCountries()).stream()
             .collect(Collectors.toMap(isoCountry -> new Locale("", isoCountry).getDisplayCountry(), isoCountry -> isoCountry));
 
-    @RequestMapping(value = {"runall"}, method = RequestMethod.PUT)
     public void runAllScriptsForStore() {
         this.storeWhoisInformationForThirdParties();
         try {
@@ -55,7 +52,6 @@ public class ScriptController {
         this.storeGeoIpInformationForAllThirdParties();
     }
 
-    @RequestMapping(value = {"runall"}, method = RequestMethod.DELETE)
     public void runAllScriptsForDelete() {
         this.deleteGeoIpInformationForAllParties();
         this.deleteGeocodeInformationForAllParties();
@@ -66,14 +62,14 @@ public class ScriptController {
      * Geocode service methods
      */
 
-    @RequestMapping(value = {"geocode/all/markers"}, method = RequestMethod.GET)
     public List<LegalEntityLocation> getGeocodeInformationForAllPartiesPerMarker() {
         return this.legalEntityLocationRepository.findAll();
     }
 
-    @RequestMapping(value = {"geocode/all/regions"}, method = RequestMethod.GET)
     public List<Map<String, String>> getGeocodeInformationForAllPartiesPerRegion() {
-        Integer totalLegalEntities = this.legalEntityLocationRepository.findAll().size();
+        Long totalLegalEntities = this.legalEntityLocationRepository.findAll().stream()
+                .filter(legalEntityLocation -> !legalEntityLocation.isEmpty())
+                .count();
         return this.serverLocationRepository.findAll().stream()
                 .collect(Collectors.toMap(
                         serverLocation -> ISO_CODE_COUNTRY_MAP.getOrDefault(serverLocation.getCountry(), ""),
@@ -87,7 +83,6 @@ public class ScriptController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = {"geoip/stats"}, method = RequestMethod.GET)
     public Map<String, Integer> getServerLocationStats() {
         Pair<Integer, Integer> stats = this.serverLocationRepository.findAll().stream()
                 .reduce(new Pair<>(0, 0),
@@ -103,7 +98,6 @@ public class ScriptController {
         );
     }
 
-    @RequestMapping(value = {"geocode/stats"}, method = RequestMethod.GET)
     public Map<String, Integer> getLegalEntityLocationStats() {
         Pair<Integer, Integer> stats = this.legalEntityLocationRepository.findAll().stream()
                 .reduce(new Pair<>(0, 0),
@@ -120,8 +114,6 @@ public class ScriptController {
         );
     }
 
-
-    @RequestMapping(value = {"geocode/all"}, method = RequestMethod.DELETE)
     public void deleteGeocodeInformationForAllParties() {
         this.legalEntityLocationRepository.deleteAll();
     }
@@ -133,7 +125,6 @@ public class ScriptController {
      * that do not have any geocode information stored yet
      * @throws OperationsException When no legal entities are found
      */
-    @RequestMapping(value = {"geocode/all"}, method = RequestMethod.PUT)
     public void storeGeocodeInformationForAllParties() throws OperationsException {
         Collection<LegalEntity> legalEntities = this.geocodeService
                 .findLegalEntitiesWithoutGeocodeInformation();
@@ -150,14 +141,14 @@ public class ScriptController {
      * GeoIP service methods
      */
 
-    @RequestMapping(value = {"geoip/all/markers"}, method = RequestMethod.GET)
     public List<ServerLocation> getGeoIpInformationForAllPartiesPerMarker() {
         return this.serverLocationRepository.findAll();
     }
 
-    @RequestMapping(value = {"geoip/all/regions"}, method = RequestMethod.GET)
     public List<Map<String, String>> getGeoIpInformationForAllPartiesPerRegion() {
-        Integer totalServers = this.serverLocationRepository.findAll().size();
+        Long totalServers = this.serverLocationRepository.findAll().stream()
+                .filter(serverLocation -> !serverLocation.isEmpty())
+                .count();
         return this.serverLocationRepository.findAll().stream()
                 .collect(Collectors.toMap(
                         serverLocation -> ISO_CODE_COUNTRY_MAP.getOrDefault(serverLocation.getCountry(), ""),
@@ -171,7 +162,6 @@ public class ScriptController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = {"geoip/all"}, method = RequestMethod.DELETE)
     public void deleteGeoIpInformationForAllParties() {
         this.serverLocationRepository.deleteAll();
     }
@@ -180,7 +170,6 @@ public class ScriptController {
      * Looks for the {@link ServerLocation}s using the GeoIP service
      * Records are refreshed, i.e. deleted and looked-up and stored anew
      */
-    @RequestMapping(value = {"geoip/thirdparties"}, method = RequestMethod.PUT)
     public void storeGeoIpInformationForAllThirdParties() {
         Set<Url> urls = this.httpRequestRecordRepository.getAllThirdPartyHosts();
         Set<ServerLocation> newServerLocations = geoIpCity.findServerLocationsByUrl(urls);
@@ -195,12 +184,10 @@ public class ScriptController {
      * WHOIS service methods
      */
 
-    @RequestMapping(value = {"whois/all"}, method = RequestMethod.GET)
     public List<LegalEntity> getWhoisInformationForAllParties() {
         return this.legalEntityRepository.findAll();
     }
 
-    @RequestMapping(value = {"whois/all"}, method = RequestMethod.DELETE)
     public void deleteWhoisInformationForAllParties() {
         this.legalEntityRepository.deleteAll();
     }
@@ -211,7 +198,6 @@ public class ScriptController {
      * Updates occur for every field that was previously null and now was found non null
      * Even if the existing contact is already complete (has all fields filled), it will be looked up again
      */
-    @RequestMapping(value = {"whois/thirdparties"}, method = RequestMethod.PUT)
     public void storeWhoisInformationForThirdParties() {
         Set<Url> urls = this.httpRequestRecordRepository.getAllThirdPartyDomains();
         Set<LegalEntity> legalEntities = this.whoisService.findLegalEntitiesByUrl(urls);
