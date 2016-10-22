@@ -1,0 +1,35 @@
+\chapter{Background}
+\label{sec:background}
+Web Privacy is an often-mentioned and thoroughly-analyzed field of study. When visiting an HTTP-based website, the browser first loads content of the main domain (commonly referred to as first party). The HTML code of the first party is then able to load further resources that can be hosted on a remote server (commonly referred third party). This mechanism clearly facilitates the development and deployment of dynamic websites because it allows to use different content providers to load resources that do not need to be served from the first party.
+
+\section{Motivation}
+External resources vary in their format and are applied with different objectives, such as the inclusion of external libraries ---e.g. jQuery--- that are indispensable for the functionality of the website itself. Further reasons include the promotion of advertising content that can be externally loaded and placed at a pre-allocated space on the website, as well as tracking purposes and fingerprinting of the user's profile and activity. Although third parties clearly improve the web's functionality, they come with a series of implications that have been subject of controversy:
+\begin{itemize}
+ \item security threats, e.g. malware attacks~\cite{cisco_annual_security_report}
+ \item privacy risks, e.g. fingerprinting and tracking~\cite{englehardt, krishnamurthy_privacy_diffusion, nikiforakis, soltani}
+ \item user distraction through advertisement, e.g. reader distraction~\cite{beymerl}, limited retention of website content~\cite{mccoy}
+ \item performance and data overhead, e.g. page-loading slowdown~\cite{krishnamurthy}
+\end{itemize}
+
+\section{Ad-blocking Methods}
+
+To address the aforementioned implications and challenges, numerous software and hardware-based solutions --- commonly referred to as \textit{adblockers} --- have been proposed in order to remove or alter the advertising and third party content in a web page.
+
+In more detail, some of these solutions include:
+
+\begin{itemize}
+ \item \textbf{External applications:} External programs customize a web proxy that cache and filter advertising content.
+ \item \textbf{DNS manipulation:} The requests that are sent to some ad servers with known domain names are directed to a virtual blackhole by using DNS sinkholing and assigning the loopback address to each of these servers.
+ \item \textbf{Hardware devices:} Hardware adblockers like \textit{AdTrap}~\cite{adtrap} are directly connected to the router and catch the requests made to a blacklist of known ad servers.
+ \item \textbf{Internet providers:} Proxy-based solutions are often adopted by internet providers in order to reduce their network traffic.
+ \item \textbf{Browser extensions}
+\end{itemize}
+
+\section{Browser extensions}
+The present work focuses on the quantitative analysis of the performance of the adblockers that come as browser extensions. The main motivation is the ever increasing popularity of this technique on desktop as well as mobile browsers.
+
+Adblocker browser extensions use one or more lists that describe the content that is to be allowed (whitelists) or blocked (blacklists) and update those on a regular basis. There are two principal methods how adblocker apply these lists to remove ads/third parties from a webpage: One is filtering the resource according to the result of a URL-pattern matching, before this resource is loaded by the web browser. The second consists of hiding loaded content with the use of CSS rules (\textit{element hiding}) within the HTML content.
+
+According to a report issued by \textit{PageFair}~\cite{pagefair_adblockers}, the active ad-blocking software users increased from 21 million in 2010 to 198 million users globally in Q2 2015. According to a further report~\cite{pagefair_adblockers_mobile}, 22\% of the world's 1.9 billion smartphone users were blocking ads on the mobile web as of March 2016. This finding is particularly important, since mobile accounts for approximately 38\% of all web browsing~\cite{pagefair_adblockers}.
+
+There exists a plethora of alternatives free of charge on the market when it comes to adblocker browser extensions. Some of the most popular solutions among them available for most major browsers are \textit{AdblockPlus}~\cite{adblockplus}, \textit{Ghostery}~\cite{ghostery}, \textit{AdBlock}~\cite{adblock} and \textit{Ad Muncher}~\cite{admuncher}. In the present work, we examine the performances of \textit{AdblockPlus} and \textit{Ghostery}.

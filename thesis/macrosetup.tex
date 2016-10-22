@@ -1,0 +1,23 @@
+%% Custom commands
+%% ===============
+
+  % Defining dash lines
+  \newcommand\solidthinrule[1][.5cm]{\rule[0.5ex]{#1}{.4pt}}
+  \newcommand\solidthickrule[1][.5cm]{\rule[0.5ex]{#1}{1.5pt}}
+  \newcommand\dashedthinrule{\mbox{%
+    \solidthinrule[1mm]\hspace{1mm}\solidthinrule[1mm]\hspace{1mm}\solidthinrule[1mm]}}
+  \newcommand\dashedthickrule{\mbox{%
+    \solidthickrule[1mm]\hspace{1mm}\solidthickrule[1mm]\hspace{1mm}\solidthickrule[1mm]}}
+  \definecolor{darkgreen}{rgb}{0, 0.8, 0}
+
+% Defining checkmark
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+
+% Subcaption references, e.g. (a)
+\captionsetup[subfigure]{subrefformat=simple,labelformat=simple,listofformat=subsimple}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+
+% todo
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\modified}[1]{{\color{blue}#1}}
+\newcommand{\checked}[1]{{\color{green}#1}}
